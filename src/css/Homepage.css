@@ -1,0 +1,76 @@
+/* src/css/HomePage.css */
+.main-content {
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 80px;
+}
+
+.movie-section {
+  margin-bottom: 72px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.section-subtitle {
+  font-family: "Inter";
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 2.5px;
+  color: var(--rio-gold, #e3b757);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.section-title {
+  font-family: "Cormorant Garamond";
+  font-size: 48px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 100%;
+  color: #f3ede1;
+  margin-top: 10px;
+}
+
+.link-see-all {
+  font-family: "Inter";
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--rio-gold, #e3b757);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link-see-all:hover {
+  color: var(--rio-gold-hover, #f1c40f);
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .main-content {
+    padding: 40px 32px;
+  }
+}
+
+@media (max-width: 580px) {
+  .movie-grid {
+    grid-template-columns: 1fr;
+  }
+  .main-content {
+    padding: 32px 20px;
+  }
+}

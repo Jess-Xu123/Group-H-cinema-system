@@ -1,0 +1,245 @@
+/* Movie Card */
+.rio-movie-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--rio-surface-dark, #14141b);
+  border: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+}
+
+.rio-movie-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--rio-gold, #e3b757);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.6),
+    0 0 15px rgba(227, 183, 87, 0.15); /* 金色微光外发光 */
+}
+
+/* Poster */
+.poster-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background-color: #0b0b11;
+}
+
+.poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.rio-movie-card:hover .poster-img {
+  transform: scale(1.05);
+}
+
+.poster-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 11, 17, 0.1) 0%,
+    rgba(20, 20, 27, 0.8) 100%
+  );
+  pointer-events: none;
+}
+
+/* Premiere Badge */
+.badge-premiere {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: var(--rio-red, #d14553);
+  color: #ffffff;
+  font-family: "Inter";
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 7px 11px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(209, 69, 83, 0.4);
+}
+
+/* Age Badge */
+.badge-age {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(11, 11, 17, 0.85);
+  border: 1px solid var(--rio-border-gold, rgba(227, 183, 87, 0.4));
+  color: var(--rio-gold, #e3b757);
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.movie-genre {
+  font-family: "Inter";
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 1.8px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.movie-title {
+  font-family: "Inter";
+  font-size: 21px;
+  font-weight: 500;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+  line-height: normal;
+  letter-spacing: -0.6px;
+}
+
+/* Showtime */
+.showtime-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Inter";
+  font-size: 13px;
+  color: var(--rio-text-muted, #9ca3af);
+  margin-bottom: 16px;
+}
+
+.dot-divider {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.price-block {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.price-amount {
+  font-family: "Inter";
+  font-size: 17px;
+  font-weight: 500;
+  color: #e3b757;
+}
+
+.discount-tag {
+  font-size: 10px;
+  color: var(--rio-gold, #e3b757);
+  font-weight: 500;
+}
+
+/* Buy button */
+.btn-buy-ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--rio-gold, #e3b757);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.btn-buy-ticket .btn-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--rio-gold, #e3b757);
+  transition: all 0.2s ease;
+}
+
+.rio-movie-card:hover .btn-buy-ticket {
+  color: var(--rio-gold-hover, #f1c40f);
+}
+
+.rio-movie-card:hover .btn-buy-ticket .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Upcoming Movies */
+.card-footer-info.upcoming {
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter";
+  color: var(--rio-text-muted, #9ca3af);
+}
+
+.upcoming-sub-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.upcoming-sub-info .clock-icon {
+  display: flex;
+  align-items: center;
+}
+
+.upcoming-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-details-link {
+  color: var(--rio-gold, #e3b757);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.btn-details-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--rio-gold, #e3b757);
+  transition: all 0.2s ease;
+}

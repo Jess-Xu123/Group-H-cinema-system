@@ -1,0 +1,189 @@
+/* Hero Banner Container */
+.rio-hero-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 76px 80px 32px 80px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.hero-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* 上下渐变：顶部轻微遮罩防止 Navbar 混淆，底部平滑融入背景色 */
+    linear-gradient(
+      180deg,
+      rgba(11, 11, 17, 0.5) 0%,
+      rgba(11, 11, 17, 0) 40%,
+      rgba(11, 11, 17, 0.7) 80%,
+      var(--rio-bg-dark, #0b0b11) 100%
+    ),
+    /* 左右渐变：左侧 0%~35% 区域聚焦文字保护，45% 往右迅速过渡为高透光 */
+    linear-gradient(
+        90deg,
+        rgba(11, 11, 17, 0.92) 0%,
+        rgba(11, 11, 17, 0.85) 35%,
+        rgba(11, 11, 17, 0.3) 65%,
+        rgba(11, 11, 17, 0.1) 100%
+      );
+}
+
+/* Text area */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 810px;
+  max-width: 100%;
+  gap: 24px;
+}
+
+/* Hash and top content */
+.hero-tag {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.hero-tag-dash {
+  color: var(--rio-gold, #e3b757);
+  font-weight: 500;
+}
+
+.hero-tag-text {
+  font-family: "Inter";
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.8px;
+  color: var(--rio-gold, #e3b757);
+  text-transform: uppercase;
+}
+
+/* Main title */
+.hero-title {
+  font-family: "Cormorant Garamond";
+  font-size: 80px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 99%;
+  letter-spacing: -1.8px;
+  color: #f3ede1;
+}
+
+/* Description */
+.hero-description {
+  font-family: "Inter";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 170%;
+  color: var(--rio-text-muted, #9ca3af);
+}
+
+/* View showtimes button */
+.btn-hero-gold {
+  display: flex;
+  height: 54px;
+  padding: 0 23px;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  border-radius: 4px;
+  border: 1px solid #e3b757;
+  background: #e3b757;
+}
+
+.btn-hero-gold:hover {
+  background-color: var(--rio-gold-hover, #f1c40f);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(227, 183, 87, 0.35);
+}
+
+.btn-arrow {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.btn-hero-gold:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Hero banner bottom */
+.hero-bottom-bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 48px;
+  padding-top: 24px;
+}
+
+.hero-slogan {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: var(
+    --rio-text-muted,
+    #9ca3af
+  ); /* 提升对比度，确保在暗色背景清晰可见 */
+  text-transform: uppercase;
+}
+
+/* 经典 Rio 品牌红点 */
+.hero-slogan .red-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--rio-red, #d14553); /* 调用 Rio 品牌红 */
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(209, 69, 83, 0.8); /* 增加微弱红色光晕 */
+}
+
+@media (max-width: 900px) {
+  .rio-hero-banner {
+    padding: 40px 24px 24px 24px;
+    min-height: 460px;
+  }
+
+  .hero-title {
+    font-size: 42px;
+  }
+
+  .hero-description {
+    font-size: 13px;
+  }
+
+  .hero-bottom-bar {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}

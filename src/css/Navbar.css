@@ -1,0 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@600&display=swap");
+
+.rio-navbar {
+  display: flex;
+  width: 100%;
+  min-height: 96px;
+  padding: 0 80px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--rio-border-subtle);
+  background: var(--rio-bg-dark);
+}
+
+.rio-logo {
+  display: flex;
+  flex-shrink: 0;
+  align-items: baseline;
+  gap: 5px;
+  color: var(--rio-text-bright);
+  white-space: nowrap;
+  text-decoration: none !important;
+}
+
+.rio-logo-main,
+.logo-dot {
+  font-family: "Oswald", sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.rio-logo-main {
+  letter-spacing: -1.5px;
+}
+
+.logo-dot {
+  color: var(--rio-gold);
+}
+
+.rio-logo-name {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+}
+
+.rio-nav-links {
+  display: flex;
+  height: 100%;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 32px;
+}
+
+.rio-nav-links a {
+  position: relative;
+  display: inline-flex;
+  height: 100%;
+  align-items: center;
+  color: var(--rio-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rio-nav-links a:hover,
+.rio-nav-links a.active {
+  color: var(--rio-gold);
+}
+
+.rio-nav-links a.active {
+  font-weight: 600;
+}
+
+.rio-nav-links a.active::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 16px;
+  height: 2px;
+  margin-top: 8px;
+  background: var(--rio-gold);
+  transform: translateX(-50%);
+}
+
+.rio-nav-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 24px;
+}
+
+.location-picker,
+.btn-login {
+  display: flex;
+  align-items: center;
+  color: var(--rio-text-bright);
+}
+
+.location-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.location-picker img,
+.location-picker svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.location-picker-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+}
+
+.location-picker-select option {
+  background: var(--rio-bg-dark);
+  color: var(--rio-text-bright);
+}
+
+.location-picker:focus-within {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 4px;
+}
+
+.location-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--rio-border-subtle);
+}
+
+.btn-login {
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+  .rio-navbar {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .rio-nav-links {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .rio-navbar {
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding: 16px 24px;
+  }
+
+  .rio-nav-links {
+    order: 1;
+    width: 100%;
+    min-height: 40px;
+    overflow-x: auto;
+  }
+
+  .rio-nav-links a.active::after {
+    bottom: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .rio-navbar {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .rio-logo-main,
+  .logo-dot {
+    font-size: 30px;
+  }
+
+  .rio-logo-name {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .rio-nav-actions {
+    gap: 12px;
+  }
+}

@@ -1,0 +1,100 @@
+/* src/css/Footer.css */
+
+.rio-footer {
+  width: 100%;
+  padding: 60px 80px 30px;
+  border-top: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
+  background-color: var(--rio-bg-dark, #0b0b11);
+  box-sizing: border-box;
+}
+
+.footer-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.rio-logo-footer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.rio-logo-footer .logo-rio {
+  font-family: "Oswald", sans-serif;
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -1.5px;
+  color: var(--rio-text-bright, #ffffff);
+}
+
+.rio-logo-footer .logo-dot {
+  color: var(--rio-gold);
+  font-family: "Oswald", sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.rio-logo-footer .logo-cinema {
+  font-family: "Inter", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 6px;
+  line-height: 1;
+  color: var(--rio-text-bright, #ffffff);
+}
+
+.footer-tagline {
+  font-size: 12px;
+  color: var(--rio-text-muted, #9ca3af);
+  margin-top: 8px;
+}
+
+.footer-links-group {
+  display: flex;
+  gap: 60px;
+}
+
+.footer-col h5 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--rio-text-muted, #9ca3af);
+  margin-bottom: 12px;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 13px;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--rio-gold, #e3b757);
+}
+
+.footer-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
+  font-size: 11px;
+  color: var(--rio-text-muted, #9ca3af);
+}
+
+@media (max-width: 768px) {
+  .rio-footer {
+    padding: 40px 24px 20px;
+  }
+  .footer-top-row {
+    flex-direction: column;
+    gap: 30px;
+  }
+}

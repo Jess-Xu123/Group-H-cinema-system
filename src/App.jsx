@@ -1,22 +1,27 @@
-import "./App.css";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import "./index.css";
 
 function App() {
+  const [currentLocation, setCurrentLocation] = useState("Oulu");
+
   return (
-    <>
-      <section id="center">
-        <div className="hero"></div>
-        <div>
-          <h1>Hello world from Group H</h1>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps"></section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <Router>
+      <div className="rio-app-main">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                currentLocation={currentLocation}
+                onLocationChange={(newLoc) => setCurrentLocation(newLoc)}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
