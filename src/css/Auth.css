@@ -1,0 +1,354 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 20px;
+  box-sizing: border-box;
+
+  background-color: var(--rio-bg-dark, #0b0b11);
+  color: var(--rio-text-bright, #ffffff);
+
+  font-family: "Inter", sans-serif;
+}
+
+/* Authentication Card */
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 44px 42px 38px;
+  box-sizing: border-box;
+
+  background-color: var(--rio-surface-dark, #14141b);
+  border: 1px solid var(--rio-border-subtle);
+  border-radius: 4px;
+
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+}
+
+/* Brand Logo */
+
+.auth-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+
+  margin-bottom: 34px;
+
+  color: var(--rio-text-bright);
+  font-family: "Oswald", sans-serif;
+  font-size: 31px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.8px;
+
+  text-decoration: none;
+}
+
+.auth-brand::after {
+  content: "CINEMA";
+
+  margin-left: 3px;
+
+  color: var(--rio-text-bright);
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+}
+
+.auth-brand:hover {
+  color: var(--rio-gold);
+}
+
+.auth-brand:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 5px;
+}
+
+/* Eyebrow */
+
+.auth-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin: 0 0 14px;
+
+  color: var(--rio-gold);
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
+
+.auth-eyebrow::before {
+  content: "";
+  display: inline-block;
+
+  width: 22px;
+  height: 1px;
+
+  flex-shrink: 0;
+
+  background-color: var(--rio-gold);
+}
+
+/* Main Heading */
+
+.auth-card h1 {
+  margin: 0 0 12px;
+
+  color: #f3ede1;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 46px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.08;
+  letter-spacing: -0.6px;
+}
+
+/* Description */
+
+.auth-description {
+  margin: 0 0 30px;
+
+  color: var(--rio-text-muted, #9ca3af);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* Form Layout */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.form-group label {
+  color: #f3ede1;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* Inputs */
+
+.form-group input {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+
+  background-color: #0b0b11;
+  color: #f3ede1;
+
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #777985;
+  opacity: 1;
+}
+
+.form-group input:hover {
+  border-color: rgba(227, 183, 87, 0.45);
+}
+
+.form-group input:focus {
+  border-color: var(--rio-gold);
+  box-shadow: 0 0 0 2px rgba(227, 183, 87, 0.12);
+}
+
+.form-group input:focus-visible {
+  outline: 1px solid var(--rio-gold);
+  outline-offset: 2px;
+}
+
+/* Primary Button */
+
+.auth-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 50px;
+  margin-top: 4px;
+  padding: 13px 18px;
+
+  border: 1px solid var(--rio-gold);
+  border-radius: 4px;
+
+  background-color: var(--rio-gold);
+  color: var(--rio-bg-dark);
+
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  border-color: var(--rio-gold-hover);
+  background-color: var(--rio-gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(227, 183, 87, 0.15);
+}
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-button:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 4px;
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error and Success Messages */
+
+.auth-error,
+.auth-success {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.auth-error {
+  color: var(--rio-red-hover, #ff4d61);
+}
+
+.auth-success {
+  color: #7fe0a0;
+}
+
+/* Switch Between Login and Register */
+
+.auth-switch {
+  margin: 28px 0 0;
+
+  color: var(--rio-text-muted, #9ca3af);
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: var(--rio-gold);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  color: var(--rio-gold-hover);
+  text-decoration: underline;
+}
+
+.auth-switch a:focus-visible {
+  outline: 1px solid var(--rio-gold);
+  outline-offset: 3px;
+}
+
+/* Back to Homepage */
+
+.auth-back {
+  display: block;
+
+  margin-top: 20px;
+
+  color: var(--rio-text-muted, #9ca3af);
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  line-height: 1.8;
+  text-align: center;
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.auth-back:hover {
+  color: #f3ede1;
+}
+
+.auth-back:focus-visible {
+  outline: 1px solid var(--rio-gold);
+  outline-offset: 3px;
+}
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  .auth-page {
+    align-items: flex-start;
+    padding: 32px 16px;
+  }
+
+  .auth-card {
+    padding: 32px 24px;
+  }
+
+  .auth-brand {
+    margin-bottom: 30px;
+  }
+
+  .auth-card h1 {
+    font-size: 40px;
+  }
+
+  .auth-description {
+    margin-bottom: 26px;
+  }
+
+  .auth-form {
+    gap: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-group input,
+  .auth-button,
+  .auth-switch a,
+  .auth-back {
+    transition: none;
+  }
+}

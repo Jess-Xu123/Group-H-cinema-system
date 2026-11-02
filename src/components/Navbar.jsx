@@ -1,29 +1,50 @@
+import { Link } from "react-router-dom";
 import "../css/Navbar.css";
 
 export default function Navbar({ currentLocation, onLocationChange }) {
   return (
     <nav className="rio-navbar">
-      <a className="rio-logo" href="#home" aria-label="RIO Cinema home">
+      {/* RIO Cinema Logo */}
+      <Link
+        className="rio-logo"
+        to="/"
+        aria-label="RIO Cinema home"
+      >
         <span className="rio-logo-main">RIO</span>
         <span className="logo-dot">.</span>
         <span className="rio-logo-name">CINEMA</span>
-      </a>
+      </Link>
 
+      {/* Main Navigation */}
       <div className="rio-nav-links" aria-label="Main navigation">
-        <a href="#home" className="active" aria-current="page">
+        <Link to="/" className="active" aria-current="page">
           Home
-        </a>
+        </Link>
         <a href="#movies">Movies</a>
         <a href="#showtimes">Showtimes</a>
         <a href="#private">Private Screenings</a>
         <a href="#about">About Us</a>
       </div>
 
+      {/* Location and Authentication */}
       <div className="rio-nav-actions">
         <div className="location-picker">
-          <img src="/assets/map-pin.svg" alt="" width="15" height="15" />
+          <img
+            src="/assets/map-pin.svg"
+            alt=""
+            width="15"
+            height="15"
+          />
+
           <span>{currentLocation}</span>
-          <img src="/assets/chevron-down.svg" alt="" width="13" height="13" />
+
+          <img
+            src="/assets/chevron-down.svg"
+            alt=""
+            width="13"
+            height="13"
+          />
+
           <select
             className="location-picker-select"
             aria-label="Cinema location"
@@ -34,11 +55,24 @@ export default function Navbar({ currentLocation, onLocationChange }) {
             <option value="Tampere">Tampere</option>
           </select>
         </div>
+
         <span className="location-divider" aria-hidden="true" />
-        <button className="btn-login" type="button">
-          <img src="/assets/user-round.svg" alt="" width="16" height="16" />
+
+        {/* Login */}
+        <Link to="/login" className="btn-login">
+          <img
+            src="/assets/user-round.svg"
+            alt=""
+            width="16"
+            height="16"
+          />
           Login
-        </button>
+        </Link>
+
+        {/* Register */}
+        <Link to="/register" className="btn-register">
+          Sign Up
+        </Link>
       </div>
     </nav>
   );
