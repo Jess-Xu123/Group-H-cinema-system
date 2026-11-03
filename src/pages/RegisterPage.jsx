@@ -54,7 +54,7 @@ export default function Register() {
     try {
       // no confirmPassword go to backend。
       const result = await registerUser({
-        username: username.trim(),
+        full_name: username.trim(),
         email: email.trim(),
         password,
       });

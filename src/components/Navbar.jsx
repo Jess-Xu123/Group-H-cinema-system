@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { logoutUser } from "../api/authApi";
 import "../css/Navbar.css";
 
 export default function Navbar({ currentLocation, onLocationChange }) {
+  const { user, setUser, isLoading } = useAuth();
+
+  async function handleLogout() {
+    try {
+      await logoutUser();
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
+
   return (
     <nav className="rio-navbar">
       {/* RIO Cinema Logo */}
@@ -58,21 +71,43 @@ export default function Navbar({ currentLocation, onLocationChange }) {
 
         <span className="location-divider" aria-hidden="true" />
 
-        {/* Login */}
-        <Link to="/login" className="btn-login">
-          <img
-            src="/assets/user-round.svg"
-            alt=""
-            width="16"
-            height="16"
-          />
-          Login
-        </Link>
 
-        {/* Register */}
-        <Link to="/register" className="btn-register">
-          Sign Up
-        </Link>
+      {!isLoading && (
+        <>
+          {!user ? (
+            <>
+              <Link to="/login" className="btn-login">
+                <img
+                  src="/assets/user-round.svg"
+                  alt=""
+                  width="16"
+                  height="16"
+                />
+                Login
+              </Link>
+
+              <Link to="/register" className="btn-register">
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="navbar-user">
+                Hi, {user.full_name}
+              </span>
+
+              <button
+                type="button"
+                className="btn-login"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </>
+      )}
+      
       </div>
     </nav>
   );

@@ -37,3 +37,30 @@ export function registerUser(userData) {
 export function loginUser(credentials) {
   return authRequest("/api/auth/login", credentials);
 }
+
+export async function getCurrentUser() {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      method: "GET",
+      credentials: "include",
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status})`
+    );
+  }
+
+  return result;
+}
+
+export function logoutUser() {
+  return authRequest("/api/auth/logout");
+}

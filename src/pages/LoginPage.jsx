@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
+import { useAuth } from "../context/AuthContext";
 import "../css/Auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -37,7 +39,9 @@ export default function Login() {
     try {
       const result = await loginUser(formData);
 
-      // if backend respond, then jump to another page. no token for now
+      // Save logged-in user to global authentication state
+      setUser(result.user);
+
       console.log("Login successful:", result);
       navigate("/");
 
