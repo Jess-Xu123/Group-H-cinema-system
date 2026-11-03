@@ -49,3 +49,22 @@ VALUES
     (2, 2, '2026-11-11 18:00:00+02', FALSE, FALSE, NULL),
     (3, 4, '2026-11-12 18:00:00+02', TRUE, FALSE, NULL),
     (1, 1, '2026-11-13 18:00:00+02', FALSE, TRUE, 'Company 1');
+
+INSERT INTO bookings (user_id, showtime_id, customer_email, total_amount, stripe_payment_id, status, expires_at)
+VALUES
+    (3, 1, 'customer@test.com', 18.00, 'pi_test_123456', 'paid', NULL),
+    (3, 3, 'customer@test.com', 28.00, NULL, 'reserved_unpaid', '2026-11-11 16:00:00+02'),
+    (NULL, 4, 'guest@test.com', 17.25, NULL, 'checkout_locked', '2026-11-12 17:15:00+02');
+
+INSERT INTO booked_seats (booking_id, showtime_id, row_number, seat_number, ticket_type, seat_price)
+VALUES
+    (1, 1, 1, 2, 'normal', 12.00),
+    (1, 1, 1, 3, 'child_under_12', 6.00),
+    (2, 3, 2, 1, 'normal', 14.00),
+    (2, 3, 2, 2, 'normal', 14.00),
+    (3, 4, 0, 1, 'wheelchair', 17.25);
+
+INSERT INTO premiere_waitlist (showtime_id, customer_email, is_notified)
+VALUES
+    (4, 'waitlist1@test.com', FALSE),
+    (4, 'waitlist2@test.com', FALSE);
