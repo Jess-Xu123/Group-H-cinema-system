@@ -78,6 +78,50 @@ app.get('/api/showtimes', async (req, res) => {
   }
 });
 
+// GET /api/showtimes/:id/seats
+app.get('/api/showtimes/:id/seats', async (req, res) => {
+  try {
+    const showtimeId = req.params.id;
+
+    if (isNaN(showtimeId)) {
+      return res.status(400).json({ error: 'Invalid showtime ID. ID must be a number.' });
+    }
+
+    const query = `
+      SELECT 
+        s.id AS showtime_id,
+        s.start_time,
+        s.is_premiere,
+        m.title AS movie_title,
+        m.age_rating,
+        h.id AS hall_id,
+        h.city,
+        h.name AS hall_name,
+        h.capacity,
+        h.total_rows,
+        h.seats_per_row,
+        h.wheelchair_limit
+      FROM showtimes s
+      JOIN movies m ON s.movie_id = m.id
+      JOIN halls h ON s.hall_id = h.id
+      WHERE s.id = $1;
+    `;
+
+    const { rows } = await pool.query(query, [showtimeId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Showtime not found' });
+    }
+
+    res.json({
+      screening: rows[0],
+      bookedSeats: []
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch seat map', details: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`RIO Backend running on http://localhost:${PORT}`);
