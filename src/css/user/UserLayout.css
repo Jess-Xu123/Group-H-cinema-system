@@ -1,0 +1,63 @@
+.user-layout {
+  min-height: 100vh;
+  background: #f5f2ec;
+  color: #29272d;
+}
+
+.user-layout .rio-navbar {
+  min-height: 87px;
+  background: #0b0b11;
+}
+
+.user-layout .rio-navbar-content {
+  min-height: 87px;
+  padding-left: 44px;
+  padding-right: 44px;
+}
+
+.user-layout .rio-navbar .rio-container {
+  max-width: none;
+}
+
+.user-layout-body {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 87px);
+}
+
+.user-main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 30px 36px;
+  background: #f5f2ec;
+}
+
+.user-layout .rio-footer {
+  padding: 0;
+  border-top: 1px solid #ded8cd;
+  background: #f5f2ec;
+}
+
+.user-layout .rio-footer .footer-top-row {
+  display: none;
+}
+
+.user-layout .rio-footer .footer-bottom-row {
+  margin: 0 36px;
+  padding: 17px 0;
+  border-top: 0;
+  color: #827d75;
+}
+
+.user-layout .rio-footer .footer-slogan {
+  color: #98701f;
+}
+
+.user-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f5f2ec;
+  color: #29272d;
+  font-size: 14px;
+}

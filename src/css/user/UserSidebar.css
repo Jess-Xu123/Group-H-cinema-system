@@ -1,0 +1,101 @@
+.user-sidebar {
+  width: 225px;
+  flex: 0 0 225px;
+  min-height: 100%;
+  padding: 30px 18px;
+  background: #eeeae2;
+  color: #29272d;
+}
+
+.user-sidebar-heading {
+  padding: 0 10px;
+  margin-bottom: 25px;
+}
+
+.user-sidebar-eyebrow {
+  display: block;
+  margin-bottom: 9px;
+  color: #98701f;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.user-sidebar-heading h2 {
+  margin: 0 0 8px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.user-sidebar-heading p {
+  margin: 0;
+  color: #827d75;
+  font-size: 11px;
+}
+
+.user-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.user-sidebar-link {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  border-radius: 4px;
+  color: #77736d;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.user-sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.55);
+  color: #29272d;
+}
+
+.user-sidebar-link.active {
+  background: #fffefa;
+  color: #29272d;
+  font-weight: 600;
+}
+
+.user-sidebar-icon {
+  width: 14px;
+  color: #8d6a27;
+  font-size: 15px;
+  text-align: center;
+}
+
+.user-sidebar-note {
+  margin-top: 25px;
+  padding: 16px 10px 0;
+  border-top: 1px solid #ded8cd;
+}
+
+.user-sidebar-note h3 {
+  margin: 0 0 10px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.user-sidebar-note p {
+  margin: 0;
+  color: #827d75;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.user-sidebar-signout {
+  margin: 12px 10px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #98701f;
+  font-size: 11px;
+  cursor: pointer;
+}

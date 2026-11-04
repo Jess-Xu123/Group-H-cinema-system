@@ -1,0 +1,367 @@
+.profile-page {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.profile-page-header {
+  margin-bottom: 36px;
+}
+
+.profile-eyebrow {
+  color: #a88746;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.profile-page-header h1 {
+  color: #29272d;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 42px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.profile-subtitle {
+  color: #77736d;
+  font-size: 14px;
+  margin: 0;
+}
+
+.profile-section {
+  background: #fffefa;
+  border: 1px solid #e8e2d8;
+  border-radius: 8px;
+  padding: 28px;
+}
+
+.profile-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.profile-section-heading h2 {
+  color: #29272d;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 25px;
+  margin: 0 0 5px;
+}
+
+.profile-section-heading p {
+  color: #89847c;
+  font-size: 13px;
+  margin: 0;
+}
+
+.profile-edit-button {
+  background: transparent;
+  border: 1px solid #c6a45e;
+  border-radius: 4px;
+  color: #947336;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 10px 18px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-edit-button:hover {
+  background: #c6a45e;
+  color: #fff;
+}
+
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 36px;
+}
+
+.profile-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-info-item span {
+  color: #89847c;
+  font-size: 12px;
+}
+
+.profile-info-item strong {
+  color: #29272d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .profile-section {
+    padding: 20px;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .profile-page-header h1 {
+    font-size: 34px;
+  }
+}
+
+
+.membership-section {
+  margin-top: 24px;
+}
+
+.membership-card {
+  background: #24232a;
+  border-radius: 8px;
+  color: #fffefa;
+  padding: 28px;
+}
+
+.membership-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.membership-label {
+  color: #d7b66f;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.membership-card-top h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  margin: 8px 0 0;
+}
+
+.membership-ticket-icon {
+  color: #d7b66f;
+  font-size: 28px;
+}
+
+.membership-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.membership-progress-info strong {
+  color: #e3b757;
+  font-weight: 500;
+}
+
+.membership-progress-bar {
+  width: 100%;
+  height: 7px;
+  background: #49464b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.membership-progress-fill {
+  height: 100%;
+  background: #e3b757;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.membership-message {
+  color: #c5c0b7;
+  font-size: 12px;
+  margin: 16px 0 0;
+}
+
+
+.upcoming-booking-section {
+  margin-top: 24px;
+}
+
+.booking-state,
+.booking-empty {
+  padding: 24px;
+  background: #f7f5f0;
+  border-radius: 8px;
+  color: #77736b;
+  font-size: 14px;
+}
+
+.booking-empty a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #9a793c;
+  text-decoration: none;
+}
+
+.booking-error {
+  color: #b54747;
+  font-size: 14px;
+}
+
+.upcoming-booking-card {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  background: #f7f5f0;
+  border-radius: 8px;
+}
+
+.upcoming-booking-poster {
+  width: 120px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.upcoming-booking-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.booking-label {
+  color: #a38448;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.upcoming-booking-details h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+}
+
+.upcoming-booking-details p {
+  margin: 0;
+  color: #77736b;
+  font-size: 13px;
+}
+
+.upcoming-booking-details strong {
+  color: #9a793c;
+  font-size: 15px;
+}
+
+@media (max-width: 600px) {
+  .upcoming-booking-card {
+    flex-direction: column;
+  }
+
+  .upcoming-booking-poster {
+    width: 100px;
+    height: 145px;
+  }
+}
+
+
+.etickets-section {
+  margin-top: 24px;
+}
+
+.eticket-count {
+  color: #9a793c;
+  font-size: 13px;
+}
+
+.eticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eticket-card {
+  background: #f7f5f0;
+  border: 1px solid #e8e2d7;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.eticket-card-header,
+.eticket-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.eticket-card-header {
+  background: #24232a;
+  color: #d7b66f;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.eticket-card-header strong {
+  color: #fffefa;
+}
+
+.eticket-card-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 20px;
+}
+
+.eticket-card-body h3 {
+  margin: 0 0 10px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+}
+
+.eticket-card-body p {
+  margin: 5px 0;
+  color: #77736b;
+  font-size: 13px;
+}
+
+.eticket-seats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: right;
+}
+
+.eticket-seats span {
+  color: #9a793c;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.eticket-seats strong {
+  font-size: 13px;
+}
+
+.eticket-card-footer {
+  border-top: 1px dashed #d8d0c2;
+  font-size: 13px;
+}
+
+.eticket-card-footer span {
+  color: #53805e;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.eticket-card-footer strong {
+  color: #9a793c;
+}
+
+@media (max-width: 600px) {
+  .eticket-card-body {
+    flex-direction: column;
+  }
+
+  .eticket-seats {
+    text-align: left;
+  }
+}

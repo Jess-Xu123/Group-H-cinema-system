@@ -1,0 +1,529 @@
+/* =========================================
+   ORDERS PAGE
+========================================= */
+
+.orders-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+  color: #28252b;
+}
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.orders-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.orders-page-header h1 {
+  margin: 8px 0 10px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #28252b;
+}
+
+.orders-page-header .profile-subtitle {
+  margin: 0;
+  color: #89847b;
+  font-size: 13px;
+}
+
+.orders-browse-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  background: #e5b64e;
+  border: 1px solid #e5b64e;
+  border-radius: 3px;
+  color: #28252b;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.orders-browse-button:hover {
+  background: #d5a83f;
+}
+
+/* =========================================
+   FILTER BAR
+========================================= */
+
+.orders-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  border-bottom: 1px solid #e8e2d7;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.orders-filter-bar button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #89847b;
+  font-family: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.orders-filter-bar button:hover {
+  color: #28252b;
+}
+
+.orders-filter-bar button.active {
+  color: #28252b;
+  border-bottom-color: #d7b66f;
+  font-weight: 600;
+}
+
+.orders-filter-bar button span {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 20px;
+  background: #eeeae2;
+  color: #77736b;
+  font-size: 10px;
+}
+
+.orders-filter-bar button.active span {
+  background: #f3e6c9;
+  color: #98783d;
+}
+
+/* =========================================
+   MAIN CONTENT LAYOUT
+========================================= */
+
+.orders-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* =========================================
+   ORDER CARD
+========================================= */
+
+.order-card {
+  padding: 20px;
+  background: #fffefa;
+  border: 1px solid #e8e2d7;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.order-card:hover {
+  border-color: #d7b66f;
+}
+
+.order-card.selected {
+  border-color: #c6a45d;
+  box-shadow: 0 2px 10px rgba(60, 48, 25, 0.06);
+}
+
+.order-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.order-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.status-paid {
+  background: #e8f1e8;
+  color: #4e7854;
+}
+
+.status-reserved_unpaid {
+  background: #fbf0d8;
+  color: #a47b30;
+}
+
+.status-cancelled {
+  background: #f7e9e7;
+  color: #a65d55;
+}
+
+.status-checkout_locked {
+  background: #eeeae2;
+  color: #77736b;
+}
+
+.order-reference {
+  color: #a39c91;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.order-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.order-poster {
+  flex-shrink: 0;
+  width: 92px;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #eeeae2;
+}
+
+.order-information {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+}
+
+.order-information h2 {
+  margin: 0 0 3px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #28252b;
+}
+
+.order-information p {
+  margin: 0;
+  color: #89847b;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.order-information > strong {
+  margin-top: 5px;
+  color: #98783d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.order-information .order-expiry {
+  color: #a47b30;
+  font-size: 10px;
+}
+
+.order-view-button {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 9px 0 0;
+  background: transparent;
+  border: none;
+  color: #98783d;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.order-view-button:hover {
+  color: #6f5428;
+}
+
+/* =========================================
+   EMPTY / LOADING / ERROR STATES
+========================================= */
+
+.booking-state,
+.booking-empty {
+  padding: 28px 24px;
+  background: #fffefa;
+  border: 1px solid #e8e2d7;
+  border-radius: 6px;
+  color: #89847b;
+  font-size: 13px;
+}
+
+.booking-empty p {
+  margin: 0 0 8px;
+}
+
+.booking-empty a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #98783d;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.booking-empty a:hover {
+  text-decoration: underline;
+}
+
+.booking-error {
+  padding: 16px;
+  background: #f7e9e7;
+  border-radius: 5px;
+  color: #a65d55;
+  font-size: 13px;
+}
+
+/* =========================================
+   RIGHT SIDE - E-TICKET SUMMARY
+========================================= */
+
+.orders-summary-panel {
+  position: sticky;
+  top: 24px;
+  padding: 24px;
+  background: #fffefa;
+  border: 1px solid #e8e2d7;
+  border-radius: 6px;
+}
+
+.summary-heading h2,
+.summary-empty h2 {
+  margin: 0 0 4px;
+  color: #28252b;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 27px;
+  font-weight: 500;
+}
+
+.summary-heading p,
+.summary-empty p {
+  margin: 0;
+  color: #89847b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.summary-reference {
+  display: block;
+  margin-top: 22px;
+  color: #a38448;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.orders-summary-panel > h3 {
+  margin: 12px 0;
+  color: #28252b;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.summary-age-rating {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 8px;
+  background: #f9e9e9;
+  border-radius: 3px;
+  color: #a64b4b;
+  font-size: 10px;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  margin-top: 20px;
+}
+
+.summary-details > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 11px;
+}
+
+.summary-details span {
+  flex-shrink: 0;
+  color: #89847b;
+}
+
+.summary-details strong {
+  color: #28252b;
+  font-weight: 500;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.summary-details .summary-price {
+  color: #98783d;
+  font-size: 14px;
+}
+
+.summary-note {
+  margin: 22px 0 16px;
+  color: #89847b;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.summary-ticket-button {
+  width: 100%;
+  padding: 12px;
+  background: #e5b64e;
+  border: 1px solid #e5b64e;
+  border-radius: 3px;
+  color: #28252b;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.summary-ticket-button:disabled {
+  background: #eeeae2;
+  border-color: #eeeae2;
+  color: #89847b;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   SUMMARY EMPTY STATE
+========================================= */
+
+.summary-empty {
+  padding: 28px 4px;
+  text-align: center;
+}
+
+.summary-empty-icon {
+  display: block;
+  margin-bottom: 16px;
+  color: #d7b66f;
+  font-size: 30px;
+}
+
+.summary-empty p {
+  margin-top: 10px;
+}
+
+.summary-browse-button {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 11px 16px;
+  background: #e5b64e;
+  border-radius: 3px;
+  color: #28252b;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.summary-browse-button:hover {
+  background: #d5a83f;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+  .orders-content {
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.9fr);
+    gap: 14px;
+  }
+
+  .orders-summary-panel {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 850px) {
+  .orders-content {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-summary-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .orders-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+
+  .orders-page-header h1 {
+    font-size: 34px;
+  }
+
+  .orders-filter-bar {
+    gap: 20px;
+  }
+
+  .order-card {
+    padding: 15px;
+  }
+
+  .order-card-main {
+    gap: 13px;
+  }
+
+  .order-poster {
+    width: 76px;
+    height: 112px;
+  }
+
+  .order-information h2 {
+    font-size: 20px;
+  }
+
+  .order-information p {
+    font-size: 10px;
+  }
+
+  .order-card-top {
+    align-items: flex-start;
+  }
+
+  .orders-summary-panel {
+    padding: 20px;
+  }
+}
