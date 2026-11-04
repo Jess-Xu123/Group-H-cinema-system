@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { logoutUser } from "../api/authApi";
 import "../css/Navbar.css";
@@ -6,6 +6,7 @@ import { Button } from "./Buttons";
 import { ChevronDownIcon, MapPinIcon } from "./Icons";
 
 export default function Navbar({ currentLocation, onLocationChange }) {
+  const { pathname } = useLocation();
   const { user, setUser, isLoading } = useAuth();
 
   async function handleLogout() {
@@ -27,11 +28,21 @@ export default function Navbar({ currentLocation, onLocationChange }) {
         </Link>
 
         <div className="rio-nav-links" aria-label="Main navigation">
-          <Link to="/" className="active" aria-current="page">
+          <Link
+            to="/"
+            className={pathname === "/" ? "active" : ""}
+            aria-current={pathname === "/" ? "page" : undefined}
+          >
             Home
           </Link>
           <a href="#movies">Movies</a>
-          <a href="#showtimes">Showtimes</a>
+          <Link
+            to="/showtimes"
+            className={pathname === "/showtimes" ? "active" : ""}
+            aria-current={pathname === "/showtimes" ? "page" : undefined}
+          >
+            Showtimes
+          </Link>
           <a href="#private">Private Screenings</a>
           <a href="#about">About Us</a>
         </div>

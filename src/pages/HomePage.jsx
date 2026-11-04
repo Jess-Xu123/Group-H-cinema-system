@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import HeroBanner from "../components/HeroBanner.jsx";
 import MovieCard from "../components/MovieCard";
@@ -9,6 +10,7 @@ import "../css/Homepage.css";
 
 export default function HomePage() {
   const [currentLocation, setCurrentLocation] = useState("Oulu");
+  const navigate = useNavigate();
 
   const handleMovieSelect = (movie) => {
     console.log("Selected movie for booking:", movie);
@@ -23,10 +25,9 @@ export default function HomePage() {
 
       <HeroBanner
         currentLocation={currentLocation}
-        onShowtimesClick={() => {
-          const el = document.getElementById("now-showing");
-          el?.scrollIntoView({ behavior: "smooth" });
-        }}
+        onShowtimesClick={() =>
+          navigate("/showtimes", { state: { city: currentLocation } })
+        }
       />
 
       <main className="main-content rio-container" id="now-showing">
@@ -37,9 +38,13 @@ export default function HomePage() {
               <span className="section-subtitle">ON THE BIG SCREEN</span>
               <h2 className="section-title">Now showing</h2>
             </div>
-            <a href="#all-showtimes" className="link-see-all">
+            <Link
+              to="/showtimes"
+              state={{ city: currentLocation }}
+              className="link-see-all"
+            >
               View all showtimes &rarr;
-            </a>
+            </Link>
           </div>
           <div className="movie-grid">
             {nowShowingMovies &&
