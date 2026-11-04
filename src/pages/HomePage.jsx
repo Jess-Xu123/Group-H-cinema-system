@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import HeroBanner from "../components/HeroBanner.jsx";
 import MovieCard from "../components/MovieCard";
+import SpecialEvent from "../components/SpecialEvent.jsx";
 import Footer from "../components/Footer";
 import { nowShowingMovies, upcomingMovies } from "../api/mockData";
 import "../css/Homepage.css";
@@ -28,7 +29,7 @@ export default function HomePage() {
         }}
       />
 
-      <main className="main-content" id="now-showing">
+      <main className="main-content rio-container" id="now-showing">
         {/* 1. Now showing section */}
         <section className="movie-section">
           <div className="section-header">
@@ -74,6 +75,9 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
+      {/* 3. Private screening banner */}
+      <SpecialEvent />
 
       <Footer />
     </div>

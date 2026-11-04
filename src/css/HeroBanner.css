@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  padding: 76px 80px 32px 80px;
+  padding: 76px 0 32px;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -45,6 +45,12 @@
         rgba(11, 11, 17, 0.3) 65%,
         rgba(11, 11, 17, 0.1) 100%
       );
+}
+
+.hero-layout-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Text area */
@@ -102,34 +108,6 @@
   color: var(--rio-text-muted, #9ca3af);
 }
 
-/* View showtimes button */
-.btn-hero-gold {
-  display: flex;
-  height: 54px;
-  padding: 0 23px;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  border-radius: 4px;
-  border: 1px solid #e3b757;
-  background: #e3b757;
-}
-
-.btn-hero-gold:hover {
-  background-color: var(--rio-gold-hover, #f1c40f);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(227, 183, 87, 0.35);
-}
-
-.btn-arrow {
-  font-size: 16px;
-  transition: transform 0.2s ease;
-}
-
-.btn-hero-gold:hover .btn-arrow {
-  transform: translateX(4px);
-}
-
 /* Hero banner bottom */
 .hero-bottom-bar {
   position: relative;
@@ -169,7 +147,7 @@
 
 @media (max-width: 900px) {
   .rio-hero-banner {
-    padding: 40px 24px 24px 24px;
+    padding: 40px 0 24px;
     min-height: 460px;
   }
 

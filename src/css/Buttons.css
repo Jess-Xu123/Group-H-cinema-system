@@ -1,0 +1,200 @@
+.rio-button {
+  cursor: pointer;
+}
+
+.rio-button--login {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--rio-text-bright);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.rio-button--login:hover {
+  color: var(--rio-gold);
+}
+
+.rio-button--register {
+  display: inline-flex;
+  min-height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 1px solid var(--rio-gold);
+  border-radius: 6px;
+  background: var(--rio-gold);
+  color: var(--rio-bg-dark);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.rio-button--register:hover {
+  border-color: var(--rio-gold-hover);
+  background: var(--rio-gold-hover);
+  color: var(--rio-bg-dark);
+}
+
+.rio-button--login:focus-visible,
+.rio-button--register:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 4px;
+}
+
+.rio-button--hero {
+  display: flex;
+  height: 54px;
+  padding: 0 23px;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #e3b757;
+  border-radius: 4px;
+  background: #e3b757;
+}
+
+.rio-button--hero:hover {
+  background-color: var(--rio-gold-hover, #f1c40f);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(227, 183, 87, 0.35);
+}
+
+.rio-button__icon--hero,
+.rio-button__icon--reserve {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.rio-button--hero:hover .rio-button__icon--hero,
+.rio-button--reserve:hover .rio-button__icon--reserve {
+  transform: translateX(4px);
+}
+
+.rio-button--ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--rio-gold, #e3b757);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.rio-button__icon--ticket {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--rio-gold, #e3b757);
+  transition: all 0.2s ease;
+}
+
+.rio-button--ticket:hover {
+  color: var(--rio-gold-hover, #f1c40f);
+}
+
+.rio-button--ticket:hover .rio-button__icon--ticket {
+  transform: translateX(4px);
+}
+
+.rio-movie-card:hover .rio-button--ticket {
+  color: var(--rio-gold-hover, #f1c40f);
+}
+
+.rio-movie-card:hover .rio-button--ticket .rio-button__icon--ticket {
+  transform: translateX(4px);
+}
+
+.rio-button--reserve {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  width: fit-content;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--rio-gold, #e3b757);
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.rio-button--reserve:hover {
+  color: var(--rio-gold-hover, #f1c40f);
+}
+
+.rio-button--auth {
+  display: flex;
+  width: 100%;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 13px 18px;
+  border: 1px solid var(--rio-gold);
+  border-radius: 4px;
+  background-color: var(--rio-gold);
+  color: var(--rio-bg-dark);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.rio-button--auth:hover:not(:disabled) {
+  border-color: var(--rio-gold-hover);
+  background-color: var(--rio-gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(227, 183, 87, 0.15);
+}
+
+.rio-button--auth:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.rio-button--auth:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 4px;
+}
+
+.rio-button--auth:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .rio-button--register {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}

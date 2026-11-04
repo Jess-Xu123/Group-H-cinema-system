@@ -2,10 +2,9 @@
 
 .rio-footer {
   width: 100%;
-  padding: 60px 80px 30px;
+  padding: 60px 0 30px;
   border-top: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
   background-color: var(--rio-bg-dark, #0b0b11);
-  box-sizing: border-box;
 }
 
 .footer-top-row {
@@ -89,9 +88,18 @@
   color: var(--rio-text-muted, #9ca3af);
 }
 
+.footer-slogan {
+  color: var(--rio-gold, #e3b757);
+  font-family: "Inter";
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
 @media (max-width: 768px) {
   .rio-footer {
-    padding: 40px 24px 20px;
+    padding: 40px 0 20px;
   }
   .footer-top-row {
     flex-direction: column;

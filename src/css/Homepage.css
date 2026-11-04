@@ -1,8 +1,7 @@
 /* src/css/HomePage.css */
 .main-content {
   width: 100%;
-  margin: 0 auto;
-  padding: 60px 80px;
+  padding-top: 60px;
 }
 
 .movie-section {
@@ -62,7 +61,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .main-content {
-    padding: 40px 32px;
+    padding-top: 40px;
   }
 }
 
@@ -71,6 +70,6 @@
     grid-template-columns: 1fr;
   }
   .main-content {
-    padding: 32px 20px;
+    padding-top: 32px;
   }
 }

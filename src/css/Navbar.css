@@ -1,14 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@600&display=swap");
 
 .rio-navbar {
+  width: 100%;
+  border-bottom: 1px solid var(--rio-border-subtle);
+  background: var(--rio-bg-dark);
+}
+
+.rio-navbar-content {
   display: flex;
   width: 100%;
   min-height: 96px;
-  padding: 0 80px;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--rio-border-subtle);
-  background: var(--rio-bg-dark);
 }
 
 .rio-logo {
@@ -92,13 +95,6 @@
   gap: 24px;
 }
 
-.location-picker,
-.btn-login {
-  display: flex;
-  align-items: center;
-  color: var(--rio-text-bright);
-}
-
 .location-picker {
   position: relative;
   display: inline-flex;
@@ -108,7 +104,6 @@
   cursor: pointer;
 }
 
-.location-picker img,
 .location-picker svg {
   display: block;
   flex-shrink: 0;
@@ -141,81 +136,24 @@
   background: var(--rio-border-subtle);
 }
 
-.btn-login {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--rio-text-bright);
-  font: inherit;
+.navbar-user {
+  color: var(--rio-text-muted);
   font-size: 13px;
-  text-decoration: none;
   white-space: nowrap;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.btn-login:hover {
-  color: var(--rio-gold);
-}
-
-.btn-login img {
-  display: block;
-  flex-shrink: 0;
-}
-
-/* Register / Sign Up */
-.btn-register {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 16px;
-  border: 1px solid var(--rio-gold);
-  border-radius: 6px;
-  background: var(--rio-gold);
-  color: var(--rio-bg-dark);
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.btn-register:hover {
-  border-color: var(--rio-gold-hover);
-  background: var(--rio-gold-hover);
-  color: var(--rio-bg-dark);
-}
-
-.btn-login:focus-visible,
-.btn-register:focus-visible {
-  outline: 2px solid var(--rio-gold);
-  outline-offset: 4px;
 }
 
 @media (max-width: 1200px) {
-  .rio-navbar {
-    padding-right: 40px;
-    padding-left: 40px;
-  }
-
   .rio-nav-links {
     gap: 20px;
   }
 }
 
 @media (max-width: 900px) {
-  .rio-navbar {
+  .rio-navbar-content {
     flex-wrap: wrap;
     gap: 12px 24px;
-    padding: 16px 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 
   .rio-nav-links {
@@ -231,11 +169,6 @@
 }
 
 @media (max-width: 480px) {
-  .rio-navbar {
-    padding-right: 16px;
-    padding-left: 16px;
-  }
-
   .rio-logo-main,
   .logo-dot {
     font-size: 30px;
@@ -248,10 +181,5 @@
 
   .rio-nav-actions {
     gap: 10px;
-  }
-
-  .btn-register {
-    padding-right: 10px;
-    padding-left: 10px;
   }
 }

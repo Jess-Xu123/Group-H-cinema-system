@@ -1,5 +1,10 @@
 /* RIO Cinema Design System Tokens */
 :root {
+  /* Layout */
+  --rio-gutter-desktop: 80px;
+  --rio-gutter-compact: 40px;
+  --rio-gutter-tablet: 32px;
+  --rio-gutter-mobile: 20px;
   /* Brand Theme Colors */
   --rio-gold: #e3b757;
   --rio-gold-hover: #f1c40f;
@@ -22,6 +27,12 @@
   --rio-glow-red: 0 4px 15px rgba(209, 69, 83, 0.3);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background-color: var(--rio-bg-dark);
@@ -32,4 +43,34 @@ body {
     BlinkMacSystemFont,
     sans-serif;
   overflow-x: hidden;
+}
+
+/* Shared gutters keep full-width sections aligned without constraining them. */
+.rio-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--rio-gutter-desktop);
+  padding-right: var(--rio-gutter-desktop);
+}
+
+@media (max-width: 1200px) {
+  .rio-container {
+    padding-left: var(--rio-gutter-compact);
+    padding-right: var(--rio-gutter-compact);
+  }
+}
+
+@media (max-width: 1024px) {
+  .rio-container {
+    padding-left: var(--rio-gutter-tablet);
+    padding-right: var(--rio-gutter-tablet);
+  }
+}
+
+@media (max-width: 640px) {
+  .rio-container {
+    padding-left: var(--rio-gutter-mobile);
+    padding-right: var(--rio-gutter-mobile);
+  }
 }

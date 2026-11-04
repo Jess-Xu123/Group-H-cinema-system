@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
+import { Button } from "../components/Buttons";
 import "../css/Auth.css";
 
 export default function Login() {
@@ -44,7 +45,6 @@ export default function Login() {
 
       console.log("Login successful:", result);
       navigate("/");
-
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
@@ -56,7 +56,7 @@ export default function Login() {
     <main className="auth-page">
       <section className="auth-card">
         <Link to="/" className="auth-brand">
-        RIO<span className="logo-dot">.</span>
+          RIO<span className="logo-dot">.</span>
         </Link>
 
         <p className="auth-eyebrow">YOUR NEXT MOVIE EXPERIENCE</p>
@@ -104,18 +104,13 @@ export default function Login() {
             </p>
           )}
 
-          <button
-            type="submit"
-            className="auth-button"
-            disabled={isLoading}
-          >
+          <Button variant="auth" type="submit" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign In"}
-          </button>
+          </Button>
         </form>
 
         <p className="auth-switch">
-          Don't have an account?{" "}
-          <Link to="/register">Create an account</Link>
+          Don't have an account? <Link to="/register">Create an account</Link>
         </p>
 
         <Link to="/" className="auth-back">

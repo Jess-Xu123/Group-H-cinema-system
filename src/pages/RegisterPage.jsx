@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/authApi";
+import { Button } from "../components/Buttons";
 import "../css/Auth.css";
 
 export default function Register() {
@@ -169,13 +170,13 @@ export default function Register() {
             </p>
           )}
 
-          <button
+          <Button
+            variant="auth"
             type="submit"
-            className="auth-button"
             disabled={isLoading}
           >
             {isLoading ? "Creating account..." : "Create Account"}
-          </button>
+          </Button>
         </form>
 
         <p className="auth-switch">

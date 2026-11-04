@@ -190,59 +190,6 @@
   outline-offset: 2px;
 }
 
-/* Primary Button */
-
-.auth-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 100%;
-  min-height: 50px;
-  margin-top: 4px;
-  padding: 13px 18px;
-
-  border: 1px solid var(--rio-gold);
-  border-radius: 4px;
-
-  background-color: var(--rio-gold);
-  color: var(--rio-bg-dark);
-
-  font-family: "Inter", sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.auth-button:hover:not(:disabled) {
-  border-color: var(--rio-gold-hover);
-  background-color: var(--rio-gold-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(227, 183, 87, 0.15);
-}
-
-.auth-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.auth-button:focus-visible {
-  outline: 2px solid var(--rio-gold);
-  outline-offset: 4px;
-}
-
-.auth-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 /* Error and Success Messages */
 
 .auth-error,
@@ -346,7 +293,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .form-group input,
-  .auth-button,
+  .rio-button--auth,
   .auth-switch a,
   .auth-back {
     transition: none;
