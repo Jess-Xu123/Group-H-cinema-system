@@ -9,7 +9,7 @@ export default function HeroBanner({
     <section className="rio-hero-banner">
       <video className="hero-video-bg" autoPlay loop muted playsInline>
         <source
-          src="https://a3s.fi/swift/v1/week-3-media/herobanner.mp4"
+          src="https://a3s.fi/swift/v1/Rio-media/web-media/herobanner.mp4"
           type="video/mp4"
         />
       </video>

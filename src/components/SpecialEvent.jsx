@@ -21,7 +21,7 @@ export default function SpecialEvent() {
           {/* 1.Picture on the left */}
           <div className="card-media">
             <img
-              src="https://a3s.fi/swift/v1/week-3-media/private screen.jpg"
+              src="https://a3s.fi/swift/v1/Rio-media/web-media/private screen.jpg"
               alt="Private Screening Room"
               className="media-img"
             />

@@ -7,8 +7,7 @@ export const nowShowingMovies = [
     genre: "SCI-FI / ADVENTURE",
     ageRestriction: 12,
     isPremiere: false,
-    poster:
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800",
+    poster: "https://a3s.fi/swift/v1/Rio-media/movie poster/dune.jpg",
     showtime: "18:00",
     room: "Room 1",
     price: 15.0,
@@ -19,8 +18,7 @@ export const nowShowingMovies = [
     genre: "DRAMA / HISTORY",
     ageRestriction: 16,
     isPremiere: false,
-    poster:
-      "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=800",
+    poster: "https://a3s.fi/swift/v1/Rio-media/movie poster/oppenheimer.jpg",
     showtime: "20:15",
     room: "Room 2",
     price: 15.0,
@@ -31,8 +29,7 @@ export const nowShowingMovies = [
     genre: "ANIMATION / FAMILY",
     ageRestriction: 0,
     isPremiere: false,
-    poster:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800",
+    poster: "https://a3s.fi/swift/v1/Rio-media/movie poster/insideout.png",
     showtime: "15:30",
     room: "Room 1",
     price: 12.0,
@@ -44,8 +41,7 @@ export const nowShowingMovies = [
     genre: "THRILLER / DRAMA",
     ageRestriction: 16,
     isPremiere: true, // Applies +15% premiere rule
-    poster:
-      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800",
+    poster: "https://a3s.fi/swift/v1/Rio-media/movie poster/Joker2.jpg",
     showtime: "21:00",
     room: "Room 2",
     price: 17.25,
@@ -57,32 +53,31 @@ export const upcomingMovies = [
     id: "u1",
     title: "Dune: Part Three",
     genre: "SCI-FI / ADVENTURE",
-    poster:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800",
+    poster: "https://a3s.fi/swift/v1/Rio-media/movie poster/dune3.jpg",
     releaseDate: "Coming soon",
   },
   {
     id: "u2",
-    title: "The Architect",
-    genre: "DRAMA / HISTORY",
+    title: "The Lord of the Rings: The Hunt for Gollum",
+    genre: "DRAMA / FICTION",
     poster:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800",
+      "https://a3s.fi/swift/v1/Rio-media/movie poster/The Lord of the Rings_ The Hunt for Gollum.jpg",
     releaseDate: "Coming soon",
   },
   {
     id: "u3",
-    title: "Lumina",
-    genre: "ANIMATION / FANTASY",
+    title: "The Thomas Crown Affair",
+    genre: "THRILLER / ACTION",
     poster:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800",
+      "https://a3s.fi/swift/v1/Rio-media/movie poster/The Thomas Crown Affair.jpg",
     releaseDate: "Coming soon",
   },
   {
     id: "u4",
-    title: "The Shadow",
-    genre: "THRILLER / DRAMA",
+    title: "Ice Age: Boiling Point",
+    genre: "ANIMATION / ADVENTURE",
     poster:
-      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800",
+      "https://a3s.fi/swift/v1/Rio-media/movie poster/Ice Age_ Boiling Point.jpg",
     releaseDate: "Coming soon",
   },
 ];
