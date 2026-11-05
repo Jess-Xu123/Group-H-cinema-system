@@ -6,6 +6,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'staff', 'admin')),
     paid_tickets_count INT NOT NULL DEFAULT 0,
+    -- preferred_cinema VARCHAR(50) NOT NULL DEFAULT 'Oulu' CHECK (preferred_cinema IN ('Oulu', 'Tampere')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -83,3 +84,8 @@ CREATE TABLE premiere_waitlist (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (showtime_id, customer_email)
 );
+
+-- ALTER TABLE users
+-- ADD COLUMN preferred_cinema VARCHAR(50)
+-- NOT NULL DEFAULT 'Oulu'
+-- CHECK (preferred_cinema IN ('Oulu', 'Tampere'));

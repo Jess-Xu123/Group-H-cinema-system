@@ -76,7 +76,9 @@ export default function Navbar({ currentLocation, onLocationChange }) {
                 </>
               ) : (
                 <>
-                  <span className="navbar-user">Hi, {user.full_name}</span>
+                  <Link to="/account/profile" className="navbar-user">
+                    Hi, {user.full_name}
+                  </Link>
                   <Button
                     variant="login"
                     icon={false}

@@ -65,9 +65,6 @@ export default function ProfilePage() {
             <h2>Personal Information</h2>
             <p>Your account details</p>
           </div>
-          <button className="profile-edit-button" type="button">
-            Edit Profile
-          </button>
         </div>
 
         <div className="profile-info-grid">
@@ -81,14 +78,14 @@ export default function ProfilePage() {
             <strong>{user?.email || "Not provided"}</strong>
           </div>
 
-          <div className="profile-info-item">
+          {/* <div className="profile-info-item">
             <span>Phone Number</span>
             <strong>Not provided</strong>
-          </div>
+          </div> */}
 
           <div className="profile-info-item">
             <span>Preferred Cinema</span>
-            <strong>Oulu</strong>
+            <strong>{user?.preferred_cinema || "Not provided"}</strong>
           </div>
         </div>
       </section>

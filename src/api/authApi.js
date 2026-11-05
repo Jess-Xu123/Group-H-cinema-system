@@ -64,3 +64,84 @@ export async function getCurrentUser() {
 export function logoutUser() {
   return authRequest("/api/auth/logout");
 }
+
+export async function updateUserProfile(profileData) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(profileData),
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status})`
+    );
+  }
+
+  return result;
+}
+
+export async function changeUserPassword(passwordData) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/auth/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(passwordData),
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status})`
+    );
+  }
+
+  return result;
+}
+
+export async function deleteUserAccount(passwordData) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/auth/account`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(passwordData),
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status})`
+    );
+  }
+
+  return result;
+}

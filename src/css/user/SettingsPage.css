@@ -1,0 +1,376 @@
+/* Account Settings Page */
+
+.settings-page {
+  width: 100%;
+  padding: 48px 56px 64px;
+  color: #29272d;
+  background: #f5f2ec;
+}
+
+/* Page Header */
+
+.settings-header {
+  margin-bottom: 40px;
+}
+
+.settings-eyebrow {
+  margin: 0 0 10px;
+  color: #a18a5b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.settings-header h1 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.settings-subtitle {
+  margin: 12px 0 0;
+  color: #858078;
+  font-size: 14px;
+}
+
+/* Settings Sections */
+
+.settings-section {
+  max-width: 850px;
+  margin-bottom: 32px;
+  padding: 32px 36px;
+  border: 1px solid #e8e3da;
+  border-radius: 10px;
+  background: #fffefc;
+}
+
+.settings-section-header {
+  margin-bottom: 28px;
+}
+
+.settings-section-header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.settings-description {
+  margin: 8px 0 0;
+  color: #858078;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Form */
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.settings-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.settings-form-group label {
+  color: #39363b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-form-group input,
+.settings-form-group select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid #ded9cf;
+  border-radius: 5px;
+  outline: none;
+  color: #29272d;
+  background: #fffefc;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.settings-form-group input:focus,
+.settings-form-group select:focus {
+  border-color: #c6a45d;
+}
+
+.settings-field-hint {
+  margin: 0;
+  color: #918b82;
+  font-size: 12px;
+}
+
+/* Feedback Messages */
+
+.settings-error,
+.settings-success {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.settings-error {
+  color: #a33d35;
+  background: #f9eae8;
+}
+
+.settings-success {
+  color: #39734b;
+  background: #eaf3ec;
+}
+
+/* Form Actions */
+
+.settings-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.settings-form-actions button {
+  min-width: 150px;
+  min-height: 44px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 4px;
+  color: #fffdf8;
+  background: #29272d;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.settings-form-actions button:hover:not(:disabled) {
+  background: #49444b;
+}
+
+.settings-form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .settings-page {
+    padding: 36px 32px 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 28px 20px 40px;
+  }
+
+  .settings-header h1 {
+    font-size: 34px;
+  }
+
+  .settings-section {
+    padding: 26px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-header h1 {
+    font-size: 30px;
+  }
+
+  .settings-section {
+    padding: 22px 18px;
+  }
+
+  .settings-section-header h2 {
+    font-size: 27px;
+  }
+
+  .settings-form-actions button {
+    width: 100%;
+  }
+}
+
+/* Account Management */
+.account-management-section {
+  margin-top: 32px;
+}
+
+.delete-account-button {
+  background-color: transparent !important;
+  color: #a94442 !important;
+  border: 1px solid #a94442 !important;
+}
+
+.delete-account-button:hover:not(:disabled) {
+  background-color: #a94442 !important;
+  color: #ffffff !important;
+}
+
+.delete-account-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-confirmation {
+  margin-top: 24px;
+  padding: 24px;
+  background-color: #f8eae8;
+  border: 1px solid #e5c2bd;
+  border-radius: 8px;
+}
+
+.delete-confirmation h3 {
+  margin: 0 0 12px;
+  color: #8f302d;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 24px;
+}
+
+.delete-confirmation p {
+  margin: 0 0 20px;
+  color: #5c4543;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.delete-confirmation .settings-form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Preferred Cinema Select */
+.preferred-cinema-select {
+  width: 240px;
+  max-width: 100%;
+  min-height: 46px;
+  padding: 10px 40px 10px 14px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #29272d;
+
+  background-color: #fffdfa;
+  border: 1px solid #d8d0c2;
+  border-radius: 6px;
+
+  cursor: pointer;
+  outline: none;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C6A45D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Custom Preferred Cinema Dropdown */
+.custom-cinema-select {
+  position: relative;
+  width: 180px;
+  max-width: 100%;
+}
+
+.cinema-select-trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #fffdfa;
+  border: 1px solid #d8d0c2;
+  border-radius: 6px;
+
+  color: #29272d;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cinema-select-trigger:hover,
+.cinema-select-trigger.active {
+  border-color: #c6a45d;
+}
+
+.cinema-select-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(198, 164, 93, 0.15);
+}
+
+.cinema-select-trigger i {
+  color: #c6a45d;
+  font-size: 12px;
+}
+
+.cinema-select-options {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  padding: 5px;
+
+  background: #fffdfa;
+  border: 1px solid #e2d9c9;
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(41, 39, 45, 0.10);
+
+  z-index: 20;
+}
+
+.cinema-select-option {
+  width: 100%;
+  padding: 10px 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+
+  color: #29272d;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cinema-select-option:hover {
+  background: #f5f0e5;
+}
+
+.cinema-select-option.selected {
+  background: #f3ebd9;
+  color: #29272d;
+  font-weight: 600;
+}
+
+.cinema-select-option i {
+  color: #c6a45d;
+  font-size: 15px;
+}

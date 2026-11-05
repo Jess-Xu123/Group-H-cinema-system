@@ -6,6 +6,8 @@ import SeatSelectionPage from "./pages/SeatSelectionPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
+import CouponsPage from "./pages/user/CouponsPage";
+import SettingsPage from "./pages/user/SettingsPage";
 import Login from "./pages/LoginPage";
 import Register from "./pages/RegisterPage";
 
@@ -43,11 +45,11 @@ function App() {
             />
             <Route
               path="coupons"
-              element={<h1>Coupons & Loyalty</h1>}
+              element={<CouponsPage />}
             />
             <Route
               path="settings"
-              element={<h1>Account Settings</h1>}
+              element={<SettingsPage />}
             />
           </Route>
         </Routes>

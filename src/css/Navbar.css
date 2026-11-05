@@ -137,9 +137,14 @@
 }
 
 .navbar-user {
-  color: var(--rio-text-muted);
-  font-size: 13px;
-  white-space: nowrap;
+  text-decoration: none;
+  color: #f5f2ec;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.navbar-user:hover {
+  color: #e3b757;
 }
 
 @media (max-width: 1200px) {
