@@ -1,17 +1,23 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+
 import HomePage from "./pages/HomePage";
 import ShowtimesPage from "./pages/ShowtimesPage";
 import MovieDetailPage from "./pages/MovieDetailPage";
 import SeatSelectionPage from "./pages/SeatSelectionPage";
 import CheckoutPage from "./pages/CheckoutPage";
+
 import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
 import CouponsPage from "./pages/user/CouponsPage";
 import SettingsPage from "./pages/user/SettingsPage";
+
 import Login from "./pages/LoginPage";
 import Register from "./pages/RegisterPage";
 
+import DashboardPage from "./pages/admin/DashboardPage";
+
 import UserLayout from "./layouts/UserLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
 import "./index.css";
 
@@ -52,6 +58,12 @@ function App() {
               element={<SettingsPage />}
             />
           </Route>
+
+          {/* Admin pages */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<DashboardPage />} />
+          </Route>
+          
         </Routes>
       </div>
     </Router>

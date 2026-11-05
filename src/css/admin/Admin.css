@@ -1,0 +1,151 @@
+/* RIO Cinema Admin Panel */
+
+.admin-layout {
+  min-height: 100vh;
+  background: #f5f2ec;
+  color: #29272d;
+  font-family: "Inter", sans-serif;
+}
+
+.admin-navbar {
+  height: 76px;
+  padding: 0 36px;
+  background: #29272d;
+  color: #f5f2ec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-navbar-title h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.admin-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.admin-role-label {
+  color: #e3b757;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-view-website {
+  color: #f5f2ec;
+  text-decoration: none;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.admin-view-website:hover {
+  color: #e3b757;
+}
+
+.admin-layout-body {
+  display: flex;
+  min-height: calc(100vh - 76px);
+}
+
+.admin-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: #eae5db;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-header {
+  padding: 0 12px 30px;
+  border-bottom: 1px solid #d8d0c2;
+}
+
+.admin-sidebar-header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.admin-sidebar-header span {
+  display: block;
+  margin-top: 4px;
+  color: #a18443;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.admin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  border-radius: 6px;
+  color: #625e57;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.admin-sidebar-link i {
+  font-size: 17px;
+}
+
+.admin-sidebar-link:hover {
+  background: #f5f2ec;
+  color: #29272d;
+}
+
+.admin-sidebar-link.active {
+  background: #29272d;
+  color: #e3b757;
+}
+
+.admin-sidebar-footer {
+  margin-top: auto;
+  padding: 20px 12px 0;
+  border-top: 1px solid #d8d0c2;
+  font-size: 12px;
+  color: #777067;
+}
+
+.admin-main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 40px;
+}
+
+.admin-page-header {
+  margin-bottom: 32px;
+}
+
+.admin-page-header h1 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 38px;
+  font-weight: 600;
+}
+
+.admin-page-header p {
+  margin: 8px 0 0;
+  color: #817b72;
+  font-size: 14px;
+}
+
