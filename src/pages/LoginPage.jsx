@@ -44,7 +44,7 @@ export default function Login() {
       setUser(result.user);
 
       console.log("Login successful:", result);
-      navigate("/");
+      navigate("/account/profile", { replace: true });
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
