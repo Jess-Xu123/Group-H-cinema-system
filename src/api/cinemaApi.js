@@ -11,7 +11,9 @@ async function getJson(endpoint, signal) {
       throw error;
     }
 
-    throw new Error("Unable to connect to the cinema server.", { cause: error });
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
   }
 
   const result = await response.json().catch(() => null);

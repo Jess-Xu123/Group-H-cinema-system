@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
         is_published
       FROM movies
       WHERE is_published = TRUE
+        OR is_upcoming = TRUE
       ORDER BY id ASC;
     `;
 

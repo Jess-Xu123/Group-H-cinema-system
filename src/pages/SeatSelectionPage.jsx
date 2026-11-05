@@ -13,6 +13,7 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+// Unique seat key
 function seatKey(row, seat) {
   return `${row}-${seat}`;
 }
@@ -27,9 +28,9 @@ export default function SeatSelectionPage() {
   const [loadedShowtimeId, setLoadedShowtimeId] = useState(null);
   const [error, setError] = useState(null);
   const isLoading = loadedShowtimeId !== showtimeId;
-  const currentError =
-    error?.showtimeId === showtimeId ? error.message : "";
+  const currentError = error?.showtimeId === showtimeId ? error.message : "";
 
+  //Call getShowtimeSeats to get screenings, booked seats, selected seats
   useEffect(() => {
     const controller = new AbortController();
 
@@ -53,6 +54,7 @@ export default function SeatSelectionPage() {
     return () => controller.abort();
   }, [showtimeId]);
 
+  //useMemo indexing booked seats and selected seats
   const occupiedKeys = useMemo(
     () =>
       new Set(
@@ -72,8 +74,10 @@ export default function SeatSelectionPage() {
 
   function toggleSeat(row, number) {
     const key = seatKey(row, number);
+    // Seat 1 is not selectable
     if (occupiedKeys.has(key) || (row === 1 && number === 1)) return;
 
+    // toddle selection status
     setSelectedSeats((current) =>
       current.some((seat) => seatKey(seat.row, seat.number) === key)
         ? current.filter((seat) => seatKey(seat.row, seat.number) !== key)
@@ -121,10 +125,17 @@ export default function SeatSelectionPage() {
               <p className="seat-screen-label">SCREEN · FRONT</p>
               <div className="seat-screen" aria-hidden="true" />
               <div className="seat-legend">
-                <span><i className="seat-legend-available" /> Available</span>
-                <span><i className="seat-legend-selected" /> Selected</span>
-                <span><i className="seat-legend-occupied" /> Unavailable</span>
+                <span>
+                  <i className="seat-legend-available" /> Available
+                </span>
+                <span>
+                  <i className="seat-legend-selected" /> Selected
+                </span>
+                <span>
+                  <i className="seat-legend-occupied" /> Unavailable
+                </span>
               </div>
+              {/*Rendering a grid for seats */}
               <div className="seat-grid">
                 {Array.from(
                   { length: Number(screening.total_rows) },
@@ -194,7 +205,10 @@ export default function SeatSelectionPage() {
                 {selectedSeats.length === 1 ? "seat" : "seats"} selected
               </p>
               {selectedSeats.map((seat) => (
-                <p className="seat-order-item" key={seatKey(seat.row, seat.number)}>
+                <p
+                  className="seat-order-item"
+                  key={seatKey(seat.row, seat.number)}
+                >
                   Row {seat.row} · Seat {seat.number}
                   <span>€{Number(screening.base_price).toFixed(2)}</span>
                 </p>

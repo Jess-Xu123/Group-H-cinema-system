@@ -25,10 +25,12 @@
 /* Poster */
 .poster-wrapper {
   position: relative;
+  display: block;
   width: 100%;
   aspect-ratio: 2 / 3;
   overflow: hidden;
   background-color: #0b0b11;
+  text-decoration: none;
 }
 
 .poster-img {
@@ -118,6 +120,15 @@
   letter-spacing: -0.6px;
 }
 
+.movie-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.movie-title a:hover {
+  color: var(--rio-gold);
+}
+
 /* Showtime */
 .showtime-tag {
   display: flex;
@@ -188,6 +199,15 @@
   margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.upcoming-details-link {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
 }
 
 .btn-details-link {

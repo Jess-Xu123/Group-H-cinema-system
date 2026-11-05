@@ -1,11 +1,13 @@
+import { Link } from "react-router-dom";
 import "../css/MovieCard.css";
 import { Button } from "./Buttons";
 import { ArrowUpRightIcon, ClockIcon } from "./Icons";
 
-export default function MovieCard({ movie, isUpcoming = false, OnSelect }) {
+export default function MovieCard({ movie, isUpcoming = false, onSelect }) {
   if (!movie) return null;
 
   const {
+    id,
     title,
     genre,
     ageRestriction,
@@ -17,39 +19,52 @@ export default function MovieCard({ movie, isUpcoming = false, OnSelect }) {
     discountNote,
     releaseDate,
   } = movie;
+  const ageLabel =
+    typeof ageRestriction === "number"
+      ? ageRestriction === 0
+        ? "S"
+        : `K-${ageRestriction}`
+      : ageRestriction;
+  const movieDetailsPath = `/movie/${id}`;
 
   return (
-    <div className="rio-movie-card" onClick={() => OnSelect && OnSelect(movie)}>
-      <div className="poster-wrapper">
+    <article className="rio-movie-card">
+      <Link
+        className="poster-wrapper"
+        to={movieDetailsPath}
+        aria-label={`View details for ${title}`}
+      >
         <img src={poster} alt={title} className="poster-img" loading="lazy" />
         <div className="poster-overlay"></div>
 
         {isPremiere && <span className="badge-premiere">Premiere</span>}
 
         {ageRestriction !== undefined && (
-          <span className="badge-age">
-            {ageRestriction === 0 ? "S" : `K-${ageRestriction}`}
-          </span>
+          <span className="badge-age">{ageLabel}</span>
         )}
-      </div>
+      </Link>
 
       {/* Movie card details */}
       <div className="card-body">
         <div className="card-header-info">
           <span className="movie-genre"> {genre}</span>
-          <h3 className="movie-title"> {title}</h3>
+          <h3 className="movie-title">
+            <Link to={movieDetailsPath}>{title}</Link>
+          </h3>
         </div>
 
         {/* If upcoming movies */}
         {!isUpcoming ? (
           <div className="card-footer-info">
             {/* Showtime and room info */}
-            <div className="showtime-tag">
-              <ClockIcon />
-              <span>{showtime}</span>
-              <span className="dot-divider">•</span>
-              <span>{room}</span>
-            </div>
+            {showtime && room && (
+              <div className="showtime-tag">
+                <ClockIcon />
+                <span>{showtime}</span>
+                <span className="dot-divider">•</span>
+                <span>{room}</span>
+              </div>
+            )}
 
             {/* Price and buy button */}
             <div className="action-row">
@@ -62,7 +77,12 @@ export default function MovieCard({ movie, isUpcoming = false, OnSelect }) {
                 )}
               </div>
 
-              <Button variant="ticket">Buy Ticket</Button>
+              <Button
+                variant="ticket"
+                onClick={() => onSelect?.(movie)}
+              >
+                Buy Ticket
+              </Button>
             </div>
           </div>
         ) : (
@@ -74,14 +94,16 @@ export default function MovieCard({ movie, isUpcoming = false, OnSelect }) {
               <span>{releaseDate || "Coming Soon"}</span>
             </div>
             <div className="upcoming-details-row">
-              <span className="btn-details-link">Details soon</span>
-              <span className="btn-details-arrow">
-                <ArrowUpRightIcon size={18} />
-              </span>
+              <Link className="upcoming-details-link" to={movieDetailsPath}>
+                <span className="btn-details-link">Details soon</span>
+                <span className="btn-details-arrow">
+                  <ArrowUpRightIcon size={18} />
+                </span>
+              </Link>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }
