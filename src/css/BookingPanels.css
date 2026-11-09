@@ -1,0 +1,159 @@
+.seat-order-panel,
+.checkout-order-panel {
+  padding: 24px;
+  border: 1px solid var(--rio-border-subtle);
+  border-radius: 4px;
+  background: var(--rio-surface-dark);
+}
+
+.seat-order-panel h2,
+.checkout-order-panel h2 {
+  margin: 0 0 20px;
+  color: #f3ede1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  font-weight: 400;
+}
+
+.seat-order-panel h3,
+.checkout-order-panel h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.seat-order-panel > p,
+.checkout-order-panel > p {
+  color: var(--rio-text-muted);
+  font-size: 12px;
+}
+
+.seat-order-divider {
+  height: 1px;
+  margin: 0;
+  background: var(--rio-border-subtle);
+}
+
+.seat-order-panel .seat-order-count,
+.checkout-order-panel .seat-order-count {
+  color: var(--rio-text-muted);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.seat-order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--rio-text-muted);
+  font-size: 12px;
+}
+
+.seat-order-item span {
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--rio-text-bright);
+}
+
+.seat-order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rio-border-subtle);
+  font-size: 14px;
+}
+
+.seat-order-total strong {
+  color: var(--rio-gold);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.booking-order-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  padding: 28px;
+}
+
+.booking-order-panel h2 {
+  margin: 0;
+  color: #f3ede1;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.booking-order-movie {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.booking-order-movie img {
+  width: 76px;
+  height: 106px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.booking-order-movie h3 {
+  margin: 0 0 4px;
+  color: #f3ede1;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.booking-order-movie p {
+  margin: 0 0 2px;
+  color: var(--rio-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.booking-order-empty,
+.booking-order-guidance {
+  color: var(--rio-text-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.booking-order-empty {
+  margin: 8px 0;
+}
+
+.booking-order-guidance {
+  margin: 14px 0 0;
+}
+
+.booking-order-panel .movie-select-seats {
+  min-height: 44px;
+  margin-top: 14px;
+  font-size: 11px;
+}
+
+.booking-checkout-layout > .booking-order-panel {
+  position: sticky;
+  top: 24px;
+}
+
+@media (max-width: 640px) {
+  .seat-order-panel,
+  .checkout-order-panel {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .booking-checkout-layout > .booking-order-panel {
+    position: static;
+    grid-row: 1;
+  }
+}

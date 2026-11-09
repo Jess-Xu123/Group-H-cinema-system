@@ -1,6 +1,17 @@
 import "../css/Footer.css";
 
-export default function Footer() {
+export default function Footer({ compact = false }) {
+  if (compact) {
+    return (
+      <footer className="rio-footer booking-footer">
+        <div className="rio-container booking-footer-content">
+          <span>© RIO Cinema · Independent cinema. A shared experience.</span>
+          <span className="footer-slogan">SEE YOU AT THE MOVIES.</span>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="rio-footer">
       <div className="rio-container rio-footer-content">

@@ -1,0 +1,274 @@
+.seat-selection-page {
+  padding-top: 40px;
+  padding-bottom: 72px;
+}
+
+.seat-selection-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  align-items: start;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.seat-map-panel {
+  padding: 24px;
+  border: 1px solid var(--rio-border-subtle);
+  border-radius: 4px;
+  background: var(--rio-surface-dark);
+}
+
+.seat-screen-label {
+  margin: 0;
+  color: var(--rio-text-muted);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+.seat-screen {
+  width: min(72%, 560px);
+  height: 22px;
+  margin: 14px auto 28px;
+  border-top: 2px solid var(--rio-gold);
+  border-radius: 50% 50% 0 0;
+  filter: drop-shadow(0 -3px 6px rgba(227, 183, 87, 0.18));
+}
+
+.seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  color: var(--rio-text-muted);
+  font-size: 10px;
+}
+
+.seat-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seat-legend i {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #656575;
+  border-radius: 3px;
+}
+
+.seat-legend-available {
+  background: transparent;
+}
+
+.seat-legend-selected {
+  border-color: var(--rio-gold) !important;
+  background: var(--rio-gold);
+}
+
+.seat-legend-occupied {
+  border-color: #733f48 !important;
+  background: #733f48;
+}
+
+.seat-grid {
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.seat-row {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 8px 0;
+}
+
+.seat-row-label {
+  width: 18px;
+  color: var(--rio-text-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.seat {
+  width: 34px;
+  height: 32px;
+  border: 1px solid #656575;
+  border-radius: 4px 4px 7px 7px;
+  background: transparent;
+  color: var(--rio-text-bright);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.seat:hover:not(:disabled) {
+  border-color: var(--rio-gold);
+}
+
+.seat:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 2px;
+}
+
+.seat.is-selected {
+  border-color: var(--rio-gold);
+  background: var(--rio-gold);
+  color: var(--rio-bg-dark);
+}
+
+.seat.is-unavailable,
+.seat:disabled {
+  border-color: #733f48;
+  background: #733f48;
+  color: #f6dce0;
+  cursor: not-allowed;
+}
+
+.booking-flow-movie-title {
+  margin: 16px 0 0;
+  color: var(--rio-text-bright);
+  font-size: 14px;
+}
+
+.booking-seat-panel {
+  min-width: 0;
+  padding: 20px;
+}
+
+.booking-seat-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  color: var(--rio-text-bright);
+  font-size: 12px;
+}
+
+.booking-seat-hint {
+  color: var(--rio-text-muted);
+  font-size: 10px;
+}
+
+.booking-seat-panel .seat-screen {
+  height: 20px;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.booking-accessibility {
+  max-width: 500px;
+  margin: 0 auto 18px;
+  padding: 11px;
+  border: 1px solid var(--rio-gold);
+  border-radius: 3px;
+  color: var(--rio-gold);
+  font-size: 10px;
+  text-align: center;
+}
+
+.booking-seat-panel .seat-legend {
+  gap: 14px;
+  margin: 0 auto 16px;
+}
+
+.booking-seat-panel .seat-grid {
+  padding: 2px 0;
+}
+
+.booking-seat-panel .seat-row {
+  gap: clamp(4px, 0.75vw, 8px);
+  margin: 7px 0;
+}
+
+.booking-seat-panel .seat {
+  width: clamp(27px, 3vw, 36px);
+  height: 30px;
+  font-size: 9px;
+}
+
+.booking-seat-entrances {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  color: var(--rio-text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.seat-selection-page .booking-order-movie {
+  gap: 12px;
+}
+
+.seat-selection-page .booking-order-movie > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.seat-selection-page .booking-order-movie img {
+  width: 54px;
+  height: 80px;
+  flex: 0 0 54px;
+}
+
+.booking-seat-instructions {
+  margin: 18px 0 0;
+  color: var(--rio-text-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .seat-selection-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+  }
+
+  .booking-seat-panel {
+    padding: 16px 10px;
+  }
+
+  .booking-seat-panel .seat-row {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .seat-selection-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .seat-map-panel {
+    padding: 18px;
+  }
+
+  .seat {
+    width: 30px;
+  }
+}
+
+@media (max-width: 560px) {
+  .booking-seat-heading {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .booking-seat-panel .seat-row {
+    gap: 3px;
+  }
+
+  .booking-seat-panel .seat {
+    width: clamp(23px, 6vw, 30px);
+    height: 28px;
+    padding: 0;
+    font-size: 8px;
+  }
+
+  .booking-seat-panel .seat-row-label {
+    width: 12px;
+  }
+}

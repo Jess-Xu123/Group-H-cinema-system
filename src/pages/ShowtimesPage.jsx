@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -59,14 +59,14 @@ function formatTime(value) {
 
 export default function ShowtimesPage() {
   const { state } = useLocation();
+  const dateInputRef = useRef(null);
   const [selectedCity, setSelectedCity] = useState(state?.city || "Oulu");
   const [selectedDate, setSelectedDate] = useState(todayDateKey);
   const [showtimes, setShowtimes] = useState([]);
   const [loadedCity, setLoadedCity] = useState(null);
   const [error, setError] = useState(null);
   const isLoading = loadedCity !== selectedCity;
-  const currentError =
-    error?.city === selectedCity ? error.message : "";
+  const currentError = error?.city === selectedCity ? error.message : "";
   const weekDates = getWeekDates(selectedDate);
   const datesWithShowtimes = new Set(
     showtimes
@@ -84,7 +84,9 @@ export default function ShowtimesPage() {
         setError(null);
         setLoadedCity(selectedCity);
         const availableDates = [
-          ...new Set(results.map((showtime) => getLocalDateKey(showtime.start_time))),
+          ...new Set(
+            results.map((showtime) => getLocalDateKey(showtime.start_time)),
+          ),
         ].sort();
         const firstUpcomingDate =
           availableDates.find((date) => date >= todayDateKey()) ??
@@ -171,15 +173,34 @@ export default function ShowtimesPage() {
                   }`}
                   onClick={() => setSelectedDate(date.value)}
                 >
-                  <span>{date.value === todayDateKey() ? "Today" : date.weekday}</span>
+                  <span>
+                    {date.value === todayDateKey() ? "Today" : date.weekday}
+                  </span>
                   <strong>{date.day}</strong>
                   {datesWithShowtimes.has(date.value) && (
-                    <i className="showtimes-date-indicator" aria-hidden="true" />
+                    <i
+                      className="showtimes-date-indicator"
+                      aria-hidden="true"
+                    />
                   )}
                 </button>
               ))}
             </div>
-            <label className="showtimes-calendar-control">
+
+            <div
+              className="showtimes-calendar-control"
+              //Click on the calendar
+              onClick={() => {
+                if (
+                  dateInputRef.current &&
+                  typeof dateInputRef.current.showPicker === "function"
+                ) {
+                  dateInputRef.current.showPicker();
+                } else {
+                  dateInputRef.current?.focus();
+                }
+              }}
+            >
               <span className="showtimes-calendar-button">
                 <svg
                   viewBox="0 0 24 24"
@@ -196,9 +217,11 @@ export default function ShowtimesPage() {
                 <span>Calendar</span>
               </span>
               <input
+                ref={dateInputRef}
                 type="date"
                 value={selectedDate}
                 min={todayDateKey()}
+                className="visually-hidden-date-input"
                 aria-label="Choose any screening date"
                 onChange={(event) => {
                   if (event.target.value) {
@@ -206,7 +229,7 @@ export default function ShowtimesPage() {
                   }
                 }}
               />
-            </label>
+            </div>
           </div>
         </section>
 
@@ -240,10 +263,12 @@ export default function ShowtimesPage() {
 
           <div className="showtimes-movie-list">
             {dayShowtimes.map((showtime) => {
-              const detailsUrl = `/movie/${showtime.movie_id}?${new URLSearchParams({
-                showtimeId: String(showtime.showtime_id),
-                city: selectedCity,
-              })}`;
+              const detailsUrl = `/movie/${showtime.movie_id}?${new URLSearchParams(
+                {
+                  showtimeId: String(showtime.showtime_id),
+                  city: selectedCity,
+                },
+              )}`;
               const price = Number(showtime.base_price);
 
               return (
