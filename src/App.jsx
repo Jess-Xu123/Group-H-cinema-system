@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 
 import HomePage from "./pages/HomePage";
 import ShowtimesPage from "./pages/ShowtimesPage";
+import MoviesPage from "./pages/MoviesPage";
 import MovieDetailPage from "./pages/MovieDetailPage";
 import SeatSelectionPage from "./pages/SeatSelectionPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/showtimes" element={<ShowtimesPage />} />
           <Route path="/movie/:id" element={<MovieDetailPage />} />
+          <Route path="/movies" element={<MoviesPage />} />
           <Route path="/seats/:showtimeId" element={<SeatSelectionPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/login" element={<Login />} />
