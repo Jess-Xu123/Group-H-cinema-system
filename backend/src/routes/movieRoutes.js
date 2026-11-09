@@ -1,39 +1,54 @@
 const express = require("express");
-const pool = require("../config/db");
+const {
+  getMovies,
+  addMovie,
+  getAllMoviesForManagement,
+  updateMovie,
+  deleteMovie
+} = require("../controllers/movieController");
+
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const query = `
-      SELECT
-        id,
-        external_api_id,
-        title,
-        description,
-        duration_min,
-        genre,
-        age_rating,
-        base_price,
-        poster_url,
-        trailer_url,
-        banner_ad_url,
-        is_upcoming,
-        is_published
-      FROM movies
-      WHERE is_published = TRUE
-        OR is_upcoming = TRUE
-      ORDER BY id ASC;
-    `;
-
-    const { rows } = await pool.query(query);
-    res.json(rows);
-  } catch (err) {
-    console.error("Failed to fetch movies:", err);
-    res.status(500).json({
-      error: "Failed to fetch movies",
+// Allow only admin and staff
+function requireStaffOrAdmin(req, res, next) {
+  if (!["admin", "staff"].includes(req.user.role)) {
+    return res.status(403).json({
+      message: "Access denied. Staff or admin role required.",
     });
   }
-});
+
+  next();
+}
+
+// Get movies (public)
+router.get("/", getMovies);
+
+router.get(
+  "/manage",
+  authMiddleware,
+  requireStaffOrAdmin,
+  getAllMoviesForManagement
+);
+
+// Add movie (admin/staff only)
+router.post("/", authMiddleware, requireStaffOrAdmin, addMovie);
+
+// Update a movie (Admin and Staff only)
+router.put(
+  "/:id",
+  authMiddleware,
+  requireStaffOrAdmin,
+  updateMovie
+);
+
+// Delete a movie (Admin and Staff only)
+router.delete(
+  "/:id",
+  authMiddleware,
+  requireStaffOrAdmin,
+  deleteMovie
+);
 
 module.exports = router;

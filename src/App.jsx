@@ -16,6 +16,7 @@ import Login from "./pages/LoginPage";
 import Register from "./pages/RegisterPage";
 
 import DashboardPage from "./pages/admin/DashboardPage";
+import AdminMoviesPage from "./pages/admin/MoviesPage";
 
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -64,6 +65,7 @@ function App() {
           {/* Admin pages */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="movies" element={<AdminMoviesPage />} />
           </Route>
           
         </Routes>
