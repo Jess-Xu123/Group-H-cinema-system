@@ -44,7 +44,11 @@ export default function Login() {
       setUser(result.user);
 
       console.log("Login successful:", result);
-      navigate("/account/profile", { replace: true });
+      if (result.user.role === "admin" || result.user.role === "staff") {
+        navigate("/admin");
+      } else {
+        navigate("/account/profile", { replace: true });
+      }
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {

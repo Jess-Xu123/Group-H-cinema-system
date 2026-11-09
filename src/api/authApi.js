@@ -145,3 +145,68 @@ export async function deleteUserAccount(passwordData) {
 
   return result;
 }
+
+export async function getDashboardAlerts() {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/dashboard/alerts`, {
+      method: "GET",
+      credentials: "include",
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status})`
+    );
+  }
+
+  return result;
+}
+
+export async function getTodayProgramme() {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/dashboard/today-programme`, {
+      method: "GET",
+      credentials: "include",
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(result?.message || `Request failed (${response.status})`);
+  }
+
+  return result;
+}
+
+export async function getRoomOccupancy() {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/dashboard/room-occupancy`, {
+      method: "GET",
+      credentials: "include",
+    });
+  } catch {
+    throw new Error("Unable to connect to the server.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(result?.message || `Request failed (${response.status})`);
+  }
+
+  return result;
+}

@@ -293,3 +293,81 @@
   font-size: 18px;
   font-weight: 600;
 }
+
+
+/* Room by Room cards */
+
+.dashboard-room-card {
+  background: #fff;
+  border: 1px solid #e8e5df;
+  border-radius: 12px;
+  padding: 22px;
+  min-width: 0;
+}
+
+.dashboard-room-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.dashboard-room-card-header h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.dashboard-room-card-header p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.dashboard-room-card-header > i {
+  font-size: 20px;
+  color: #b18a4a;
+}
+
+.dashboard-room-occupancy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dashboard-room-occupancy span,
+.dashboard-room-details span {
+  color: #777;
+  font-size: 13px;
+}
+
+.dashboard-room-occupancy strong {
+  font-size: 22px;
+}
+
+.dashboard-room-progress {
+  height: 7px;
+  background: #eeeae3;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.dashboard-room-progress-fill {
+  height: 100%;
+  background: #b18a4a;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.dashboard-room-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid #f0eeea;
+}
+
+.dashboard-room-details strong {
+  font-size: 14px;
+}

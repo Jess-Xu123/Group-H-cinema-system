@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const showtimeRoutes = require("./routes/showtimeRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -19,17 +20,11 @@ app.use(
   })
 );
 
-// Authentication routes
 app.use("/api/auth", authRoutes);
-
-// Movies routes
 app.use("/api/movies", movieRoutes);
-
-// Showtimes routes
 app.use("/api/showtimes", showtimeRoutes);
-
-// Booking routes
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
