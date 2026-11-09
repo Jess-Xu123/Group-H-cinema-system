@@ -35,7 +35,13 @@ export default function Navbar({ currentLocation, onLocationChange }) {
           >
             Home
           </Link>
-          <a href="#movies">Movies</a>
+          <Link
+              to="/movies"
+              className={pathname === "/movies" ? "active" : ""}
+              aria-current={pathname === "/movies" ? "page" : undefined}
+            >
+              Movies
+            </Link>
           <Link
             to="/showtimes"
             className={pathname === "/showtimes" ? "active" : ""}
