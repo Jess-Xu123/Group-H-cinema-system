@@ -87,6 +87,7 @@ router.get("/:id/seats", async (req, res) => {
         s.is_premiere,
         m.title AS movie_title,
         m.base_price,
+        m.poster_url,
         m.age_rating,
         h.id AS hall_id,
         h.city,
