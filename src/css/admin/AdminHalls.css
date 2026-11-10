@@ -1,0 +1,431 @@
+.admin-halls-page {
+  min-height: 100%;
+  padding: 32px;
+  color: #f3f0e9;
+}
+
+/* Page Header */
+
+.halls-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.halls-eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: #b69a62;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.halls-page-header h1 {
+  margin: 0;
+  color: #f3f0e9;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 600;
+}
+
+.halls-page-header p {
+  margin: 8px 0 0;
+  color: #99958d;
+  font-size: 14px;
+}
+
+/* Month Selector */
+
+.halls-month-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.halls-month-selector label {
+  color: #aaa49a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.halls-month-selector input {
+  min-width: 180px;
+  padding: 11px 14px;
+  border: 1px solid #37352f;
+  border-radius: 6px;
+  outline: none;
+  background: #201f1c;
+  color: #f3f0e9;
+  font-family: inherit;
+  font-size: 13px;
+  color-scheme: dark;
+}
+
+.halls-month-selector input:focus {
+  border-color: #b69a62;
+}
+
+/* Section Heading */
+
+.halls-overview-section,
+.halls-performance-section,
+.halls-information-section {
+  margin-bottom: 38px;
+}
+
+.halls-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.halls-section-heading h2 {
+  margin: 0;
+  color: #f3f0e9;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.halls-section-heading p {
+  margin: 6px 0 0;
+  color: #928e85;
+  font-size: 13px;
+}
+
+/* Overview Cards */
+
+.halls-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.halls-stat-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #34322d;
+  border-radius: 9px;
+  background: #201f1c;
+}
+
+.halls-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 18px;
+  border-radius: 7px;
+  background: rgba(182, 154, 98, 0.13);
+  color: #b69a62;
+  font-size: 19px;
+}
+
+.halls-stat-label {
+  margin-bottom: 7px;
+  color: #a49f95;
+  font-size: 12px;
+}
+
+.halls-stat-value {
+  color: #f3f0e9;
+  font-size: 27px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.halls-revenue-value {
+  font-size: 23px;
+}
+
+.halls-stat-description {
+  margin-top: 8px;
+  color: #77736c;
+  font-size: 11px;
+}
+
+/* Performance Cards */
+
+.halls-performance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.halls-performance-card {
+  padding: 24px;
+  border: 1px solid #34322d;
+  border-radius: 9px;
+  background: #201f1c;
+}
+
+.halls-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.halls-card-eyebrow {
+  color: #a49f95;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.halls-card-header h3 {
+  margin: 6px 0 0;
+  color: #f3f0e9;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.halls-fixed-badge,
+.halls-table-fixed {
+  padding: 5px 10px;
+  border: 1px solid rgba(182, 154, 98, 0.35);
+  border-radius: 20px;
+  background: rgba(182, 154, 98, 0.1);
+  color: #c4a970;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Capacity */
+
+.halls-capacity-display {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 25px 0;
+}
+
+.halls-capacity-number {
+  color: #f3f0e9;
+  font-size: 34px;
+  font-weight: 600;
+}
+
+.halls-capacity-label {
+  color: #8d887f;
+  font-size: 12px;
+}
+
+/* Occupancy */
+
+.halls-occupancy {
+  margin-bottom: 25px;
+}
+
+.halls-occupancy-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 11px;
+  color: #a49f95;
+  font-size: 12px;
+}
+
+.halls-occupancy-heading strong {
+  color: #c4a970;
+  font-size: 14px;
+}
+
+.halls-progress-track {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #38362f;
+}
+
+.halls-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: #b69a62;
+  transition: width 0.3s ease;
+}
+
+/* Performance Details */
+
+.halls-performance-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #39362f;
+}
+
+.halls-performance-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.halls-performance-details span {
+  color: #89847b;
+  font-size: 11px;
+}
+
+.halls-performance-details strong {
+  color: #eee9df;
+  font-size: 15px;
+}
+
+/* Hall Information Table */
+
+.halls-readonly-label {
+  color: #b69a62;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.halls-table-wrapper {
+  border: 1px solid #34322d;
+  border-radius: 9px;
+  background: #201f1c;
+}
+
+.halls-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.halls-table th {
+  padding: 17px 18px;
+  border-bottom: 1px solid #39362f;
+  color: #9b958b;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.halls-table td {
+  padding: 18px;
+  border-bottom: 1px solid #302e29;
+  color: #d4cfc4;
+  font-size: 12px;
+}
+
+.halls-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.halls-table-name {
+  color: #f3f0e9 !important;
+  font-weight: 600;
+}
+
+/* Loading */
+
+.halls-loading {
+  display: flex;
+  min-height: 350px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  color: #aaa49a;
+  font-size: 13px;
+}
+
+.halls-spinner {
+  width: 35px;
+  height: 35px;
+  border: 3px solid #38362f;
+  border-top-color: #b69a62;
+  border-radius: 50%;
+  animation: halls-spin 0.8s linear infinite;
+}
+
+@keyframes halls-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error */
+
+.halls-error,
+.halls-empty {
+  padding: 35px;
+  border: 1px solid #443a31;
+  border-radius: 9px;
+  background: #201f1c;
+  color: #aaa49a;
+  text-align: center;
+}
+
+.halls-error h3 {
+  margin-bottom: 10px;
+  color: #e8e1d5;
+  font-size: 17px;
+}
+
+.halls-error p {
+  font-size: 13px;
+}
+
+.halls-retry-btn {
+  margin-top: 12px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #b69a62;
+  color: #191815;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.halls-retry-btn:hover {
+  background: #c7aa72;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .halls-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-halls-page {
+    padding: 22px 16px;
+  }
+
+  .halls-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .halls-page-header h1 {
+    font-size: 34px;
+  }
+
+  .halls-performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .halls-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .halls-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .halls-stat-value {
+    font-size: 24px;
+  }
+}

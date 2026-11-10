@@ -1,7 +1,21 @@
-
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { logoutUser } from "../../api/authApi";
 
 function AdminNavbar({ userRole }) {
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setUser(null);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <header className="admin-navbar">
       <div className="admin-navbar-title">
@@ -17,6 +31,14 @@ function AdminNavbar({ userRole }) {
           <i className="bi bi-box-arrow-up-right"></i>
           <span>View Website</span>
         </Link>
+
+        <button
+          type="button"
+          className="admin-logout-button"
+          onClick={handleLogout}
+        >
+          <span>Logout</span>
+        </button>
       </div>
     </header>
   );

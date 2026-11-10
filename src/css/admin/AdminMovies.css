@@ -1,7 +1,6 @@
 /* RIO Cinema - Movie Management */
 
 .admin-movies-page {
-  width: 100%;
   color: #29272d;
 }
 
@@ -296,11 +295,6 @@
 .movie-delete-button:hover:not(:disabled) {
   background: #a94442;
   color: #ffffff;
-}
-
-.movie-delete-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .movie-form-section {

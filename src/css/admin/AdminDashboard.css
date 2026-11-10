@@ -9,8 +9,8 @@
 }
 
 .dashboard-stat-card {
-  min-height: 145px;
-  padding: 24px;
+  min-height: 155px;
+  padding: 26px;
   background: #fff;
   border: 1px solid #e9e4da;
   border-radius: 8px;
@@ -52,11 +52,6 @@
   line-height: 1.5;
 }
 
-.dashboard-stat-card {
-  min-height: 155px;
-  padding: 26px;
-}
-
 
 /* Today's Programme */
 
@@ -91,11 +86,6 @@
 .dashboard-date-label {
   color: #a18443;
   font-size: 11px;
-}
-
-.dashboard-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
 }
 
 .dashboard-table {

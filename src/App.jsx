@@ -17,6 +17,9 @@ import Register from "./pages/RegisterPage";
 
 import DashboardPage from "./pages/admin/DashboardPage";
 import AdminMoviesPage from "./pages/admin/MoviesPage";
+import HallsPage from "./pages/admin/HallsPage";
+import UsersPage from "./pages/admin/UsersPage";
+import SettingPage from "./pages/admin/SettingPage";
 
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -66,6 +69,9 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="movies" element={<AdminMoviesPage />} />
+            <Route path="halls" element={<HallsPage />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="settings" element={<SettingPage />} />
           </Route>
           
         </Routes>

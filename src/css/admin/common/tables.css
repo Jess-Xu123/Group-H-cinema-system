@@ -1,0 +1,31 @@
+/* Shared Admin Table Structure */
+
+.dashboard-table,
+.users-table,
+.halls-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table-wrapper,
+.users-table-wrapper,
+.halls-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-table th,
+.dashboard-table td,
+.users-table th,
+.users-table td,
+.halls-table th,
+.halls-table td {
+  text-align: left;
+}
+
+.dashboard-table th,
+.users-table th,
+.halls-table th {
+  white-space: nowrap;
+}

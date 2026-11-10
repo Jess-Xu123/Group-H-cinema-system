@@ -7,20 +7,13 @@ const {
   deleteMovie
 } = require("../controllers/movieController");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const { 
+  authMiddleware, 
+  requireStaffOrAdmin
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Allow only admin and staff
-function requireStaffOrAdmin(req, res, next) {
-  if (!["admin", "staff"].includes(req.user.role)) {
-    return res.status(403).json({
-      message: "Access denied. Staff or admin role required.",
-    });
-  }
-
-  next();
-}
 
 // Get movies (public)
 router.get("/", getMovies);

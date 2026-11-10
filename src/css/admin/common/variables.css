@@ -1,0 +1,50 @@
+:root {
+  /* Brand */
+  --admin-color-primary: #29272d;
+  --admin-color-gold: #b18a4a;
+  --admin-color-gold-light: #e3b757;
+
+  /* Light Theme */
+  --admin-color-page-bg: #f5f2ec;
+  --admin-color-card-bg: #ffffff;
+  --admin-color-card-bg-soft: #fffdf9;
+  --admin-color-sidebar-bg: #eae5db;
+
+  --admin-color-text: #29272d;
+  --admin-color-text-secondary: #625e57;
+  --admin-color-text-muted: #817b72;
+
+  /* Borders */
+  --admin-border-color: #e9e4da;
+  --admin-border-color-soft: #eeeae2;
+
+  /* Status */
+  --admin-color-error: #a33d32;
+  --admin-color-error-bg: #fbefed;
+  --admin-color-success: #477447;
+  --admin-color-success-bg: #edf5ed;
+
+  /* Dark Theme - Halls */
+  --admin-dark-bg: #201f1c;
+  --admin-dark-card-bg: #201f1c;
+  --admin-dark-border: #34322d;
+  --admin-dark-text: #f3f0e9;
+  --admin-dark-text-secondary: #a49f95;
+  --admin-dark-gold: #b69a62;
+
+  /* Typography */
+  --admin-font-body: "Inter", sans-serif;
+  --admin-font-heading: "Cormorant Garamond", Georgia, serif;
+
+  /* Radius */
+  --admin-radius-sm: 4px;
+  --admin-radius-md: 6px;
+  --admin-radius-lg: 8px;
+  --admin-radius-xl: 9px;
+
+  /* Shadows */
+  --admin-shadow-modal: 0 18px 60px rgba(0, 0, 0, 0.2);
+
+  /* Transitions */
+  --admin-transition: 0.2s ease;
+}

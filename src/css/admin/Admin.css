@@ -1,4 +1,11 @@
 /* RIO Cinema Admin Panel */
+@import "./common/variables.css";
+@import "./common/page.css";
+@import "./common/cards.css";
+@import "./common/tables.css";
+@import "./common/forms.css";
+@import "./common/states.css";
+@import "./common/common.css";
 
 .admin-layout {
   min-height: 100vh;
@@ -48,6 +55,32 @@
 
 .admin-view-website:hover {
   color: #e3b757;
+}
+
+.admin-logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid #a54e42;
+  border-radius: 6px;
+  background: transparent;
+  color: #a54e42;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-logout-button:hover {
+  background: #a54e42;
+  color: #ffffff;
+}
+
+.admin-logout-button i {
+  font-size: 15px;
 }
 
 .admin-layout-body {

@@ -1,0 +1,27 @@
+/* Shared Admin Page Styles */
+
+.admin-dashboard,
+.admin-movies-page,
+.admin-users-page,
+.admin-halls-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-page-header,
+.users-page-header,
+.halls-page-header {
+  min-width: 0;
+}
+
+.admin-page-header h1,
+.users-page-header h1,
+.halls-page-header h1 {
+  line-height: 1.2;
+}
+
+.admin-page-header p,
+.users-page-header p,
+.halls-page-header p {
+  line-height: 1.6;
+}

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 function authMiddleware(req, res, next) {
   try {
     // Get JWT from HttpOnly Cookie
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
 
     if (!token) {
       return res.status(401).json({
@@ -28,4 +28,30 @@ function authMiddleware(req, res, next) {
   }
 }
 
-module.exports = authMiddleware;
+// Allow only admin and staff
+function requireStaffOrAdmin(req, res, next) {
+  if (!req.user || !["admin", "staff"].includes(req.user.role)) {
+    return res.status(403).json({
+      message: "Access denied. Staff or admin role required.",
+    });
+  }
+
+  next();
+}
+
+// Allow only admin
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({
+      message: "Access denied. Admin role required.",
+    });
+  }
+
+  next();
+}
+
+module.exports = {
+  authMiddleware,
+  requireStaffOrAdmin,
+  requireAdmin,
+};

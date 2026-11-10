@@ -1,0 +1,38 @@
+/* Shared Admin States */
+
+.users-loading-state,
+.users-empty-state,
+.users-error-state,
+.halls-loading,
+.halls-error,
+.halls-empty {
+  width: 100%;
+  text-align: center;
+}
+
+.users-loading-state,
+.users-empty-state,
+.users-error-state {
+  padding: 45px 20px;
+}
+
+.halls-error,
+.halls-empty {
+  padding: 35px;
+}
+
+/* Shared Error Feedback */
+
+.users-error-state p,
+.users-action-error,
+.movie-form .form-error,
+.admin-movies-page .form-error {
+  color: var(--admin-color-error);
+}
+
+/* Shared Success Feedback */
+
+.movie-form .form-success,
+.users-action-success {
+  color: var(--admin-color-success);
+}

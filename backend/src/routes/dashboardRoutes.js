@@ -7,7 +7,7 @@ const {
   getRoomOccupancy,
 } = require("../controllers/dashboardController");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const { authMiddleware, requireStaffOrAdmin } = require("../middleware/authMiddleware");
 
 router.get(
   "/alerts",

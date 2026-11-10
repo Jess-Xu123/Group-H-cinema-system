@@ -1,0 +1,31 @@
+/* RIO Cinema - Shared Admin Styles */
+
+.admin-layout {
+  font-family: var(--admin-font-body);
+}
+
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3 {
+  font-family: var(--admin-font-heading);
+  font-weight: 400;
+}
+
+/* Shared Disabled State */
+
+.users-refresh-button:disabled,
+.users-save-role-button:disabled,
+.movie-form button:disabled,
+.movie-delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Shared Horizontal Overflow */
+
+.dashboard-table-wrapper,
+.users-table-wrapper,
+.halls-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}

@@ -3,7 +3,7 @@ const {
   getMyBookings,
 } = require("../controllers/bookingController");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const { authMiddleware, requireStaffOrAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
