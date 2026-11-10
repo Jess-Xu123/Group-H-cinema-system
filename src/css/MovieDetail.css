@@ -311,6 +311,7 @@
   opacity: 0;
   pointer-events: none;
   font-family: inherit;
+  color-scheme: dark;
 }
 
 .detail-date-full-label {
