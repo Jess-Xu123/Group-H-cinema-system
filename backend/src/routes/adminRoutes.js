@@ -15,10 +15,18 @@ router.post("/movies/import", async (req, res) => {
 
   if (external_api_id) {
     try {
-      const url = `https://api.themoviedb.org/3/movie/${external_api_id}?api_key=${process.env.TMDB_KEY}`;
+      const url = `https://api.themoviedb.org/3/movie/${external_api_id}?api_key=${process.env.TMDB_KEY}&append_to_response=videos`;
       const apiRes = await fetch(url, { signal: AbortSignal.timeout(4000) });
       if (!apiRes.ok) throw new Error("External API error");
       const data = await apiRes.json();
+
+      const trailer = data.videos?.results?.find(
+        (v) => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
+      );
+      const trailerUrl = trailer
+        ? `https://www.youtube.com/watch?v=${trailer.key}`
+        : "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
       moviePayload = {
         external_api_id: String(data.id),
         title: data.title,
@@ -28,6 +36,7 @@ router.post("/movies/import", async (req, res) => {
         poster_url: data.poster_path
           ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
           : "https://placehold.co/300x450?text=Poster",
+        trailer_url: trailerUrl,
       };
     } catch {
       isFallback = true;
@@ -47,6 +56,7 @@ router.post("/movies/import", async (req, res) => {
       duration_min: Number(manual_data.duration_min) || 120,
       genre: manual_data.genre || "General",
       poster_url: manual_data.poster_url || "https://placehold.co/300x450?text=Poster",
+      trailer_url: manual_data.trailer_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     };
   }
 
@@ -75,7 +85,7 @@ router.post("/movies/import", async (req, res) => {
     moviePayload.genre,
     "S",
     moviePayload.poster_url,
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    moviePayload.trailer_url,
     "https://placehold.co/800x200?text=Ad"
   ];
 
