@@ -79,6 +79,15 @@ router.get("/:id/seats", async (req, res) => {
   }
 
   try {
+
+    await pool.query(
+      `DELETE FROM bookings
+       WHERE showtime_id = $1
+         AND status IN ('checkout_locked', 'reserved_unpaid')
+         AND expires_at <= NOW();`,
+      [showtimeId]
+    );
+    
     const screeningQuery = `
       SELECT
         s.id AS showtime_id,
