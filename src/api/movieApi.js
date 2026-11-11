@@ -132,3 +132,30 @@ export async function deleteMovie(movieId) {
 
   return result;
 }
+
+export async function importMovie(externalApiId) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/admin/movies/import`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ external_api_id: externalApiId }),
+    });
+  } catch (error) {
+    throw new Error("Unable to connect to the server. Please try again later.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.error || result?.message || `Failed to import movie (${response.status})`
+    );
+  }
+
+  return result;
+}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { 
     addMovie, 
-    updateMovie
+    updateMovie,
+    importMovie
  } from "../../api/movieApi";
 
 function MovieForm({
@@ -76,6 +77,40 @@ function MovieForm({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  }
+
+  async function handleTmdbFetch() {
+    if (!formData.external_api_id.trim()) {
+      setError("Please enter a TMDB Movie ID first (e.g., 550).");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await importMovie(formData.external_api_id.trim());
+      const m = result.movie || result;
+
+      setFormData((prev) => ({
+        ...prev,
+        title: m.title || prev.title,
+        description: m.description || prev.description,
+        duration_min: m.duration_min || prev.duration_min,
+        genre: m.genre || prev.genre,
+        age_rating: m.age_rating || prev.age_rating || "S",
+        poster_url: m.poster_url || prev.poster_url,
+        trailer_url: m.trailer_url || prev.trailer_url,
+        banner_ad_url: m.banner_ad_url || prev.banner_ad_url,
+      }));
+
+      setSuccess(result.message || "Movie imported and cached from external API.");
+    } catch (err) {
+      setError(`⚠️ Outage / Fallback Warning: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleSubmit(event) {
@@ -240,6 +275,13 @@ function MovieForm({
           value={formData.external_api_id}
           onChange={handleChange}
         />
+        <button
+          type="button"
+          onClick={handleTmdbFetch}
+          disabled={isLoading}
+        >
+          {isLoading ? "Fetching..." : "Fetch from TMDB"}
+        </button>
       </div>
 
       <div className="form-group">
