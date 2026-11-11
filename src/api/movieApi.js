@@ -159,3 +159,29 @@ export async function importMovie(externalApiId) {
 
   return result;
 }
+
+export async function searchMoviesByTitle(query) {
+  let response;
+
+  try {
+    response = await fetch(
+      `${API_BASE_URL}/api/admin/movies/search?q=${encodeURIComponent(query)}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+  } catch (error) {
+    throw new Error("Unable to connect to the server. Please try again later.");
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.error || result?.message || `Failed to search movies (${response.status})`
+    );
+  }
+
+  return result;
+}

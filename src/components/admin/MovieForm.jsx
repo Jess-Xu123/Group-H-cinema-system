@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { 
     addMovie, 
     updateMovie,
-    importMovie
+    importMovie,
+    searchMoviesByTitle
  } from "../../api/movieApi";
 
 function MovieForm({
@@ -30,6 +31,9 @@ function MovieForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (editingMovie) {
@@ -106,6 +110,53 @@ function MovieForm({
       }));
 
       setSuccess(result.message || "Movie imported and cached from external API.");
+    } catch (err) {
+      setError(`⚠️ Outage / Fallback Warning: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  async function handleSearch() {
+    if (!searchQuery.trim()) return;
+    setIsSearching(true);
+    setError("");
+    try {
+      const results = await searchMoviesByTitle(searchQuery.trim());
+      setSearchResults(results);
+      if (results.length === 0) setError("No matching movies found on TMDB.");
+    } catch (err) {
+      setError(`⚠️ Outage Warning: ${err.message}`);
+    } finally {
+      setIsSearching(false);
+    }
+  }
+
+  async function handleSelectMovie(selectedId) {
+    setSearchResults([]);
+    setSearchQuery("");
+    setFormData((prev) => ({ ...prev, external_api_id: String(selectedId) }));
+
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await importMovie(String(selectedId));
+      const m = result.movie || result;
+
+      setFormData((prev) => ({
+        ...prev,
+        title: m.title || prev.title,
+        description: m.description || prev.description,
+        duration_min: m.duration_min || prev.duration_min,
+        genre: m.genre || prev.genre,
+        age_rating: m.age_rating || prev.age_rating || "S",
+        poster_url: m.poster_url || prev.poster_url,
+        trailer_url: m.trailer_url || prev.trailer_url,
+        banner_ad_url: m.banner_ad_url || prev.banner_ad_url,
+      }));
+
+      setSuccess(result.message || "Movie data imported from TMDB! Enter base price and save.");
     } catch (err) {
       setError(`⚠️ Outage / Fallback Warning: ${err.message}`);
     } finally {
@@ -266,6 +317,67 @@ function MovieForm({
         />
       </div>
 
+      <div className="form-group" style={{ marginBottom: "16px" }}>
+        <label>Search TMDB by Movie Name</label>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            type="text"
+            placeholder="e.g. Fight Club, Dune..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ maxWidth: "260px" }}
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            disabled={isSearching || !searchQuery.trim()}
+          >
+            {isSearching ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {searchResults.length > 0 && (
+          <div
+            style={{
+              marginTop: "8px",
+              background: "#14141b",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px",
+              maxWidth: "420px",
+              overflow: "hidden",
+            }}
+          >
+            {searchResults.map((m) => (
+              <div
+                key={m.id}
+                onClick={() => handleSelectMovie(m.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid rgba(255,255,255,0.05)",
+                }}
+              >
+                {m.poster_url && (
+                  <img
+                    src={m.poster_url}
+                    alt=""
+                    style={{ width: "24px", height: "36px", objectFit: "cover", borderRadius: "2px" }}
+                  />
+                )}
+                <span style={{ fontWeight: "bold", color: "#fff" }}>{m.title}</span>
+                <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>({m.release_year})</span>
+                <span style={{ marginLeft: "auto", fontSize: "0.8rem", color: "var(--rio-gold, #e3b757)" }}>
+                  Select & Import →
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
       <div className="form-group">
         <label htmlFor="external_api_id">External API ID</label>
         <input
