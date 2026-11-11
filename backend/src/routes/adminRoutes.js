@@ -2,6 +2,32 @@ const express = require("express");
 const pool = require("../config/db");
 
 const router = express.Router();
+router.get("/movies/search", async (req, res) => {
+  const { q } = req.query;
+  if (!q || !q.trim()) {
+    return res.status(400).json({ error: "Search query 'q' is required." });
+  }
+
+  try {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_KEY}&query=${encodeURIComponent(q.trim())}`;
+    const apiRes = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!apiRes.ok) throw new Error("TMDB search request failed");
+
+    const data = await apiRes.json();
+    const results = (data.results || []).slice(0, 5).map((m) => ({
+      id: m.id,
+      title: m.title,
+      release_year: m.release_date ? m.release_date.split("-")[0] : "N/A",
+      poster_url: m.poster_path ? `https://image.tmdb.org/t/p/w92${m.poster_path}` : null,
+    }));
+
+    return res.json(results);
+  } catch {
+    return res.status(503).json({
+      error: "External movie API is offline. Please enter movie details manually.",
+    });
+  }
+});
 
 router.post("/movies/import", async (req, res) => {
   const { external_api_id, manual_data } = req.body;
