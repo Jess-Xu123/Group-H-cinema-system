@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { createCheckoutSession } from "../../api/paymentApi";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -13,16 +14,48 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [city, setCity] = useState(screening?.city || "Oulu");
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [loading, setLoading] = useState(false);
   const selectedSeats = state?.selectedSeats || [];
   const total = Number(state?.total || 0);
 
-  function handlePayment() {
-    // TODO: Add the payment provider/API integration here.
+  const [customerDetails, setCustomerDetails] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
+
+  function handleInputChange(e) {
+    setCustomerDetails({
+      ...customerDetails,
+      [e.target.name]: e.target.value,
+    });
   }
 
-  function submitCheckout(event) {
+  //When user click pay button, backend handling
+  async function submitCheckout(event) {
     event.preventDefault();
-    handlePayment();
+
+    if (paymentMethod === "card") {
+      try {
+        setLoading(true);
+
+        const data = await createCheckoutSession({
+          screening,
+          selectedSeats,
+          total,
+          customerDetails,
+        });
+
+        // direct to Stripe sandbox
+        if (data.url) {
+          window.location.href = data.url;
+        }
+      } catch (err) {
+        console.error("Payment Error:", err);
+        alert("Payment initialization failed.");
+        setLoading(false);
+      }
+    }
   }
 
   function continueToLogin() {
@@ -93,6 +126,8 @@ export default function CheckoutPage() {
                       First name
                       <input
                         name="firstName"
+                        value={customerDetails.firstName}
+                        onChange={handleInputChange}
                         autoComplete="given-name"
                         placeholder="Enter first name"
                         required
@@ -102,6 +137,8 @@ export default function CheckoutPage() {
                       Last name
                       <input
                         name="lastName"
+                        value={customerDetails.lastName}
+                        onChange={handleInputChange}
                         autoComplete="family-name"
                         placeholder="Enter last name"
                         required
@@ -113,6 +150,8 @@ export default function CheckoutPage() {
                     <input
                       type="email"
                       name="email"
+                      value={customerDetails.email}
+                      onChange={handleInputChange}
                       autoComplete="email"
                       placeholder="Enter your email address"
                       required
@@ -160,10 +199,6 @@ export default function CheckoutPage() {
                       </span>
                     </label>
                   </div>
-                  <p className="booking-demo-note">
-                    Payment options are for this concept only. No card details
-                    are collected and no payment will be processed.
-                  </p>
                 </section>
 
                 <label className="booking-terms">
@@ -184,7 +219,9 @@ export default function CheckoutPage() {
                     }
                   >
                     {paymentMethod === "card"
-                      ? `Pay €${total.toFixed(2)}`
+                      ? loading
+                        ? "Redirecting..."
+                        : `Pay €${total.toFixed(2)}`
                       : "Login"}
                     <span aria-hidden="true">→</span>
                   </button>

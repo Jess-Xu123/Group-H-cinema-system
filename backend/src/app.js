@@ -10,6 +10,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const hallRoutes = require("./routes/hallRoutes");
 const userRoutes = require("./routes/userRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 app.use("/api/auth", authRoutes);
@@ -31,6 +32,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/halls", hallRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
