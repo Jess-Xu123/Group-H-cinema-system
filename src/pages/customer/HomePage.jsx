@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getMovies, getShowtimes } from "../api/cinemaApi";
-import Navbar from "../components/Navbar";
-import HeroBanner from "../components/HeroBanner";
-import MovieCard from "../components/MovieCard";
-import SpecialEvent from "../components/SpecialEvent";
-import Footer from "../components/Footer";
-import "../css/Homepage.css";
+import { getMovies, getShowtimes } from "../../api/cinemaApi";
+import Navbar from "../../components/Navbar";
+import HeroBanner from "../../components/HeroBanner";
+import MovieCard from "../../components/MovieCard";
+import SpecialEvent from "../../components/SpecialEvent";
+import Footer from "../../components/Footer";
+import "../../css/Homepage.css";
 
 function mapMovie(movie) {
   return {

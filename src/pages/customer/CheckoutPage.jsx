@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import BookingProgress from "../components/BookingProgress";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import "../css/Showtimes.css";
-import "../css/BookingPanels.css";
-import "../css/BookingFlow.css";
+import BookingProgress from "../../components/BookingProgress";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import "../../css/Showtimes.css";
+import "../../css/BookingPanels.css";
+import "../../css/BookingFlow.css";
 
 export default function CheckoutPage() {
   const { state } = useLocation();

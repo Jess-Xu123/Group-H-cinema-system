@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import { getShowtimes } from "../api/cinemaApi";
-import "../css/Showtimes.css";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import { getShowtimes } from "../../api/cinemaApi";
+import "../../css/Showtimes.css";
 
 function getLocalDateKey(value) {
   const date = new Date(value);

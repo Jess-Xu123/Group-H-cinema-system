@@ -5,11 +5,11 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import { getMovies, getShowtimes } from "../api/cinemaApi";
-import "../css/MovieDetail.css";
-import "../css/Showtimes.css";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import { getMovies, getShowtimes } from "../../api/cinemaApi";
+import "../../css/MovieDetail.css";
+import "../../css/Showtimes.css";
 
 function formatTime(value) {
   return new Intl.DateTimeFormat("en", {

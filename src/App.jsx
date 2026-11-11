@@ -1,19 +1,24 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 
-import HomePage from "./pages/HomePage";
-import ShowtimesPage from "./pages/ShowtimesPage";
-import MoviesPage from "./pages/MoviesPage";
-import MovieDetailPage from "./pages/MovieDetailPage";
-import SeatSelectionPage from "./pages/SeatSelectionPage";
-import CheckoutPage from "./pages/CheckoutPage";
+import HomePage from "./pages/customer/HomePage";
+import ShowtimesPage from "./pages/customer/ShowtimesPage";
+import MoviesPage from "./pages/customer/MoviesPage";
+import MovieDetailPage from "./pages/customer/MovieDetailPage";
+import SeatSelectionPage from "./pages/customer/SeatSelectionPage";
+import CheckoutPage from "./pages/customer/CheckoutPage";
 
 import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
 import CouponsPage from "./pages/user/CouponsPage";
 import SettingsPage from "./pages/user/SettingsPage";
 
-import Login from "./pages/LoginPage";
-import Register from "./pages/RegisterPage";
+import Login from "./pages/customer/LoginPage";
+import Register from "./pages/customer/RegisterPage";
 
 import DashboardPage from "./pages/admin/DashboardPage";
 import AdminMoviesPage from "./pages/admin/MoviesPage";
@@ -43,26 +48,11 @@ function App() {
 
           {/* User account pages */}
           <Route path="/account" element={<UserLayout />}>
-            <Route
-              index
-              element={<Navigate to="profile" replace />}
-            />
-            <Route
-              path="profile"
-              element={<ProfilePage />}
-            />
-            <Route
-              path="orders"
-              element={<OrdersPage />}
-            />
-            <Route
-              path="coupons"
-              element={<CouponsPage />}
-            />
-            <Route
-              path="settings"
-              element={<SettingsPage />}
-            />
+            <Route index element={<Navigate to="profile" replace />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="coupons" element={<CouponsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Admin pages */}
@@ -73,7 +63,6 @@ function App() {
             <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<SettingPage />} />
           </Route>
-          
         </Routes>
       </div>
     </Router>

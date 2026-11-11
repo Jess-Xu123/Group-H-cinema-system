@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../api/authApi";
-import { Button } from "../components/Buttons";
-import "../css/Auth.css";
+import { registerUser } from "../../api/authApi";
+import { Button } from "../../components/Buttons";
+import "../../css/Auth.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -69,9 +69,7 @@ export default function Register() {
         navigate("/login");
       }, 1000);
     } catch (err) {
-      setError(
-        err.message || "Registration failed. Please try again."
-      );
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +79,7 @@ export default function Register() {
     <main className="auth-page">
       <section className="auth-card">
         <Link to="/" className="auth-brand">
-        RIO<span className="logo-dot">.</span>
+          RIO<span className="logo-dot">.</span>
         </Link>
 
         <p className="auth-eyebrow">JOIN THE EXPERIENCE</p>
@@ -141,9 +139,7 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirm-password">
-              Confirm Password
-            </label>
+            <label htmlFor="confirm-password">Confirm Password</label>
 
             <input
               id="confirm-password"
@@ -170,18 +166,13 @@ export default function Register() {
             </p>
           )}
 
-          <Button
-            variant="auth"
-            type="submit"
-            disabled={isLoading}
-          >
+          <Button variant="auth" type="submit" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
 
         <p className="auth-switch">
-          Already have an account?{" "}
-          <Link to="/login">Sign in</Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
 
         <Link to="/" className="auth-back">

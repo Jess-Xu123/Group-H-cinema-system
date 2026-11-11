@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import BookingProgress from "../components/BookingProgress";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import { getShowtimeSeats } from "../api/cinemaApi";
-import "../css/Showtimes.css";
-import "../css/BookingPanels.css";
-import "../css/SeatSelection.css";
-import "../css/BookingFlow.css";
+import BookingProgress from "../../components/BookingProgress";
+import Footer from "../../components/Footer";
+import Navbar from "../../components/Navbar";
+import { getShowtimeSeats } from "../../api/cinemaApi";
+import "../../css/Showtimes.css";
+import "../../css/BookingPanels.css";
+import "../../css/SeatSelection.css";
+import "../../css/BookingFlow.css";
 
 function formatTime(value) {
   return new Intl.DateTimeFormat("en", {
