@@ -136,12 +136,12 @@ function DashboardPage() {
       <section className="dashboard-programme">
         <div className="dashboard-section-header">
             <div>
-            <h2>Upcoming 7 Days</h2>
+            <h2>Upcoming Movies</h2>
             <p>Published screenings and ticket sales</p>
             </div>
 
             <span className="dashboard-date-label">
-              Next 7 days
+              Today's overview
             </span>
         </div>
 

@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createCheckoutSession } from "../../api/paymentApi";
-import { holdBookingSeats, releaseBookingHold } from "../../api/bookingApi";
+import {
+  holdBookingSeats,
+  releaseBookingHold,
+  reserveBooking,
+} from "../../api/bookingApi";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -31,6 +36,10 @@ function saveCheckoutDraft(draft) {
 export default function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const isLoggedIn = Boolean(user);
+
   const paymentSucceeded =
     new URLSearchParams(location.search).get("payment") === "success";
   const [savedDraft] = useState(readCheckoutDraft);
@@ -45,6 +54,9 @@ export default function CheckoutPage() {
       : "",
   );
   const [holdInfo, setHoldInfo] = useState(checkout.holdInfo || null);
+  const [reservationMessage, setReservationMessage] = useState("");
+  const reservationAttemptRef = useRef(null);
+  const checkoutFormRef = useRef(null);
   const selectedSeats = checkout.selectedSeats || [];
   const total = Number(checkout.total || 0);
 
@@ -66,11 +78,135 @@ export default function CheckoutPage() {
     });
   }, [screening, selectedSeats, total, holdInfo, customerDetails]);
 
+  useEffect(() => {
+    if (!location.state?.completeReservation || !screening) return;
+
+    if (reservationAttemptRef.current === "processing") return;
+
+    reservationAttemptRef.current = "processing";
+
+    async function completeReservation() {
+      setError("");
+      setLoading(true);
+
+      try {
+        // Create the seat hold after the user has logged in.
+        // The backend will obtain the user's email from their account.
+        const holdResponse = await holdBookingSeats({
+          showtime_id: screening.showtime_id,
+          seats: selectedSeats,
+        });
+
+        const booking = holdResponse.booking;
+
+        if (!booking?.id) {
+          throw new Error("The server did not return a valid seat hold.");
+        }
+
+        const activeHold = {
+          bookingId: booking.id,
+          guestToken: null,
+          expiresAt: booking.expires_at,
+          totalAmount: booking.total_amount,
+        };
+
+        setHoldInfo(activeHold);
+
+        // Convert the authenticated checkout hold into a reservation.
+        const result = await reserveBooking(booking.id);
+
+        const updatedHoldInfo = {
+          ...activeHold,
+          expiresAt: result.booking.expires_at,
+          totalAmount: result.booking.total_amount,
+        };
+
+        setHoldInfo(updatedHoldInfo);
+
+        saveCheckoutDraft({
+          screening,
+          selectedSeats,
+          total,
+          holdInfo: updatedHoldInfo,
+          customerDetails,
+        });
+
+        setReservationMessage(
+          result.message || "Your reservation has been created successfully."
+        );
+
+        navigate("/checkout", {
+          replace: true,
+          state: null,
+        });
+      } catch (requestError) {
+        console.error("Reservation creation failed:", requestError);
+
+        setError(
+          requestError.message || "Unable to complete your reservation."
+        );
+
+        // Allow retry if the request failed.
+        reservationAttemptRef.current = null;
+
+        navigate("/checkout", {
+          replace: true,
+          state: null,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    completeReservation();
+  }, [location.state, screening]);
+
   function handleInputChange(e) {
     setCustomerDetails({
       ...customerDetails,
       [e.target.name]: e.target.value,
     });
+  }
+
+  async function getOrCreateActiveHold() {
+    let activeHold = holdInfo;
+
+    if (
+      !activeHold?.bookingId ||
+      (activeHold.expiresAt &&
+        new Date(activeHold.expiresAt) <= new Date())
+    ) {
+      const holdResponse = await holdBookingSeats({
+        showtime_id: screening.showtime_id,
+        seats: selectedSeats,
+        customer_email: customerDetails.email,
+      });
+
+      const booking = holdResponse.booking;
+
+      if (!booking?.id) {
+        throw new Error("The server did not return a valid seat hold.");
+      }
+
+      activeHold = {
+        bookingId: booking.id,
+        guestToken: holdResponse.guest_checkout_token,
+        expiresAt: booking.expires_at,
+        totalAmount: booking.total_amount,
+      };
+
+      setHoldInfo(activeHold);
+
+      saveCheckoutDraft({
+        screening,
+        selectedSeats,
+        total,
+        holdInfo: activeHold,
+        customerDetails,
+      });
+    }
+
+    return activeHold;
   }
 
   async function handleBackToSeats(e) {
@@ -90,42 +226,28 @@ export default function CheckoutPage() {
   }
 
   async function submitCheckout(event) {
-    event.preventDefault();
-    if (paymentMethod !== "card" || loading) return;
+
+      event.preventDefault();
+
+  if (loading) return;
+
+  if (paymentMethod === "reserve") {
+      if (!isLoggedIn) {
+        continueToLogin();
+        return;
+      }
+
+      await createReservationDirectly();
+      return;
+    }
+
+    if (paymentMethod !== "card") return;
 
     setError("");
     setLoading(true);
-    try {
-      let activeHold = holdInfo;
-      if (
-        !activeHold?.bookingId ||
-        (activeHold.expiresAt && new Date(activeHold.expiresAt) <= new Date())
-      ) {
-        const holdResponse = await holdBookingSeats({
-          showtime_id: screening.showtime_id,
-          seats: selectedSeats,
-          customer_email: customerDetails.email,
-        });
 
-        const booking = holdResponse.booking;
-        if (!booking?.id) {
-          throw new Error("The server did not return a valid seat hold.");
-        }
-        activeHold = {
-          bookingId: booking.id,
-          guestToken: holdResponse.guest_checkout_token,
-          expiresAt: booking.expires_at,
-          totalAmount: booking.total_amount,
-        };
-        setHoldInfo(activeHold);
-        saveCheckoutDraft({
-          screening,
-          selectedSeats,
-          total,
-          holdInfo: activeHold,
-          customerDetails,
-        });
-      }
+    try {
+      const activeHold = await getOrCreateActiveHold();
 
       const paymentData = await createCheckoutSession(
         {
@@ -146,7 +268,70 @@ export default function CheckoutPage() {
   }
 
   function continueToLogin() {
-    navigate("/login");
+    if (loading) return;
+
+    setError("");
+
+    saveCheckoutDraft({
+      screening,
+      selectedSeats,
+      total,
+      holdInfo: null,
+      customerDetails,
+    });
+
+    navigate("/login", {
+      state: { from: "checkout" },
+    });
+  }
+
+  async function createReservationDirectly() {
+    if (loading || !isLoggedIn) return;
+
+    setError("");
+    setLoading(true);
+    setReservationMessage("");
+
+    try {
+      const holdResponse = await holdBookingSeats({
+        showtime_id: screening.showtime_id,
+        seats: selectedSeats,
+      });
+
+      const booking = holdResponse.booking;
+
+      if (!booking?.id) {
+        throw new Error("The server did not return a valid seat hold.");
+      }
+
+      const result = await reserveBooking(booking.id);
+
+      const updatedHoldInfo = {
+        bookingId: booking.id,
+        guestToken: null,
+        expiresAt: result.booking.expires_at,
+        totalAmount: result.booking.total_amount,
+      };
+
+      setHoldInfo(updatedHoldInfo);
+
+      saveCheckoutDraft({
+        screening,
+        selectedSeats,
+        total,
+        holdInfo: updatedHoldInfo,
+        customerDetails,
+      });
+
+      setReservationMessage(
+        result.message || "Your reservation has been created successfully."
+      );
+    } catch (requestError) {
+      console.error("Reservation failed:", requestError);
+      setError(requestError.message || "Unable to create your reservation.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -200,6 +385,17 @@ export default function CheckoutPage() {
                 {error}
               </p>
             )}
+            {reservationMessage && (
+              <p className="booking-success-message" role="status">
+                {reservationMessage}
+                {holdInfo?.expiresAt && (
+                  <>
+                    {" "}Your reservation expires at{" "}
+                    {formatScreening(holdInfo.expiresAt)}.
+                  </>
+                )}
+              </p>
+            )}
             {paymentSucceeded && (
               <p className="showtimes-feedback" role="status">
                 Payment received. Your booking is being confirmed; keep this
@@ -208,18 +404,21 @@ export default function CheckoutPage() {
             )}
 
             <form
+              ref={checkoutFormRef}
               className="checkout-layout booking-checkout-layout"
               onSubmit={submitCheckout}
             >
-              <div className="booking-checkout-fields">
+              {!isLoggedIn && (
                 <section className="checkout-form-panel booking-form-panel">
                   <div className="booking-panel-title">
                     <h2>Your details</h2>
                     <span>Guest checkout</span>
                   </div>
+
                   <p>
-                    No account needed. We’ll send your tickets to your email.
+                    No account needed. We will send your tickets to your email.
                   </p>
+
                   <div className="booking-name-fields">
                     <label>
                       First name
@@ -229,9 +428,10 @@ export default function CheckoutPage() {
                         onChange={handleInputChange}
                         autoComplete="given-name"
                         placeholder="Enter first name"
-                        required
+                        required={paymentMethod === "card"}
                       />
                     </label>
+
                     <label>
                       Last name
                       <input
@@ -240,10 +440,11 @@ export default function CheckoutPage() {
                         onChange={handleInputChange}
                         autoComplete="family-name"
                         placeholder="Enter last name"
-                        required
+                        required={paymentMethod === "card"}
                       />
                     </label>
                   </div>
+
                   <label>
                     Email address
                     <input
@@ -253,17 +454,20 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       autoComplete="email"
                       placeholder="Enter your email address"
-                      required
+                      required={paymentMethod === "card"}
                     />
                   </label>
+
                   <p className="booking-field-note">
-                    Please check your email carefully — this is where your
-                    tickets will arrive.
+                    Please check your email carefully — this is where your tickets will arrive.
                   </p>
                 </section>
+              )}
 
+              <div className="booking-checkout-fields">
                 <section className="checkout-form-panel booking-form-panel">
                   <h2>How would you like to pay?</h2>
+
                   <div className="booking-payment-options">
                     <label
                       className={paymentMethod === "card" ? "is-selected" : ""}
@@ -280,10 +484,9 @@ export default function CheckoutPage() {
                         <small>Visa · Mastercard</small>
                       </span>
                     </label>
+
                     <label
-                      className={
-                        paymentMethod === "reserve" ? "is-selected" : ""
-                      }
+                      className={paymentMethod === "reserve" ? "is-selected" : ""}
                     >
                       <input
                         type="radio"
@@ -307,6 +510,7 @@ export default function CheckoutPage() {
                     notice.
                   </span>
                 </label>
+
                 <div className="booking-submit-row">
                   <button
                     className={`movie-select-seats ${
@@ -315,7 +519,15 @@ export default function CheckoutPage() {
                     type={paymentMethod === "card" ? "submit" : "button"}
                     disabled={loading || paymentSucceeded}
                     onClick={
-                      paymentMethod === "reserve" ? continueToLogin : undefined
+                      paymentMethod === "reserve"
+                        ? () => {
+                            if (isLoggedIn) {
+                              createReservationDirectly();
+                            } else {
+                              continueToLogin();
+                            }
+                          }
+                        : undefined
                     }
                   >
                     {paymentMethod === "card"
@@ -324,12 +536,15 @@ export default function CheckoutPage() {
                         : loading
                           ? "Redirecting..."
                           : `Pay €${total.toFixed(2)}`
-                      : "Login"}
+                      : isLoggedIn
+                        ? "Reserve ticket"
+                        : "Login"}
                     <span aria-hidden="true">→</span>
                   </button>
+
                   <p>
-                    Review your order on the right. Your total is €
-                    {total.toFixed(2)}, with no added fees.
+                    Review your order on the page. Your total is €
+                    {total.toFixed(2)}.
                   </p>
                 </div>
               </div>
@@ -367,7 +582,7 @@ export default function CheckoutPage() {
                   <strong>€{total.toFixed(2)}</strong>
                 </div>
                 <p className="booking-order-guidance">
-                  {selectedSeats.length} × €
+                  {selectedSeats.length} * €
                   {Number(screening.base_price).toFixed(2)} · No additional
                   fees.
                 </p>
