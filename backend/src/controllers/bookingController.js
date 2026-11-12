@@ -624,8 +624,23 @@ async function confirmOfflinePayment(req, res) {
     }
 
     if (booking.status === "paid") {
-      await client.query("COMMIT");
-      return res.status(200).json({ message: "This booking is already paid.", booking });
+      // A duplicate webhook for the same Stripe payment is safe.
+      if (
+        stripePaymentId &&
+        booking.stripe_payment_id === stripePaymentId
+      ) {
+        return { ok: true, alreadyPaid: true, booking };
+      }
+
+      // Another Stripe payment or an offline payment already paid this booking.
+      // The new Stripe payment must be refunded.
+      return {
+        ok: false,
+        reason: booking.stripe_payment_id
+          ? "already_paid_with_different_payment"
+          : "already_paid_offline",
+        booking,
+      };
     }
 
     if (booking.status !== "reserved_unpaid") {

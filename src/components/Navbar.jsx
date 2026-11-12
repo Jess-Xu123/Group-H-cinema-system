@@ -50,7 +50,6 @@ export default function Navbar({ currentLocation, onLocationChange }) {
             Showtimes
           </Link>
           <a href="#private">Private Screenings</a>
-          <a href="#about">About Us</a>
         </div>
 
         <div className="rio-nav-actions">
