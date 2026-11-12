@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createCheckoutSession } from "../../api/paymentApi";
+import { holdBookingSeats, releaseBookingHold } from "../../api/bookingApi";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -8,21 +9,62 @@ import "../../css/Showtimes.css";
 import "../../css/BookingPanels.css";
 import "../../css/BookingFlow.css";
 
+const CHECKOUT_DRAFT_KEY = "rio-checkout-draft";
+
+function readCheckoutDraft() {
+  try {
+    const saved = sessionStorage.getItem(CHECKOUT_DRAFT_KEY);
+    if (!saved) return null;
+
+    const draft = JSON.parse(saved);
+    return draft?.screening && Array.isArray(draft.selectedSeats) ? draft : null;
+  } catch (error) {
+    console.warn("Unable to restore the checkout draft:", error);
+    return null;
+  }
+}
+
+function saveCheckoutDraft(draft) {
+  sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+}
+
 export default function CheckoutPage() {
-  const { state } = useLocation();
-  const screening = state?.screening;
+  const location = useLocation();
   const navigate = useNavigate();
+  const paymentSucceeded =
+    new URLSearchParams(location.search).get("payment") === "success";
+  const [savedDraft] = useState(readCheckoutDraft);
+  const checkout = location.state?.screening ? location.state : savedDraft || {};
+  const screening = checkout.screening;
   const [city, setCity] = useState(screening?.city || "Oulu");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
-  const selectedSeats = state?.selectedSeats || [];
-  const total = Number(state?.total || 0);
+  const [error, setError] = useState(
+    new URLSearchParams(location.search).get("payment") === "cancelled"
+      ? "Payment was cancelled. Your selected seats are still held temporarily; you can try again here."
+      : "",
+  );
+  const [holdInfo, setHoldInfo] = useState(checkout.holdInfo || null);
+  const selectedSeats = checkout.selectedSeats || [];
+  const total = Number(checkout.total || 0);
 
   const [customerDetails, setCustomerDetails] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: checkout.customerDetails?.firstName || "",
+    lastName: checkout.customerDetails?.lastName || "",
+    email: checkout.customerDetails?.email || "",
   });
+
+  useEffect(() => {
+    if (!screening) return;
+
+    saveCheckoutDraft({
+      screening,
+      selectedSeats,
+      total,
+      holdInfo,
+      customerDetails,
+    });
+  }, [screening, selectedSeats, total, holdInfo, customerDetails]);
 
   function handleInputChange(e) {
     setCustomerDetails({
@@ -31,30 +73,76 @@ export default function CheckoutPage() {
     });
   }
 
-  //When user click pay button, backend handling
+  async function handleBackToSeats(e) {
+    e.preventDefault();
+    setError("");
+    try {
+      if (holdInfo?.bookingId) {
+        await releaseBookingHold(holdInfo.bookingId, holdInfo.guestToken);
+      }
+      sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+      navigate(`/seats/${screening.showtime_id}`, {
+        state: { screening, selectedSeats, total },
+      });
+    } catch (requestError) {
+      setError(requestError.message || "Unable to release your seat hold.");
+    }
+  }
+
   async function submitCheckout(event) {
     event.preventDefault();
+    if (paymentMethod !== "card" || loading) return;
 
-    if (paymentMethod === "card") {
-      try {
-        setLoading(true);
+    setError("");
+    setLoading(true);
+    try {
+      let activeHold = holdInfo;
+      if (
+        !activeHold?.bookingId ||
+        (activeHold.expiresAt && new Date(activeHold.expiresAt) <= new Date())
+      ) {
+        const holdResponse = await holdBookingSeats({
+          showtime_id: screening.showtime_id,
+          seats: selectedSeats,
+          customer_email: customerDetails.email,
+        });
 
-        const data = await createCheckoutSession({
+        const booking = holdResponse.booking;
+        if (!booking?.id) {
+          throw new Error("The server did not return a valid seat hold.");
+        }
+        activeHold = {
+          bookingId: booking.id,
+          guestToken: holdResponse.guest_checkout_token,
+          expiresAt: booking.expires_at,
+          totalAmount: booking.total_amount,
+        };
+        setHoldInfo(activeHold);
+        saveCheckoutDraft({
           screening,
           selectedSeats,
           total,
+          holdInfo: activeHold,
           customerDetails,
         });
-
-        // direct to Stripe sandbox
-        if (data.url) {
-          window.location.href = data.url;
-        }
-      } catch (err) {
-        console.error("Payment Error:", err);
-        alert("Payment initialization failed.");
-        setLoading(false);
       }
+
+      const paymentData = await createCheckoutSession({
+        bookingId: activeHold.bookingId,
+        screening,
+        selectedSeats,
+        total: Number(activeHold.totalAmount ?? total),
+        customerDetails,
+      });
+
+      if (!paymentData?.url) {
+        throw new Error("The payment provider did not return a checkout URL.");
+      }
+      window.location.assign(paymentData.url);
+    } catch (requestError) {
+      console.error("Payment initialization failed:", requestError);
+      setError(requestError.message || "Payment initialization failed.");
+      setLoading(false);
     }
   }
 
@@ -71,7 +159,7 @@ export default function CheckoutPage() {
             <Link
               className="booking-back-link"
               to={`/seats/${screening.showtime_id}`}
-              state={{ screening, selectedSeats, total }}
+              onClick={handleBackToSeats}
             >
               ← Back to seat selection
             </Link>
@@ -107,6 +195,18 @@ export default function CheckoutPage() {
                 {screening.hall_name}
               </p>
             </header>
+
+            {error && (
+              <p className="showtimes-feedback showtimes-error" role="alert">
+                {error}
+              </p>
+            )}
+            {paymentSucceeded && (
+              <p className="showtimes-feedback" role="status">
+                Payment received. Your booking is being confirmed; keep this
+                page open if you need to check your order details.
+              </p>
+            )}
 
             <form
               className="checkout-layout booking-checkout-layout"
@@ -214,14 +314,17 @@ export default function CheckoutPage() {
                       paymentMethod === "card" ? "is-payment-active" : ""
                     }`}
                     type={paymentMethod === "card" ? "submit" : "button"}
+                    disabled={loading || paymentSucceeded}
                     onClick={
                       paymentMethod === "reserve" ? continueToLogin : undefined
                     }
                   >
                     {paymentMethod === "card"
-                      ? loading
-                        ? "Redirecting..."
-                        : `Pay €${total.toFixed(2)}`
+                      ? paymentSucceeded
+                        ? "Payment received"
+                        : loading
+                          ? "Redirecting..."
+                          : `Pay €${total.toFixed(2)}`
                       : "Login"}
                     <span aria-hidden="true">→</span>
                   </button>

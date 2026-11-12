@@ -12,7 +12,15 @@ const hallRoutes = require("./routes/hallRoutes");
 const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 
+// Stripe Webhook
+const { handleStripeWebhook } = require("./controllers/paymentController");
 const app = express();
+
+app.post(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook,
+);
 
 app.use(express.json());
 app.use(cookieParser());
