@@ -127,13 +127,12 @@ export default function CheckoutPage() {
         });
       }
 
-      const paymentData = await createCheckoutSession({
-        bookingId: activeHold.bookingId,
-        screening,
-        selectedSeats,
-        total: Number(activeHold.totalAmount ?? total),
-        customerDetails,
-      });
+      const paymentData = await createCheckoutSession(
+        {
+          booking_id: activeHold.bookingId,
+        },
+        activeHold.guestToken
+      );
 
       if (!paymentData?.url) {
         throw new Error("The payment provider did not return a checkout URL.");

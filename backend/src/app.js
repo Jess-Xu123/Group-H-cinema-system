@@ -16,21 +16,25 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const { handleStripeWebhook } = require("./controllers/paymentController");
 const app = express();
 
-app.post(
-  "/api/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  handleStripeWebhook,
-);
-
-app.use(express.json());
-app.use(cookieParser());
-
+// CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  }),
+  })
 );
+
+// Stripe Webhook must receive the original raw body.
+// This MUST be registered before express.json().
+app.use(
+  "/api/payment/webhook",
+  express.raw({ type: "application/json" })
+);
+
+// Normal JSON requests.
+app.use(express.json());
+
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/movies", movieRoutes);
