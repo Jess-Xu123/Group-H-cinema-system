@@ -19,6 +19,7 @@ import SettingsPage from "./pages/user/SettingsPage";
 
 import Login from "./pages/customer/LoginPage";
 import Register from "./pages/customer/RegisterPage";
+import BookingSuccessPage from "./pages/user/BookingSuccessPage";
 
 import DashboardPage from "./pages/admin/DashboardPage";
 import AdminMoviesPage from "./pages/admin/MoviesPage";
@@ -46,6 +47,7 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/booking-success" element={<BookingSuccessPage />} />
 
           {/* User account pages */}
           <Route path="/account" element={<UserLayout />}>

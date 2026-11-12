@@ -1,0 +1,228 @@
+.booking-success-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background: #101010;
+  color: #f5f5f5;
+}
+
+.booking-success-container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.payment-status-card {
+  width: 100%;
+  padding: 48px 42px;
+  text-align: center;
+  background: #191919;
+  border: 1px solid #303030;
+  border-radius: 12px;
+}
+
+.payment-status-card h1 {
+  margin: 20px 0 12px;
+  color: #f5f5f5;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 38px;
+  font-weight: 600;
+}
+
+.payment-status-card > p {
+  max-width: 480px;
+  margin: 0 auto;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.payment-loading-spinner {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 24px;
+  border: 3px solid #3a3a3a;
+  border-top-color: #d5ad65;
+  border-radius: 50%;
+  animation: payment-spin 0.8s linear infinite;
+}
+
+@keyframes payment-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status icons */
+
+.payment-status-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.success-icon {
+  color: #ffffff;
+  background: #24864b;
+}
+
+.unavailable-icon {
+  color: #ffffff;
+  background: #a84a43;
+}
+
+.pending-icon {
+  color: #ffffff;
+  background: #a47b32;
+}
+
+/* Success section */
+
+.payment-status-label {
+  display: inline-block;
+  color: #65c98a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.payment-success-card h1 {
+  margin-top: 14px;
+}
+
+.payment-status-description {
+  margin-bottom: 32px !important;
+}
+
+/* Booking details */
+
+.success-booking-details {
+  margin-top: 32px;
+  padding: 26px;
+  text-align: left;
+  background: #222222;
+  border: 1px solid #383838;
+  border-radius: 8px;
+}
+
+.success-booking-details h2 {
+  margin: 0 0 20px;
+  padding-bottom: 14px;
+  color: #d5ad65;
+  border-bottom: 1px solid #414141;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.success-detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 11px 0;
+  border-bottom: 1px solid #383838;
+  font-size: 13px;
+}
+
+.success-detail-row span {
+  flex-shrink: 0;
+  color: #999;
+}
+
+.success-detail-row strong {
+  color: #f2f2f2;
+  text-align: right;
+  font-weight: 500;
+}
+
+.success-paid-text {
+  color: #65c98a !important;
+}
+
+.success-detail-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  font-size: 15px;
+}
+
+.success-detail-total span {
+  color: #ccc;
+}
+
+.success-detail-total strong {
+  color: #d5ad65;
+  font-size: 22px;
+}
+
+/* Buttons */
+
+.success-home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 32px;
+  padding: 0 32px;
+  color: #171717;
+  background: #d5ad65;
+  border: 1px solid #d5ad65;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.success-home-button:hover {
+  color: #171717;
+  background: #e5c17f;
+  border-color: #e5c17f;
+}
+
+.payment-error-note {
+  margin-top: 16px !important;
+  color: #d5ad65 !important;
+  font-size: 12px !important;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .booking-success-page {
+    padding: 32px 16px;
+  }
+
+  .payment-status-card {
+    padding: 36px 20px;
+  }
+
+  .payment-status-card h1 {
+    font-size: 30px;
+  }
+
+  .success-booking-details {
+    padding: 20px 16px;
+  }
+
+  .success-detail-row {
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .success-detail-total strong {
+    font-size: 19px;
+  }
+}

@@ -476,6 +476,146 @@ async function createCheckoutSession(req, res) {
   }
 }
 
+async function getCheckoutSessionStatus(req, res) {
+  const sessionId = req.params.sessionId;
+
+  if (
+    typeof sessionId !== "string" ||
+    !sessionId.startsWith("cs_") ||
+    sessionId.length > 255
+  ) {
+    return res.status(400).json({
+      message: "Invalid Checkout Session ID.",
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        b.id AS booking_id,
+        b.user_id,
+        b.guest_token_hash,
+        b.customer_email,
+        b.total_amount,
+        b.status AS booking_status,
+        b.created_at,
+        b.expires_at,
+
+        s.start_time,
+        s.is_premiere,
+
+        m.title AS movie_title,
+        m.poster_url,
+        m.duration_min,
+        m.age_rating,
+
+        h.city,
+        h.name AS hall_name,
+
+        pa.status AS payment_attempt_status,
+
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'row_number', bs.row_number,
+              'seat_number', bs.seat_number,
+              'ticket_type', bs.ticket_type,
+              'seat_price', bs.seat_price
+            )
+            ORDER BY bs.row_number, bs.seat_number
+          ) FILTER (WHERE bs.id IS NOT NULL),
+          '[]'::json
+        ) AS seats
+
+      FROM stripe_payment_attempts pa
+      JOIN bookings b ON b.id = pa.booking_id
+      JOIN showtimes s ON s.id = b.showtime_id
+      JOIN movies m ON m.id = s.movie_id
+      JOIN halls h ON h.id = s.hall_id
+
+      LEFT JOIN booked_seats bs
+        ON bs.booking_id = b.id
+        AND bs.released_at IS NULL
+
+      WHERE pa.stripe_checkout_session_id = $1
+
+      GROUP BY
+        b.id,
+        s.id,
+        m.id,
+        h.id,
+        pa.id
+
+      LIMIT 1
+      `,
+      [sessionId]
+    );
+
+    const booking = result.rows[0];
+
+    // Return 404 for unknown sessions.
+    if (!booking) {
+      return res.status(404).json({
+        message: "Payment session not found.",
+      });
+    }
+
+    // Verify ownership for registered customers.
+    if (booking.user_id) {
+      if (
+        !req.user ||
+        Number(req.user.userId) !== Number(booking.user_id)
+      ) {
+        return res.status(404).json({
+          message: "Payment session not found.",
+        });
+      }
+    } else {
+      // Verify ownership for guest customers.
+      const guestToken = getGuestToken(req);
+
+      if (
+        !guestTokenMatches(
+          guestToken,
+          booking.guest_token_hash
+        )
+      ) {
+        return res.status(404).json({
+          message: "Payment session not found.",
+        });
+      }
+    }
+
+    // Never expose the stored guest token hash.
+    delete booking.guest_token_hash;
+
+    let paymentStatus = "pending";
+
+    if (booking.booking_status === "paid") {
+      paymentStatus = "paid";
+    } else if (
+      booking.booking_status === "expired" ||
+      booking.booking_status === "cancelled"
+    ) {
+      paymentStatus = "unavailable";
+    }
+
+    return res.status(200).json({
+      payment_status: paymentStatus,
+      booking,
+    });
+  } catch (error) {
+    console.error("Get Checkout Session Status Error:", error);
+
+    return res.status(500).json({
+      message: "Unable to check the payment status.",
+    });
+  }
+}
+
+
 module.exports = {
   createCheckoutSession,
+  getCheckoutSessionStatus,
 };

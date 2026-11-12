@@ -7,6 +7,7 @@ const {
 
 const {
   createCheckoutSession,
+  getCheckoutSessionStatus,
 } = require("../controllers/paymentController");
 
 const {
@@ -21,6 +22,12 @@ router.post(
   "/create-checkout-session",
   optionalAuthMiddleware,
   createCheckoutSession
+);
+
+router.get(
+  "/checkout-session/:sessionId",
+  optionalAuthMiddleware,
+  getCheckoutSessionStatus
 );
 
 module.exports = router;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createCheckoutSession } from "../../api/paymentApi";
 import { Link } from "react-router-dom";
 import { getMyBookings } from "../../api/bookingApi";
 import "../../css/user/OrdersPage.css";
@@ -33,6 +34,9 @@ export default function OrdersPage() {
   const [error, setError] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+  const [payingBookingId, setPayingBookingId] = useState(null);
+  const [paymentError, setPaymentError] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -101,6 +105,28 @@ export default function OrdersPage() {
     };
 
     return labels[status] || status;
+  }
+
+  async function handlePayNow(booking) {
+    try {
+      setPayingBookingId(booking.booking_id);
+      setPaymentError("");
+
+      const result = await createCheckoutSession({
+        booking_id: booking.booking_id,
+      });
+
+      if (!result?.url) {
+        throw new Error("Unable to start the payment process.");
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.assign(result.url);
+
+    } catch (error) {
+      setPaymentError(error.message);
+      setPayingBookingId(null);
+    }
   }
 
   return (
@@ -318,15 +344,34 @@ export default function OrdersPage() {
                 at RIO Cinema.
             </p>
 
-            <button
+            {paymentError && (
+              <p className="booking-error">
+                {paymentError}
+              </p>
+            )}
+
+            {selectedBooking.status === "reserved_unpaid" ? (
+              <button
                 type="button"
                 className="summary-ticket-button"
-                disabled={selectedBooking.status !== "paid"}
-            >
+                onClick={() => handlePayNow(selectedBooking)}
+                disabled={payingBookingId === selectedBooking.booking_id}
+              >
+                {payingBookingId === selectedBooking.booking_id
+                  ? "Redirecting to payment..."
+                  : `Pay Now · €${Number(selectedBooking.total_amount).toFixed(2)}`}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="summary-ticket-button"
+                disabled
+              >
                 {selectedBooking.status === "paid"
-                ? "E-tickets coming soon ↗"
-                : "Tickets available after payment"}
-            </button>
+                  ? "E-tickets coming soon ↗"
+                  : "Tickets unavailable"}
+              </button>
+            )}
             </>
         ) : (
             <div className="summary-empty">
