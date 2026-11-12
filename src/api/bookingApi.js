@@ -147,3 +147,64 @@ export async function cancelReservation(bookingId) {
 
   return result;
 }
+
+
+// Get all bookings for Staff/Admin.
+export async function getAdminBookings(signal) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/bookings/admin`, {
+      method: "GET",
+      credentials: "include",
+      signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw error;
+    }
+
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status}).`
+    );
+  }
+
+  return result.bookings || [];
+}
+
+// Confirm offline payment for an unpaid reservation.
+export async function confirmOfflinePayment(bookingId) {
+  let response;
+
+  try {
+    response = await fetch(
+      `${API_BASE_URL}/api/bookings/${bookingId}/offline-payment`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+  } catch (error) {
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Request failed (${response.status}).`
+    );
+  }
+
+  return result;
+}

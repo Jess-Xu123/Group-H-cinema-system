@@ -25,6 +25,7 @@ import AdminMoviesPage from "./pages/admin/MoviesPage";
 import HallsPage from "./pages/admin/HallsPage";
 import UsersPage from "./pages/admin/UsersPage";
 import SettingPage from "./pages/admin/SettingPage";
+import BookingsPage from "./pages/admin/BookingsPage";
 
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -62,6 +63,7 @@ function App() {
             <Route path="halls" element={<HallsPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<SettingPage />} />
+            <Route path="bookings" element={<BookingsPage />} />
           </Route>
         </Routes>
       </div>

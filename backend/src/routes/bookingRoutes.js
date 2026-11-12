@@ -2,6 +2,7 @@ const express = require("express");
 
 const {
   getMyBookings,
+  getAdminBookings,
   holdSeats,
   reserveBooking,
   releaseBookingHold,
@@ -19,6 +20,12 @@ const { optionalAuthMiddleware } = require("../middleware/optionalAuthMiddleware
 const router = express.Router();
 
 router.get("/my-bookings", authMiddleware, getMyBookings);
+router.get(
+  "/admin",
+  authMiddleware,
+  requireStaffOrAdmin,
+  getAdminBookings
+);
 
 router.post("/hold", optionalAuthMiddleware, holdSeats);
 router.post("/:id/reserve", authMiddleware, reserveBooking);

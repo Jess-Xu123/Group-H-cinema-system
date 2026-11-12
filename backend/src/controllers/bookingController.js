@@ -136,6 +136,64 @@ async function getMyBookings(req, res) {
   }
 }
 
+// GET /api/bookings/admin
+// Staff/Admin only. Retrieve all bookings, including guest and historical bookings.
+async function getAdminBookings(req, res) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        b.id AS booking_id,
+        b.user_id,
+        u.full_name AS customer_name,
+        b.customer_email,
+        b.total_amount,
+        b.status,
+        b.expires_at,
+        b.created_at,
+        s.id AS showtime_id,
+        s.start_time,
+        s.is_premiere,
+        m.id AS movie_id,
+        m.title AS movie_title,
+        m.poster_url,
+        m.duration_min,
+        m.age_rating,
+        h.city,
+        h.name AS hall_name,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'row_number', bs.row_number,
+              'seat_number', bs.seat_number,
+              'ticket_type', bs.ticket_type,
+              'seat_price', bs.seat_price,
+              'released_at', bs.released_at
+            )
+            ORDER BY bs.row_number, bs.seat_number
+          ) FILTER (WHERE bs.id IS NOT NULL),
+          '[]'::json
+        ) AS seats
+      FROM bookings b
+      JOIN showtimes s ON s.id = b.showtime_id
+      JOIN movies m ON m.id = s.movie_id
+      JOIN halls h ON h.id = s.hall_id
+      LEFT JOIN users u ON u.id = b.user_id
+      LEFT JOIN booked_seats bs ON bs.booking_id = b.id
+      GROUP BY b.id, s.id, m.id, h.id, u.id
+      ORDER BY b.created_at DESC
+      `
+    );
+
+    return res.status(200).json({ bookings: result.rows });
+  } catch (error) {
+    console.error("Get admin bookings error:", error);
+    return res.status(500).json({
+      message: "Unable to retrieve bookings.",
+    });
+  }
+}
+
 // POST /api/bookings/hold
 // Price is calculated from movies.base_price; frontend seat_price is ignored.
 // Until ticket-specific pricing is agreed, every ticket type uses base_price.
@@ -624,23 +682,11 @@ async function confirmOfflinePayment(req, res) {
     }
 
     if (booking.status === "paid") {
-      // A duplicate webhook for the same Stripe payment is safe.
-      if (
-        stripePaymentId &&
-        booking.stripe_payment_id === stripePaymentId
-      ) {
-        return { ok: true, alreadyPaid: true, booking };
-      }
+      await client.query("ROLLBACK");
 
-      // Another Stripe payment or an offline payment already paid this booking.
-      // The new Stripe payment must be refunded.
-      return {
-        ok: false,
-        reason: booking.stripe_payment_id
-          ? "already_paid_with_different_payment"
-          : "already_paid_offline",
-        booking,
-      };
+      return res.status(409).json({
+        message: "This booking has already been paid.",
+      });
     }
 
     if (booking.status !== "reserved_unpaid") {
@@ -708,6 +754,7 @@ async function markBookingPaidFromVerifiedStripe(bookingId, paymentIntentId) {
 
 module.exports = {
   getMyBookings,
+  getAdminBookings,
   holdSeats,
   reserveBooking,
   releaseBookingHold,
