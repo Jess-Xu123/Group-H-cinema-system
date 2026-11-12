@@ -22,7 +22,9 @@ function readCheckoutDraft() {
     if (!saved) return null;
 
     const draft = JSON.parse(saved);
-    return draft?.screening && Array.isArray(draft.selectedSeats) ? draft : null;
+    return draft?.screening && Array.isArray(draft.selectedSeats)
+      ? draft
+      : null;
   } catch (error) {
     console.warn("Unable to restore the checkout draft:", error);
     return null;
@@ -43,7 +45,9 @@ export default function CheckoutPage() {
   const paymentSucceeded =
     new URLSearchParams(location.search).get("payment") === "success";
   const [savedDraft] = useState(readCheckoutDraft);
-  const checkout = location.state?.screening ? location.state : savedDraft || {};
+  const checkout = location.state?.screening
+    ? location.state
+    : savedDraft || {};
   const screening = checkout.screening;
   const [city, setCity] = useState(screening?.city || "Oulu");
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -59,6 +63,27 @@ export default function CheckoutPage() {
   const checkoutFormRef = useRef(null);
   const selectedSeats = checkout.selectedSeats || [];
   const total = Number(checkout.total || 0);
+
+  const [secondsLeft, setSecondsLeft] = useState(15 * 60);
+  useEffect(() => {
+    if (!screening || selectedSeats.length === 0) return;
+
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [screening, selectedSeats.length]);
+
+  const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+  const seconds = String(secondsLeft % 60).padStart(2, "0");
+  const isExpired = secondsLeft === 0;
 
   const [customerDetails, setCustomerDetails] = useState({
     firstName: checkout.customerDetails?.firstName || "",
@@ -374,10 +399,31 @@ export default function CheckoutPage() {
                 </p>
                 <h1>Your evening is almost booked.</h1>
               </div>
-              <p className="booking-flow-screening-meta">
-                {screening.city} · {formatScreening(screening.start_time)} ·{" "}
-                {screening.hall_name}
-              </p>
+              <div className="checkout-heading-meta">
+                <p className="booking-flow-screening-meta">
+                  {screening.city} · {formatScreening(screening.start_time)} ·{" "}
+                  {screening.hall_name}
+                </p>
+
+                <div
+                  className={`booking-countdown ${
+                    secondsLeft <= 120 ? "is-urgent" : ""
+                  }`}
+                >
+                  {isExpired ? (
+                    <span>
+                      Session expired. Please select your seats again.
+                    </span>
+                  ) : (
+                    <span>
+                      Your seats are held for{" "}
+                      <strong>
+                        {minutes}:{seconds}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+              </div>
             </header>
 
             {error && (
