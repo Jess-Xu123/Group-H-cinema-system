@@ -89,3 +89,61 @@ export async function releaseBookingHold(bookingId, guestToken) {
     throw new Error(result?.message || "Failed to release the seat hold.");
   }
 }
+
+// Convert an active guest checkout into a logged-in reservation.
+export async function reserveBooking(bookingId, guestToken) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}/reserve`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(guestToken
+          ? { "x-guest-checkout-token": guestToken }
+          : {}),
+      },
+      credentials: "include",
+    });
+  } catch (error) {
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Failed to reserve booking (${response.status}).`,
+    );
+  }
+
+  return result;
+}
+
+// Cancel a logged-in user's unpaid reservation.
+export async function cancelReservation(bookingId) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}/cancel`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Failed to cancel reservation (${response.status}).`,
+    );
+  }
+
+  return result;
+}

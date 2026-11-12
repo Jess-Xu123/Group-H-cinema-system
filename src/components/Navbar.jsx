@@ -9,6 +9,11 @@ export default function Navbar({ currentLocation, onLocationChange }) {
   const { pathname } = useLocation();
   const { user, setUser, isLoading } = useAuth();
 
+  const userDestination =
+  user?.role === "admin" || user?.role === "staff"
+    ? "/admin"
+    : "/account/profile";
+
   async function handleLogout() {
     try {
       await logoutUser();
@@ -81,7 +86,7 @@ export default function Navbar({ currentLocation, onLocationChange }) {
                 </>
               ) : (
                 <>
-                  <Link to="/account/profile" className="navbar-user">
+                  <Link to={userDestination} className="navbar-user">
                     Hi, {user.full_name}
                   </Link>
                   <Button

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/authApi";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../../components/Buttons";
@@ -7,6 +7,7 @@ import "../../css/Auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -44,8 +45,15 @@ export default function Login() {
       setUser(result.user);
 
       console.log("Login successful:", result);
+
       if (result.user.role === "admin" || result.user.role === "staff") {
-        navigate("/admin");
+        navigate("/admin", { replace: true });
+      } else if (location.state?.from === "checkout") {
+        // Return to Checkout to complete the reservation.
+        navigate("/checkout", {
+          replace: true,
+          state: { completeReservation: true },
+        });
       } else {
         navigate("/account/profile", { replace: true });
       }
