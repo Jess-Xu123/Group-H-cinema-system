@@ -19,6 +19,7 @@ function getPaymentIntentId(session) {
 }
 
 async function handleStripeWebhook(req, res) {
+
   if (!process.env.STRIPE_SECRET_KEY) {
     return res.status(503).send("Stripe is not configured.");
   }
@@ -67,10 +68,12 @@ async function handleStripeWebhook(req, res) {
     "checkout.session.expired",
   ].includes(event.type);
 
-  const client = await pool.connect();
+  let client;
 
   try {
-    await client.query("BEGIN");
+
+  client = await pool.connect();
+  await client.query("BEGIN");
 
     // 2. Register event. Stripe event ID is the primary key.
     await client.query(
@@ -97,6 +100,7 @@ async function handleStripeWebhook(req, res) {
         paymentAttemptId,
       ]
     );
+
 
     // 3. Lock event row to prevent concurrent duplicate processing.
     const eventResult = await client.query(
@@ -219,7 +223,8 @@ async function handleStripeWebhook(req, res) {
       // This function uses its own transaction and locks the Booking.
       const paymentResult = await markBookingPaidFromVerifiedStripe(
         bookingId,
-        paymentIntentId
+        paymentIntentId,
+        client
       );
 
       if (paymentResult.ok) {
@@ -229,7 +234,7 @@ async function handleStripeWebhook(req, res) {
           UPDATE stripe_payment_attempts
           SET stripe_payment_intent_id = $2,
               status = 'completed',
-              failure_message = NULL
+              failure_message = NULL,
               updated_at = NOW()
           WHERE id = $1
           `,
@@ -317,7 +322,16 @@ async function handleStripeWebhook(req, res) {
       event_type: event.type,
     });
   } catch (error) {
-    await client.query("ROLLBACK");
+      if (client) {
+        try {
+          await client.query("ROLLBACK");
+        } catch (rollbackError) {
+          console.error(
+            "[STRIPE WEBHOOK] Rollback failed:",
+            rollbackError.message
+          );
+        }
+      }
 
     console.error("Stripe webhook processing error:", error);
 
@@ -361,7 +375,9 @@ async function handleStripeWebhook(req, res) {
     // Non-2xx tells Stripe to retry delivery.
     return res.status(500).send("Webhook processing failed.");
   } finally {
-    client.release();
+    if (client) {
+  client.release();
+}
   }
 }
 

@@ -599,10 +599,16 @@ async function cancelReservation(req, res) {
 }
 
 async function markBookingPaidInTransaction(client, bookingId, stripePaymentId = null) {
+
   const result = await client.query(
     "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
     [bookingId]
   );
+
+  console.log("[PAYMENT] Booking row locked", {
+    bookingId,
+    status: result.rows[0]?.status,
+  });
   const booking = result.rows[0];
 
   if (!booking) return { ok: false, reason: "not_found" };
@@ -730,25 +736,59 @@ async function confirmOfflinePayment(req, res) {
   }
 }
 
-// Call this ONLY after the Stripe webhook signature has been verified by the
-// Stripe integration. Do not expose it as a public HTTP route.
-async function markBookingPaidFromVerifiedStripe(bookingId, paymentIntentId) {
-  const client = await pool.connect();
+// Call this ONLY after the Stripe webhook signature has been verified.
+// If an existing transaction client is supplied, reuse that transaction.
+// Otherwise, create a separate transaction.
+async function markBookingPaidFromVerifiedStripe(
+  bookingId,
+  paymentIntentId,
+  existingClient = null
+) {
+  // Reuse the Webhook's existing transaction.
+  if (existingClient) {
+    return markBookingPaidInTransaction(
+      existingClient,
+      bookingId,
+      paymentIntentId
+    );
+  }
+
+  // Keep support for callers that do not provide an existing client.
+  let client;
 
   try {
+    client = await pool.connect();
+
     await client.query("BEGIN");
+
     const result = await markBookingPaidInTransaction(
       client,
       bookingId,
       paymentIntentId
     );
+
     await client.query("COMMIT");
+
     return result;
   } catch (error) {
-    await client.query("ROLLBACK");
+    if (client) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (rollbackError) {
+        console.error("[PAYMENT] Rollback failed:", rollbackError.message);
+      }
+    }
+
+    console.error(
+      "[PAYMENT] markBookingPaidFromVerifiedStripe error:",
+      error
+    );
+
     throw error;
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 }
 
