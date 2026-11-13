@@ -42,7 +42,7 @@ router.post("/movies/import", async (req, res) => {
 
   if (external_api_id) {
     try {
-      const url = `https://api.themoviedb.org/3/movie/${external_api_id}?api_key=${process.env.TMDB_KEY}&append_to_response=videos`;
+      const url = `https://api.themoviedb.org/3/movie/${external_api_id}?api_key=${process.env.TMDB_KEY}&append_to_response=videos,release_dates`;
       const apiRes = await fetch(url, { signal: AbortSignal.timeout(4000) });
       if (!apiRes.ok) throw new Error("External API error");
       const data = await apiRes.json();
@@ -53,12 +53,24 @@ router.post("/movies/import", async (req, res) => {
         ? `https://www.youtube.com/watch?v=${trailer.key}`
         : "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
+      const releases = data.release_dates?.results || [];
+      const country = releases.find((r) => r.iso_3166_1 === "FI") || releases.find((r) => r.iso_3166_1 === "US");
+      const rawCert = country?.release_dates?.find((d) => d.certification)?.certification || "S";
+
+      const clean = rawCert.toUpperCase().replace("K-", "").trim();
+      let ageRating = "S";
+      if (["18", "NC-17", "R"].includes(clean)) ageRating = "K-18";
+      else if (["16", "15"].includes(clean)) ageRating = "K-16";
+      else if (["12", "PG-13"].includes(clean)) ageRating = "K-12";
+      else if (["7", "PG"].includes(clean)) ageRating = "K-7";
+
       moviePayload = {
         external_api_id: String(data.id),
         title: data.title,
         description: data.overview || "No description provided.",
         duration_min: data.runtime || 120,
         genre: data.genres?.[0]?.name || "Drama",
+        age_rating: ageRating,
         poster_url: data.poster_path
           ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
           : "https://placehold.co/300x450?text=Poster",

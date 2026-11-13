@@ -296,12 +296,10 @@ function MovieForm({
         >
           <option value="">Select age rating</option>
           <option value="S">S</option>
-          <option value="7">7</option>
-          <option value="12">12</option>
-          <option value="16">16</option>
-          <option value="18">18</option>
-          <option value="PG-13">PG-13</option>
-          <option value="R">R</option>
+          <option value="K-7">K-7</option>
+          <option value="K-12">K-12</option>
+          <option value="K-16">K-16</option>
+          <option value="K-18">K-18</option>
         </select>
       </div>
 
@@ -380,7 +378,7 @@ function MovieForm({
           </div>
         )}
       </div>
-      
+
       <div className="form-group">
         <label htmlFor="external_api_id">External API ID</label>
         <input
