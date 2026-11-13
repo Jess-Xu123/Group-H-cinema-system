@@ -38,16 +38,32 @@ function MoviesPage() {
 
   function handleMovieAdded(newMovie) {
     setMovies((prevMovies) => [...prevMovies, newMovie]);
+
+    setEditingMovie(null);
+
+    setTimeout(() => {
+      movieFormRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      });
+    }, 100);
   }
 
   function handleMovieUpdated(updatedMovie) {
-  setMovies((prevMovies) =>
-    prevMovies.map((movie) =>
-      movie.id === updatedMovie.id ? updatedMovie : movie
-    )
+    setMovies((prevMovies) =>
+      prevMovies.map((movie) =>
+        movie.id === updatedMovie.id ? updatedMovie : movie
+      )
   );
 
   setEditingMovie(null);
+
+  setTimeout(() => {
+      movieFormRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      });
+    }, 100);
   }
 
   function handleCancelEdit() {
@@ -55,32 +71,32 @@ function MoviesPage() {
   }
 
   async function handleDeleteMovie(movie) {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete "${movie.title}"? This action cannot be undone.`
-        );
+    const confirmed = window.confirm(
+        `Are you sure you want to delete "${movie.title}"? This action cannot be undone.`
+    );
 
-        if (!confirmed) {
-            return;
-        }
+      if (!confirmed) {
+          return;
+      }
 
-        setDeletingMovieId(movie.id);
-        setDeleteError("");
+      setDeletingMovieId(movie.id);
+      setDeleteError("");
 
-        try {
-            await deleteMovie(movie.id);
+      try {
+          await deleteMovie(movie.id);
 
-            setMovies((prevMovies) =>
-            prevMovies.filter((item) => item.id !== movie.id)
-            );
+          setMovies((prevMovies) =>
+          prevMovies.filter((item) => item.id !== movie.id)
+          );
 
-            if (editingMovie?.id === movie.id) {
-            setEditingMovie(null);
-            }
-        } catch (err) {
-            setDeleteError(err.message);
-        } finally {
-            setDeletingMovieId(null);
-        }
+          if (editingMovie?.id === movie.id) {
+          setEditingMovie(null);
+          }
+      } catch (err) {
+          setDeleteError(err.message);
+      } finally {
+          setDeletingMovieId(null);
+      }
     }
 
     function handleEditMovie(movie) {

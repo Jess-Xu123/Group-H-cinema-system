@@ -27,6 +27,7 @@ import HallsPage from "./pages/admin/HallsPage";
 import UsersPage from "./pages/admin/UsersPage";
 import SettingPage from "./pages/admin/SettingPage";
 import BookingsPage from "./pages/admin/BookingsPage";
+import AdminShowtimesPage from "./pages/admin/AdminShowtimesPage";
 
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -66,6 +67,7 @@ function App() {
             <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<SettingPage />} />
             <Route path="bookings" element={<BookingsPage />} />
+            <Route path="showtimes" element={<AdminShowtimesPage />} />
           </Route>
         </Routes>
       </div>
