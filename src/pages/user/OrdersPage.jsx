@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { createCheckoutSession } from "../../api/paymentApi";
 import { Link } from "react-router-dom";
-import { getMyBookings } from "../../api/bookingApi";
+import {
+  getMyBookings,
+  cancelReservation,
+} from "../../api/bookingApi";
 import "../../css/user/OrdersPage.css";
 
 const filters = [
@@ -37,6 +40,10 @@ export default function OrdersPage() {
 
   const [payingBookingId, setPayingBookingId] = useState(null);
   const [paymentError, setPaymentError] = useState("");
+
+  const [cancellingBookingId, setCancellingBookingId] = useState(null);
+  const [cancellationError, setCancellationError] = useState("");
+  const [cancellationSuccess, setCancellationSuccess] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -126,6 +133,42 @@ export default function OrdersPage() {
     } catch (error) {
       setPaymentError(error.message);
       setPayingBookingId(null);
+    }
+  }
+
+  async function handleCancelReservation(booking) {
+    const confirmed = window.confirm(
+      `Are you sure you want to cancel your reservation for ${booking.movie_title}?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setCancellingBookingId(booking.booking_id);
+      setCancellationError("");
+      setCancellationSuccess("");
+      setPaymentError("");
+
+      const result = await cancelReservation(booking.booking_id);
+
+      // Update the booking status without reloading the page.
+      setBookings((previousBookings) =>
+        previousBookings.map((item) =>
+          item.booking_id === booking.booking_id
+            ? { ...item, status: result.status }
+            : item
+        )
+      );
+
+      setCancellationSuccess(
+        result.status === "cancelled"
+          ? "Your reservation has been cancelled successfully."
+          : "Your reservation has expired. The seats have been released."
+      );
+    } catch (error) {
+      setCancellationError(error.message);
+    } finally {
+      setCancellingBookingId(null);
     }
   }
 
@@ -350,17 +393,51 @@ export default function OrdersPage() {
               </p>
             )}
 
+            {cancellationError && (
+              <p className="booking-error">
+                {cancellationError}
+              </p>
+            )}
+
+            {cancellationSuccess && (
+              <p className="booking-success">
+                {cancellationSuccess}
+              </p>
+            )}
+
             {selectedBooking.status === "reserved_unpaid" ? (
-              <button
-                type="button"
-                className="summary-ticket-button"
-                onClick={() => handlePayNow(selectedBooking)}
-                disabled={payingBookingId === selectedBooking.booking_id}
-              >
-                {payingBookingId === selectedBooking.booking_id
-                  ? "Redirecting to payment..."
-                  : `Pay Now · €${Number(selectedBooking.total_amount).toFixed(2)}`}
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="summary-ticket-button"
+                  onClick={() => handlePayNow(selectedBooking)}
+                  disabled={
+                    payingBookingId === selectedBooking.booking_id ||
+                    cancellingBookingId === selectedBooking.booking_id
+                  }
+                >
+                  {payingBookingId === selectedBooking.booking_id
+                    ? "Redirecting to payment..."
+                    : `Pay Now · €${Number(selectedBooking.total_amount).toFixed(2)}`}
+                </button>
+
+                {selectedBooking.expires_at &&
+                  new Date(selectedBooking.expires_at) > new Date() && (
+                    <button
+                      type="button"
+                      className="summary-cancel-button"
+                      onClick={() => handleCancelReservation(selectedBooking)}
+                      disabled={
+                        cancellingBookingId === selectedBooking.booking_id ||
+                        payingBookingId === selectedBooking.booking_id
+                      }
+                    >
+                      {cancellingBookingId === selectedBooking.booking_id
+                        ? "Cancelling..."
+                        : "Cancel Reservation"}
+                    </button>
+                  )}
+              </>
             ) : (
               <button
                 type="button"
