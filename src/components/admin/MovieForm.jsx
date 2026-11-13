@@ -109,9 +109,9 @@ function MovieForm({
         banner_ad_url: m.banner_ad_url || prev.banner_ad_url,
       }));
 
-      setSuccess(result.message || "Movie imported and cached from external API.");
+      setSuccess("Movie details loaded from TMDB. Complete the form and click Add Movie to save.");
     } catch (err) {
-      setError(`⚠️ Outage / Fallback Warning: ${err.message}`);
+      setError(` Outage / Fallback Warning: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -125,7 +125,7 @@ function MovieForm({
       setSearchResults(results);
       if (results.length === 0) setError("No matching movies found on TMDB.");
     } catch (err) {
-      setError(`⚠️ Outage Warning: ${err.message}`);
+      setError(` Outage Warning: ${err.message}`);
     } finally {
       setIsSearching(false);
     }
@@ -156,13 +156,14 @@ function MovieForm({
         banner_ad_url: m.banner_ad_url || prev.banner_ad_url,
       }));
 
-      setSuccess(result.message || "Movie data imported from TMDB! Enter base price and save.");
+      setSuccess("Movie details loaded from TMDB. Enter base price and click Add Movie to save.");
     } catch (err) {
-      setError(`⚠️ Outage / Fallback Warning: ${err.message}`);
+      setError(` Outage / Fallback Warning: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   }
+
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -192,32 +193,32 @@ function MovieForm({
         external_api_id: formData.external_api_id.trim() || null,
         duration_min: Number(formData.duration_min),
         base_price:
-          formData.base_price === "" ? null : Number(formData.base_price),
+          formData.base_price === ""
+            ? null
+            : Number(formData.base_price),
       };
 
-    if (editingMovie) {
-        const result = await updateMovie(editingMovie.id, formData);
+      if (editingMovie) {
+        const result = await updateMovie(
+          editingMovie.id,
+          movieData
+        );
 
         setSuccess("Movie updated successfully.");
 
         if (onMovieUpdated) {
-            onMovieUpdated(result.movie);
+          onMovieUpdated(result.movie);
         }
-    } else {
-        const result = await addMovie(formData);
+      } else {
+        const result = await addMovie(movieData);
 
         setSuccess("Movie added successfully.");
 
         if (onMovieAdded) {
-            onMovieAdded(result.movie);
+          onMovieAdded(result.movie);
         }
-    }
 
-      setSuccess("Movie added successfully!");
-      setFormData(initialFormData);
-
-      if (onMovieAdded) {
-        onMovieAdded(result.movie);
+        setFormData(initialFormData);
       }
     } catch (err) {
       setError(err.message);
@@ -225,6 +226,7 @@ function MovieForm({
       setIsLoading(false);
     }
   }
+
 
   return (
     <form onSubmit={handleSubmit} className="movie-form">
@@ -304,7 +306,7 @@ function MovieForm({
       </div>
 
       <div className="form-group">
-        <label htmlFor="base_price">Base Price</label>
+        <label htmlFor="base_price">Base Price *</label>
         <input
           id="base_price"
           name="base_price"
@@ -314,6 +316,7 @@ function MovieForm({
           value={formData.base_price}
           onChange={handleChange}
           placeholder="e.g. 12.50"
+          required
         />
       </div>
 

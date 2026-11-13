@@ -2,6 +2,7 @@ const express = require("express");
 const pool = require("../config/db");
 
 const router = express.Router();
+
 router.get("/movies/search", async (req, res) => {
   const { q } = req.query;
   if (!q || !q.trim()) {
@@ -45,7 +46,6 @@ router.post("/movies/import", async (req, res) => {
       const apiRes = await fetch(url, { signal: AbortSignal.timeout(4000) });
       if (!apiRes.ok) throw new Error("External API error");
       const data = await apiRes.json();
-
       const trailer = data.videos?.results?.find(
         (v) => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
       );
@@ -63,8 +63,12 @@ router.post("/movies/import", async (req, res) => {
           ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
           : "https://placehold.co/300x450?text=Poster",
         trailer_url: trailerUrl,
+        banner_ad_url: data.backdrop_path
+          ? `https://image.tmdb.org/t/p/original${data.backdrop_path}`
+          : "",
       };
-    } catch {
+    } catch (error) {
+      console.error("[MOVIE IMPORT] TMDB import failed:", error.message);
       isFallback = true;
     }
   }
@@ -83,51 +87,18 @@ router.post("/movies/import", async (req, res) => {
       genre: manual_data.genre || "General",
       poster_url: manual_data.poster_url || "https://placehold.co/300x450?text=Poster",
       trailer_url: manual_data.trailer_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      banner_ad_url: manual_data.banner_ad_url || "",
     };
   }
 
-  const query = `
-    INSERT INTO movies (
-      external_api_id, 
-      title, 
-      description, 
-      duration_min, 
-      genre, 
-      age_rating, 
-      poster_url, 
-      trailer_url, 
-      banner_ad_url, 
-      is_published
-    ) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, FALSE) 
-    RETURNING *;
-  `;
+    return res.status(200).json({
+    message: isFallback
+      ? "Movie details loaded using manual fallback."
+      : "Movie details fetched successfully from TMDB.",
+    isFallback,
+    movie: moviePayload,
+  });
 
-  const values = [
-    moviePayload.external_api_id,
-    moviePayload.title,
-    moviePayload.description,
-    moviePayload.duration_min,
-    moviePayload.genre,
-    "S",
-    moviePayload.poster_url,
-    moviePayload.trailer_url,
-    "https://placehold.co/800x200?text=Ad"
-  ];
-
-  try {
-    const { rows } = await pool.query(query, values);
-
-    const message = isFallback
-      ? "Movie saved locally via offline fallback."
-      : "Movie imported and cached from external API.";
-    return res.status(201).json({ message, isFallback, movie: rows[0] });
-  } catch (dbErr) {
-    if (dbErr.code === "23505") {
-      return res.status(409).json({ error: "This movie has already been imported into the database." });
-    }
-    return res.status(500).json({ error: "Failed to save movie", details: dbErr.message });
-  }
 });
 
 module.exports = router;
