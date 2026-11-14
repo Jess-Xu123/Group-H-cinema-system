@@ -130,7 +130,8 @@
 .booking-flow-movie-title {
   margin: 16px 0 0;
   color: var(--rio-text-bright);
-  font-size: 14px;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .booking-seat-panel {

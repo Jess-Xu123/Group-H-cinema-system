@@ -121,8 +121,8 @@
 .booking-order-empty,
 .booking-order-guidance {
   color: var(--rio-text-muted);
-  font-size: 10px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.8;
 }
 
 .booking-order-empty {

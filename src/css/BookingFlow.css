@@ -15,7 +15,7 @@
 
 .booking-back-link {
   color: var(--rio-text-muted);
-  font-size: 11px;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -37,7 +37,7 @@
   align-items: center;
   gap: 8px;
   color: var(--rio-text-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .booking-progress-number {
@@ -81,6 +81,12 @@
   font-weight: 400;
   line-height: 1.08;
 }
+.booking-flow-heading .booking-flow-screening-meta {
+  color: #9ca3af;
+  font-size: 14px;
+  line-height: 2;
+  text-align: right;
+}
 
 .checkout-heading-meta {
   display: flex;
@@ -93,8 +99,8 @@
 
 .checkout-heading-meta .booking-flow-screening-meta {
   margin: 0;
-  color: var(--rio-text-muted);
-  font-size: 0.75rem;
+  color: var(--rio-text-muted) !important;
+  font-size: 13px;
   line-height: 1.4;
 }
 
@@ -385,7 +391,7 @@
 
   .checkout-heading-meta .booking-flow-screening-meta {
     margin: 0;
-    font-size: 0.6875rem;
+    font-size: 13px;
     line-height: 1.4;
     text-align: left;
     white-space: normal;

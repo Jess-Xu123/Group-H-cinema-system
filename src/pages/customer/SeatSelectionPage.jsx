@@ -17,6 +17,12 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+// time for opening door and ad info
+function formatOffsetTime(value, offsetMinutes) {
+  const date = new Date(new Date(value).getTime() + offsetMinutes * 60 * 1000);
+  return formatTime(date);
+}
+
 // Unique seat key
 function seatKey(row, seat) {
   return `${row}-${seat}`;
@@ -169,6 +175,9 @@ export default function SeatSelectionPage() {
                   }).format(new Date(screening.start_time))}
                 {" · "}
                 {formatTime(screening.start_time)} · {screening.hall_name}
+                <br />
+                Door opens at {formatOffsetTime(screening.start_time, -35)} ·
+                Ads {formatOffsetTime(screening.start_time, -20)}
               </p>
             </header>
 
@@ -335,9 +344,9 @@ export default function SeatSelectionPage() {
                     No account needed to purchase. Seats are held for up to 15
                     minutes during payment.
                     <br />
-                    Reserve &amp; pay later: login required. Claim by 16:00 for
-                    this 18:00 show, or the reservation is released. Unpaid
-                    reservations can be cancelled.
+                    Reserve &amp; pay later: login required. Claim your tickets
+                    2 hours before the movie starts, or the reservation is
+                    released. Unpaid reservations can be cancelled.
                     <br />
                     If a show is full, join the waiting list for availability
                     alerts.
