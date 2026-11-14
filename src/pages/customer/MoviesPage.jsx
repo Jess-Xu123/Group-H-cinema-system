@@ -137,6 +137,12 @@ export default function MoviesPage() {
           >
             Coming Soon
           </button>
+          <p className="movies-showtimes-link">
+            Discover films · For times, visit{" "}
+            <Link to="/showtimes" state={{ city: selectedCity }}>
+              Showtimes →
+            </Link>
+          </p>
         </nav>
 
         <section className="movies-results" aria-live="polite">
