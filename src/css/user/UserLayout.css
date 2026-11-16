@@ -34,11 +34,13 @@
 
 .user-layout .rio-footer {
   padding: 0;
+  min-height: 0;
   border-top: 1px solid #ded8cd;
   background: #f5f2ec;
 }
 
-.user-layout .rio-footer .footer-top-row {
+.user-layout .rio-footer .footer-top-row,
+.user-layout .rio-footer .footer-location-grid {
   display: none;
 }
 

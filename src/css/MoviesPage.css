@@ -9,7 +9,7 @@
 /* Page heading */
 .movies-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 32px;
   margin-bottom: 48px;
@@ -50,58 +50,51 @@
 /* Cinema selector */
 .movies-cinema-selector {
   flex: 0 0 auto;
-  min-width: 190px;
-  padding: 13px 15px 14px;
-  border: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.12));
-  border-radius: 6px;
-  background: var(--rio-surface-dark, #171717);
 }
 
 .movies-selector-label {
   display: block;
-  margin-bottom: 9px;
-  color: var(--rio-text-muted, #aaa39a);
+  margin-bottom: 8px;
+  color: var(--rio-text-muted);
   font-family: "Inter", sans-serif;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
 }
 
 .movies-city-options {
   display: flex;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 3px;
+  border: 1px solid var(--rio-border-subtle);
   border-radius: 4px;
-  background: #090909;
+  background: var(--rio-surface-dark);
 }
 
 .movies-city-button {
-  flex: 1;
-  min-height: 34px;
-  padding: 7px 12px;
-  border: 1px solid transparent;
+  min-width: 88px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
   border-radius: 3px;
   background: transparent;
-  color: var(--rio-text-muted, #aaa39a);
+  color: var(--rio-text-muted);
   cursor: pointer;
-  font-family: "Inter", sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+  font: inherit;
+  font-size: 12px;
 }
 
 .movies-city-button:hover:not(.is-active) {
-  color: var(--rio-text-bright, #f3ede1);
+  color: var(--rio-text-bright);
 }
 
 .movies-city-button.is-active {
-  border-color: rgba(227, 183, 87, 0.35);
   background: var(--rio-gold, #e3b757);
-  color: #17130b;
+  color: var(--rio-bg-dark);
+  font-weight: 600;
+}
+
+.movies-city-button:focus-visible {
+  outline: 2px solid var(--rio-gold);
+  outline-offset: 3px;
 }
 
 /* Category tabs */
@@ -189,15 +182,15 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  padding: 6px 9px;
-  border: 1px solid rgba(227, 183, 87, 0.55);
-  border-radius: 2px;
-  background: rgba(12, 11, 9, 0.88);
-  color: var(--rio-gold, #e3b757);
+  padding: 7px 11px;
+  border-radius: 4px;
+  background: var(--rio-red, #d14553);
+  color: #ffffff;
   font-family: "Inter", sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.1px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(209, 69, 83, 0.4);
   text-transform: uppercase;
 }
 
@@ -207,6 +200,24 @@
   flex-direction: column;
   align-items: flex-start;
   padding-top: 14px;
+}
+
+.movies-showtimes-link {
+  align-self: flex-end;
+  margin: 0 0 13px auto;
+  color: var(--rio-text-muted, #aaa39a);
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.movies-showtimes-link a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.movies-showtimes-link a:hover {
+  color: var(--rio-gold, #e3b757);
 }
 
 .movies-card-genre {
@@ -311,6 +322,7 @@
 @media (max-width: 760px) {
   .movies-header {
     flex-direction: column;
+    align-items: flex-start;
     gap: 24px;
     margin-bottom: 38px;
   }
@@ -349,8 +361,16 @@
   }
 
   .movies-tabs {
+    flex-wrap: wrap;
     gap: 24px;
     margin-bottom: 26px;
+  }
+
+  .movies-showtimes-link {
+    flex-basis: 100%;
+    margin: 0 0 12px;
+    text-align: right;
+    white-space: normal;
   }
 
   .movies-tab {

@@ -231,14 +231,15 @@ export default function MovieDetailPage() {
                   {movie.duration_min && <span>{movie.duration_min} min</span>}
                   <span>{movie.age_rating}</span>
                 </div>
+                <div className="movie-detail-about">
+                  <h2>About the movie</h2>
+                  <p>{movie.description}</p>
+                </div>
               </div>
             </section>
 
             <div className="movie-detail-content">
               <section className="movie-detail-copy">
-                <h2>About the movie</h2>
-                <p>{movie.description}</p>
-
                 <dl className="movie-detail-facts">
                   <div>
                     <dt>GENRE</dt>
@@ -253,6 +254,19 @@ export default function MovieDetailPage() {
                     <dd>{movie.age_rating}</dd>
                   </div>
                 </dl>
+
+                <section
+                  className="movie-age-warning"
+                  aria-label="Age restriction warning"
+                >
+                  <h2>Age restriction · {movie.age_rating}</h2>
+                  <p>
+                    This film is rated {movie.age_rating}. Please ensure
+                    everyone in your booking meets the age requirement. Ages
+                    will be verified at the auditorium entrance during
+                    check-in.
+                  </p>
+                </section>
 
                 <section className="movie-trailer">
                   <h2>Trailer</h2>

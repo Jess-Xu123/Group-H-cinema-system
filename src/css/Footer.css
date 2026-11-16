@@ -2,87 +2,115 @@
 
 .rio-footer {
   width: 100%;
-  padding: 60px 0 30px;
+  min-height: 292px;
+  padding: 32px 0 20px;
   border-top: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
   background-color: var(--rio-bg-dark, #0b0b11);
 }
 
-.footer-top-row {
+.rio-footer.booking-footer {
+  padding: 0;
+  min-height: 0;
+}
+
+.rio-footer-content {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 40px;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.footer-top-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 48px;
+  min-height: 160px;
+}
+
+.footer-brand {
+  min-width: 0;
+  padding-top: 20px;
 }
 
 .rio-logo-footer {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.rio-logo-footer .logo-rio {
-  font-family: "Oswald", sans-serif;
-  font-size: 64px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -1.5px;
-  color: var(--rio-text-bright, #ffffff);
-}
-
-.rio-logo-footer .logo-dot {
-  color: var(--rio-gold);
-  font-family: "Oswald", sans-serif;
-  font-size: 36px;
-  font-weight: 600;
-  line-height: 1.1;
-}
-
-.rio-logo-footer .logo-cinema {
-  font-family: "Inter", sans-serif;
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: 6px;
-  line-height: 1;
-  color: var(--rio-text-bright, #ffffff);
+  display: block;
+  width: 106px;
+  height: 78px;
+  object-fit: contain;
 }
 
 .footer-tagline {
+  margin: 6px 0 0;
   font-size: 12px;
   color: var(--rio-text-muted, #9ca3af);
-  margin-top: 8px;
 }
 
-.footer-links-group {
-  display: flex;
-  gap: 60px;
-}
-
-.footer-col h5 {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+.footer-section-title {
+  margin: 0 0 18px;
   color: var(--rio-text-muted, #9ca3af);
-  margin-bottom: 12px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-align: left;
 }
 
-.footer-col a {
-  display: block;
-  font-size: 13px;
-  color: #ffffff;
-  text-decoration: none;
-  margin-bottom: 8px;
-  transition: color 0.2s;
+.footer-location-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
 }
 
-.footer-col a:hover {
+.footer-location {
+  min-width: 0;
+}
+
+.footer-location h3 {
+  margin: 0 0 8px;
   color: var(--rio-gold, #e3b757);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.footer-location address {
+  color: var(--rio-text-bright, #ffffff);
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.footer-location address p {
+  margin: 0 0 4px;
+}
+
+.footer-location address a {
+  color: var(--rio-text-muted, #9ca3af);
+  text-decoration: none;
+}
+
+.footer-location address a:hover {
+  color: var(--rio-gold, #e3b757);
+}
+
+.footer-auditorium-count {
+  margin: 7px 0 0;
+  color: var(--rio-text-muted, #9ca3af);
+  font-size: 11px;
+}
+
+.footer-capacities {
+  margin: 3px 0 0;
+  color: var(--rio-text-muted, #9ca3af);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .footer-bottom-row {
   display: flex;
   justify-content: space-between;
-  padding-top: 24px;
+  gap: 20px;
+  padding-top: 18px;
   border-top: 1px solid var(--rio-border-subtle, rgba(255, 255, 255, 0.08));
   font-size: 11px;
   color: var(--rio-text-muted, #9ca3af);
@@ -99,10 +127,32 @@
 
 @media (max-width: 768px) {
   .rio-footer {
-    padding: 40px 0 20px;
+    min-height: 0;
   }
+
   .footer-top-row {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    min-height: 0;
+  }
+
+  .footer-brand {
+    padding-top: 0;
+  }
+
+  .footer-location-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-location-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .footer-bottom-row {
     flex-direction: column;
-    gap: 30px;
+    gap: 10px;
   }
 }

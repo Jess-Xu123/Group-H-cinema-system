@@ -27,9 +27,11 @@ export default function Navbar({ currentLocation, onLocationChange }) {
     <nav className="rio-navbar">
       <div className="rio-container rio-navbar-content">
         <Link className="rio-logo" to="/" aria-label="RIO Cinema home">
-          <span className="rio-logo-main">RIO</span>
-          <span className="logo-dot">.</span>
-          <span className="rio-logo-name">CINEMA</span>
+          <img
+            className="rio-logo-image"
+            src="/assets/rio-marquee-logo.png"
+            alt=""
+          />
         </Link>
 
         <div className="rio-nav-links" aria-label="Main navigation">
