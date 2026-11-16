@@ -213,6 +213,60 @@ async function getAdminBookings(req, res) {
   }
 }
 
+// GET /api/bookings/loyalty-rewards
+// return user's currently available half-price rewards
+async function getLoyaltyRewards(req, res) {
+  try {
+    const userId = req.user.userId;
+    const result = await pool.query(
+      `
+        SELECT
+          u.paid_tickets_count,
+          FLOOR(u.paid_tickets_count / 10.0)::int AS earned_rewards,
+          COUNT(*) FILTER (
+            WHERE bs.id IS NOT NULL AND b.status = 'paid'
+          )::int AS redeemed_rewards,
+          COUNT(*) FILTER (
+            WHERE bs.id IS NOT NULL
+              AND b.status IN ('checkout_locked', 'reserved_unpaid')
+              AND b.expires_at > NOW()
+          )::int AS reserved_rewards
+        FROM users u
+        LEFT JOIN bookings b ON b.user_id = u.id
+        LEFT JOIN booked_seats bs
+          ON bs.booking_id = b.id
+         AND bs.ticket_type = 'loyalty_10th'
+         AND bs.released_at IS NULL
+        WHERE u.id = $1
+        GROUP BY u.id
+      `,
+      [userId]
+    );
+
+    const row = result.rows[0];
+    if (!row) {
+      return res.status(404).json({ message: "User account not found." });
+    }
+
+    const earned = Number(row.earned_rewards);
+    const redeemed = Number(row.redeemed_rewards);
+    const reserved = Number(row.reserved_rewards);
+
+    return res.status(200).json({
+      paid_tickets_count: Number(row.paid_tickets_count),
+      earned_rewards: earned,
+      redeemed_rewards: redeemed,
+      reserved_rewards: reserved,
+      available_rewards: Math.max(0, earned - redeemed - reserved),
+    });
+  } catch (error) {
+    console.error("Get loyalty rewards error:", error);
+    return res.status(500).json({
+      message: "Unable to retrieve loyalty rewards.",
+    });
+  }
+}
+
 // POST /api/bookings/hold
 // Price is calculated from movies.base_price; frontend seat_price is ignored.
 // Until ticket-specific pricing is agreed, every ticket type uses base_price.
@@ -266,15 +320,33 @@ async function holdSeats(req, res) {
 
     let customerEmail;
     let userId = null;
+    let paidTicketsCount = 0;
 
     if (req.user?.userId) {
       userId = req.user.userId;
-      customerEmail = await getUserEmail(client, userId);
 
-      if (!customerEmail) {
+      // Lock the user row to prevent concurrent reward redemption
+      const userResult = await client.query(
+        `
+        SELECT email, paid_tickets_count
+        FROM users
+        WHERE id = $1
+        FOR UPDATE
+        `,
+        [userId]
+      );
+
+      const user = userResult.rows[0];
+
+      if (!user) {
         await client.query("ROLLBACK");
-        return res.status(401).json({ message: "Your account could not be verified." });
+        return res.status(401).json({
+          message: "Your account could not be verified.",
+        });
       }
+
+      customerEmail = user.email;
+      paidTicketsCount = Number(user.paid_tickets_count);
     } else {
       customerEmail = String(req.body?.customer_email || "").trim().toLowerCase();
 
@@ -295,8 +367,87 @@ async function holdSeats(req, res) {
       return res.status(400).json({ message: validationError.message });
     }
 
-    const unitPrice = Number(showtime.base_price);
-    const totalAmount = unitPrice * normalizedSeats.length;
+    // Convert the movie's base price into cents to avoid floating-point issues.
+    const basePriceCents = Math.round(Number(showtime.base_price) * 100);
+
+    const loyaltySeatsCount = normalizedSeats.filter(
+      (seat) => seat.ticket_type === "loyalty_10th"
+    ).length;
+
+    // Loyalty rewards are only available to registered users.
+    if (loyaltySeatsCount > 0 && !userId) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "You must log in to use a loyalty reward.",
+      });
+    }
+
+    // Calculate the number of rewards already used or reserved.
+    if (loyaltySeatsCount > 0) {
+      const rewardUsageResult = await client.query(
+        `
+        SELECT
+          COUNT(*) FILTER (
+            WHERE b.status = 'paid'
+          )::int AS redeemed_count,
+
+          COUNT(*) FILTER (
+            WHERE bs.id IS NOT NULL
+              AND b.status IN ('checkout_locked', 'reserved_unpaid')
+              AND b.expires_at > NOW()
+          )::int AS reserved_count
+
+        FROM booked_seats bs
+        JOIN bookings b ON b.id = bs.booking_id
+        WHERE b.user_id = $1
+          AND bs.ticket_type = 'loyalty_10th'
+          AND bs.released_at IS NULL
+        `,
+        [userId]
+      );
+
+      const redeemedCount = rewardUsageResult.rows[0].redeemed_count;
+      const reservedCount = rewardUsageResult.rows[0].reserved_count;
+
+      const earnedRewards = Math.floor(paidTicketsCount / 10);
+
+      const availableRewards =
+        earnedRewards - redeemedCount - reservedCount;
+
+      if (loyaltySeatsCount > availableRewards) {
+        await client.query("ROLLBACK");
+        return res.status(409).json({
+          message: `You only have ${Math.max(0, availableRewards)} loyalty reward(s) available.`,
+        });
+      }
+    }
+
+    // Calculate the price of every selected seat.
+    const seatsWithPrices = normalizedSeats.map((seat) => {
+      let priceCents = basePriceCents;
+
+      if (
+        seat.ticket_type === "child_under_12" ||
+        seat.ticket_type === "loyalty_10th"
+      ) {
+        priceCents = Math.round(basePriceCents / 2);
+      }
+
+      return {
+        ...seat,
+        seatPrice: (priceCents / 100).toFixed(2),
+        priceCents,
+      };
+    });
+
+    // Calculate the total booking amount.
+    const totalAmountCents = seatsWithPrices.reduce(
+      (total, seat) => total + seat.priceCents,
+      0
+    );
+
+    const totalAmount = (totalAmountCents / 100).toFixed(2);
+
     const guestToken = userId ? null : crypto.randomBytes(32).toString("hex");
     const guestTokenHash = guestToken ? hashGuestToken(guestToken) : null;
 
@@ -317,14 +468,14 @@ async function holdSeats(req, res) {
         userId,
         showtimeId,
         customerEmail,
-        totalAmount.toFixed(2),
+        totalAmount,
         guestTokenHash,
       ]
     );
 
     const booking = bookingResult.rows[0];
 
-    for (const seat of normalizedSeats) {
+    for (const seat of seatsWithPrices) {
       await client.query(
         `
         INSERT INTO booked_seats (
@@ -339,7 +490,7 @@ async function holdSeats(req, res) {
           seat.row_number,
           seat.seat_number,
           seat.ticket_type,
-          unitPrice.toFixed(2),
+          seat.seatPrice,
         ]
       );
     }
@@ -667,12 +818,16 @@ async function markBookingPaidInTransaction(client, bookingId, stripePaymentId =
 
   if (paidBooking.user_id) {
     const countResult = await client.query(
-      `SELECT COUNT(*)::int AS count
-       FROM booked_seats
-       WHERE booking_id = $1 AND released_at IS NULL`,
+      `
+      SELECT COUNT(*)::int AS count
+      FROM booked_seats
+      WHERE booking_id = $1
+        AND released_at IS NULL
+        AND ticket_type != 'loyalty_10th'
+      `,
       [bookingId]
     );
-
+    
     await client.query(
       `UPDATE users
        SET paid_tickets_count = paid_tickets_count + $1
@@ -816,6 +971,7 @@ async function markBookingPaidFromVerifiedStripe(
 module.exports = {
   getMyBookings,
   getAdminBookings,
+  getLoyaltyRewards,
   holdSeats,
   reserveBooking,
   releaseBookingHold,

@@ -8,6 +8,7 @@ const {
   releaseBookingHold,
   cancelReservation,
   confirmOfflinePayment,
+  getLoyaltyRewards,
 } = require("../controllers/bookingController");
 
 const {
@@ -28,6 +29,7 @@ router.get(
 );
 
 router.post("/hold", optionalAuthMiddleware, holdSeats);
+router.get("/loyalty-rewards", authMiddleware, getLoyaltyRewards);
 router.post("/:id/reserve", authMiddleware, reserveBooking);
 router.delete("/:id/hold", optionalAuthMiddleware, releaseBookingHold);
 router.post("/:id/cancel", authMiddleware, cancelReservation);

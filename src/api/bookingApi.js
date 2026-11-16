@@ -29,6 +29,35 @@ export async function getMyBookings(signal) {
   return result.bookings || [];
 }
 
+
+// Get the logged-in user's loyalty reward balance.
+export async function getLoyaltyRewards(signal) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/bookings/loyalty-rewards`, {
+      method: "GET",
+      credentials: "include",
+      signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") throw error;
+    throw new Error("Unable to connect to the cinema server.", {
+      cause: error,
+    });
+  }
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message || `Unable to retrieve loyalty rewards (${response.status}).`
+    );
+  }
+
+  return result;
+}
+
 export async function holdBookingSeats({ showtime_id, seats, customer_email }) {
   const formattedSeats = seats.map((s) => ({
     row_number: Number(s.row_number ?? s.row),
