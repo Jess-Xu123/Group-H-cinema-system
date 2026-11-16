@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
-import { getShowtimeSeats } from "../../api/cinemaApi";
+import { getShowtimeSeats, joinShowtimeWaitlist } from "../../api/cinemaApi";
 import "../../css/Showtimes.css";
 import "../../css/BookingPanels.css";
 import "../../css/SeatSelection.css";
@@ -43,6 +43,9 @@ export default function SeatSelectionPage() {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loadedShowtimeId, setLoadedShowtimeId] = useState(null);
   const [error, setError] = useState(null);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistLoading, setWaitlistLoading] = useState(false); 
+  const [waitlistStatus, setWaitlistStatus] = useState(null); 
   const isLoading = loadedShowtimeId !== showtimeId;
   const currentError = error?.showtimeId === showtimeId ? error.message : "";
 
@@ -121,6 +124,33 @@ export default function SeatSelectionPage() {
         total,
       },
     });
+  }
+
+  const hasOpenSeat = screening
+    ? Array.from({ length: Number(screening.total_rows) }, (_, i) => i + 1)
+        .filter((row) => row !== 13)
+        .some((row) =>
+          getSeatNumbers(row, Number(screening.seats_per_row)).some((_, idx) => {
+            const pos = idx + 1;
+            return !occupiedKeys.has(seatKey(row, pos)) && !(row === 1 && pos === 1);
+          }),
+        )
+    : true;
+  const isSoldOut = Boolean(screening && !hasOpenSeat);
+
+  async function handleJoinWaitlist(event) {
+    event.preventDefault();
+    setWaitlistLoading(true);
+    setWaitlistStatus(null);
+    try {
+      const result = await joinShowtimeWaitlist(showtimeId, waitlistEmail); 
+      setWaitlistStatus({ type: "success", text: result.message });
+      setWaitlistEmail("");
+    } catch (err) {
+      setWaitlistStatus({ type: "error", text: err.message });
+    } finally {
+      setWaitlistLoading(false); 
+    }
   }
 
   return (
@@ -314,6 +344,33 @@ export default function SeatSelectionPage() {
                 >
                   Continue to checkout <span aria-hidden="true">→</span>
                 </button>
+
+                {isSoldOut && (
+                  <div className="waitlist-box" style={{ marginTop: "1rem" }}>
+                    <h3>Screening Full — Join Waitlist</h3>
+                    <p>Enter your email to get an alert if a seat opens up.</p>
+                    <form onSubmit={handleJoinWaitlist}>
+                      <input
+                        type="email"
+                        required
+                        placeholder="you@example.com"
+                        value={waitlistEmail}
+                        onChange={(e) => setWaitlistEmail(e.target.value)}
+                      />
+                      <button
+                        className="movie-select-seats"
+                        type="submit"
+                        disabled={waitlistLoading}
+                      >
+                        {waitlistLoading ? "Joining..." : "Join Waitlist"}
+                      </button>
+                    </form>
+                    {waitlistStatus && (
+                      <p role="status">{waitlistStatus.text}</p>
+                    )}
+                  </div>
+                )}
+                
 
                 {/* Reminder in the summary section */}
                 <div className="booking-order-guidance">

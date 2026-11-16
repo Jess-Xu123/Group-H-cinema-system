@@ -87,7 +87,7 @@ router.get("/:id/seats", async (req, res) => {
          AND expires_at <= NOW();`,
       [showtimeId]
     );
-    
+
     const screeningQuery = `
       SELECT
         s.id AS showtime_id,
@@ -128,15 +128,63 @@ router.get("/:id/seats", async (req, res) => {
       ORDER BY bs.row_number, bs.seat_number;
     `;
     const bookedSeatsResult = await pool.query(bookedSeatsQuery, [showtimeId]);
+    
+    const takenRegularSeats = bookedSeatsResult.rows.filter(
+          (seat) => seat.row_number > 0
+        ).length;
+    const isSoldOut = takenRegularSeats >= rows[0].capacity - 1;
 
-    return res.json({
-      screening: rows[0],
-      bookedSeats: bookedSeatsResult.rows,
-    });
+        return res.json({
+          screening: rows[0],
+          bookedSeats: bookedSeatsResult.rows,
+          isSoldOut,
+        });
   } catch (err) {
     console.error("Failed to fetch seat map:", err);
     return res.status(500).json({ error: "Failed to fetch seat map." });
   }
+});
+
+router.post("/:id/waitlist", async (req, res) => {
+  const showtimeId = Number(req.params.id);
+  const email = String(req.body.customer_email || "").trim().toLowerCase();
+
+  if (!Number.isInteger(showtimeId) || showtimeId < 1) {
+    return res.status(400).json({ error: "Showtime ID must be a positive integer." });
+  }
+  if (!email || !email.includes("@")) {
+    return res.status(400).json({ error: "A valid email address is required." });
+  }
+
+try {
+    const checkQuery = `
+      SELECT h.capacity, COUNT(bs.id) FILTER (WHERE bs.row_number > 0)::int AS taken_seats
+      FROM showtimes s JOIN halls h ON s.hall_id = h.id
+      LEFT JOIN bookings b ON b.showtime_id = s.id AND b.status IN ('paid', 'reserved_unpaid', 'checkout_locked') AND (b.expires_at IS NULL OR b.expires_at > NOW())
+      LEFT JOIN booked_seats bs ON bs.booking_id = b.id
+      WHERE s.id = $1 AND s.is_private_company = FALSE GROUP BY h.capacity;
+    `;
+    const { rows } = await pool.query(checkQuery, [showtimeId]);
+    if (rows.length === 0) return res.status(404).json({ error: "Showtime not found." });
+    if (rows[0].taken_seats < rows[0].capacity - 1) return res.status(400).json({ error: "Seats are still available." });
+
+    const insertResult = await pool.query(
+      `INSERT INTO premiere_waitlist (showtime_id, customer_email)
+       VALUES ($1, $2)
+       RETURNING id, showtime_id, customer_email, is_notified, created_at;`,
+      [showtimeId, email]
+    );
+
+    return res.status(201).json({
+      message: "Added to the waiting list.",
+      waitlistEntry: insertResult.rows[0],
+    });
+
+  } catch (err) {
+    if (err.code === "23505") return res.status(409).json({ error: "Already on the waiting list." });
+    return res.status(500).json({ error: "Failed to check availability." });
+  }
+
 });
 
 module.exports = router;

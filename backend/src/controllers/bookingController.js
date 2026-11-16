@@ -80,6 +80,25 @@ async function getUserEmail(client, userId) {
   return result.rows[0]?.email || null;
 }
 
+async function notifyWaitlistForShowtime(dbClient, showtimeId) {
+  const { rows } = await dbClient.query(
+    `UPDATE premiere_waitlist
+     SET is_notified = TRUE
+     WHERE showtime_id = $1
+       AND is_notified = FALSE
+     RETURNING id, customer_email;`,
+    [showtimeId]
+  );
+
+  if (rows.length > 0) {
+    console.log(
+      `[Waitlist Alert] Showtime #${showtimeId}: Notified ${rows.map((r) => r.customer_email).join(", ")}`
+    );
+  }
+
+  return rows;
+}
+
 // GET /api/bookings/my-bookings
 async function getMyBookings(req, res) {
   try {
@@ -525,6 +544,8 @@ async function releaseBookingHold(req, res) {
        WHERE booking_id = $1 AND released_at IS NULL`,
       [bookingId]
     );
+
+   await notifyWaitlistForShowtime(client, booking.showtime_id);
 
     await client.query("COMMIT");
     return res.status(200).json({

@@ -43,3 +43,17 @@ export function getShowtimes({ city, date } = {}, signal) {
 export function getShowtimeSeats(showtimeId, signal) {
   return getJson(`/api/showtimes/${showtimeId}/seats`, signal);
 }
+
+export async function joinShowtimeWaitlist(showtimeId, customerEmail) {
+  const response = await fetch(`${API_BASE_URL}/api/showtimes/${showtimeId}/waitlist`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customer_email: customerEmail }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || data.error || "Failed to join waitlist.");
+  }
+  return data;
+}
