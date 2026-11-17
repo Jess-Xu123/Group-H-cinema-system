@@ -29,7 +29,6 @@
   z-index: 1;
   pointer-events: none;
   background:
-    /* 上下渐变：顶部轻微遮罩防止 Navbar 混淆，底部平滑融入背景色 */
     linear-gradient(
       180deg,
       rgba(11, 11, 17, 0.5) 0%,
@@ -37,14 +36,13 @@
       rgba(11, 11, 17, 0.7) 80%,
       var(--rio-bg-dark, #0b0b11) 100%
     ),
-    /* 左右渐变：左侧 0%~35% 区域聚焦文字保护，45% 往右迅速过渡为高透光 */
     linear-gradient(
-        90deg,
-        rgba(11, 11, 17, 0.92) 0%,
-        rgba(11, 11, 17, 0.85) 35%,
-        rgba(11, 11, 17, 0.3) 65%,
-        rgba(11, 11, 17, 0.1) 100%
-      );
+      90deg,
+      rgba(11, 11, 17, 0.92) 0%,
+      rgba(11, 11, 17, 0.85) 35%,
+      rgba(11, 11, 17, 0.3) 65%,
+      rgba(11, 11, 17, 0.1) 100%
+    );
 }
 
 .hero-layout-container {
@@ -127,22 +125,19 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 2px;
-  color: var(
-    --rio-text-muted,
-    #9ca3af
-  ); /* 提升对比度，确保在暗色背景清晰可见 */
+  color: var(--rio-text-muted, #9ca3af);
   text-transform: uppercase;
 }
 
-/* 经典 Rio 品牌红点 */
+/* Hero slogan dot */
 .hero-slogan .red-dot {
   width: 6px;
   height: 6px;
-  background-color: var(--rio-red, #d14553); /* 调用 Rio 品牌红 */
+  background-color: var(--rio-red, #d14553);
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(209, 69, 83, 0.8); /* 增加微弱红色光晕 */
+  box-shadow: 0 0 8px rgba(209, 69, 83, 0.8);
 }
 
 @media (max-width: 900px) {
