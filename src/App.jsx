@@ -11,6 +11,7 @@ import MoviesPage from "./pages/customer/MoviesPage";
 import MovieDetailPage from "./pages/customer/MovieDetailPage";
 import SeatSelectionPage from "./pages/customer/SeatSelectionPage";
 import CheckoutPage from "./pages/customer/CheckoutPage";
+import PrivateScreeningPage from "./pages/customer/PrivateScreeningPage";
 
 import ProfilePage from "./pages/user/ProfilePage";
 import OrdersPage from "./pages/user/OrdersPage";
@@ -46,6 +47,10 @@ function App() {
           <Route path="/movies" element={<MoviesPage />} />
           <Route path="/seats/:showtimeId" element={<SeatSelectionPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route
+            path="/private-screenings"
+            element={<PrivateScreeningPage />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/booking-success" element={<BookingSuccessPage />} />
