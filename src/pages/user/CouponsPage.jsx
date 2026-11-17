@@ -53,6 +53,9 @@ function CouponsPage() {
   const availableRewards = Number(rewards?.available_rewards ?? 0);
   const redeemedRewards = Number(rewards?.redeemed_rewards ?? 0);
   const reservedRewards = Number(rewards?.reserved_rewards ?? 0);
+  const loyaltyDiscountPercent = Number(
+    rewards?.loyalty_ticket_discount_percent ?? 50
+  );
 
   return (
     <main className="coupons-page">
@@ -103,7 +106,7 @@ function CouponsPage() {
                     : "Start collecting tickets to earn your first reward."
                   : `${ticketsRemaining} more ${
                       ticketsRemaining === 1 ? "ticket" : "tickets"
-                    } until your next half-price reward.`}
+                    } until your next ${loyaltyDiscountPercent}%-off reward.`}
               </p>
 
               <div className="membership-reward-summary">
@@ -169,9 +172,9 @@ function CouponsPage() {
                       <p className="coupons-eyebrow">
                         RIO CINEMA MEMBERSHIP REWARD
                       </p>
-                      <h3>Half-Price Movie Ticket</h3>
+                      <h3>{loyaltyDiscountPercent}%-Off Movie Ticket</h3>
                       <p>
-                        Enjoy 50% off the base ticket price on one seat.
+                        Enjoy {loyaltyDiscountPercent}% off the base ticket price on one seat.
                       </p>
                     </div>
 
@@ -189,7 +192,7 @@ function CouponsPage() {
                     ? `${reservedRewards} reward${
                         reservedRewards === 1 ? " is" : "s are"
                       } currently being used in an unfinished booking.`
-                    : "Keep collecting paid movie tickets to earn your next half-price reward."}
+                    : "Keep collecting paid movie tickets to earn your next ${loyaltyDiscountPercent}%-off reward."}
                 </p>
               </div>
             )
@@ -199,7 +202,7 @@ function CouponsPage() {
                 <p className="coupons-eyebrow">
                   RIO CINEMA MEMBERSHIP REWARD
                 </p>
-                <h3>Half-Price Movie Tickets</h3>
+                <h3>{loyaltyDiscountPercent}%-Off Movie Tickets</h3>
                 <p>
                   You have redeemed {redeemedRewards} membership{" "}
                   {redeemedRewards === 1 ? "reward" : "rewards"}.
@@ -232,8 +235,8 @@ function CouponsPage() {
             paid movie ticket.
           </p>
           <p>
-            After every 10 paid tickets, you earn one half-price
-            ticket reward.
+            After every 10 paid tickets, you earn one ticket reward
+            with {loyaltyDiscountPercent}% off.
           </p>
           <p>
             Child and wheelchair tickets also count towards your

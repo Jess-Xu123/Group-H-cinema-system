@@ -34,6 +34,30 @@ function validId(value) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+// Read the current ticket discounts. The SQL migration seeds both keys with 50.
+// The fallback also keeps booking creation functional if a key is accidentally missing.
+async function getTicketDiscountSettings(dbClient = pool) {
+  const result = await dbClient.query(
+    `SELECT setting_key, setting_value
+     FROM system_settings
+     WHERE setting_key IN (
+       'child_ticket_discount_percent',
+       'loyalty_ticket_discount_percent'
+     )`
+  );
+
+  const values = Object.fromEntries(
+    result.rows.map((row) => [row.setting_key, Number(row.setting_value)])
+  );
+
+  return {
+    child_ticket_discount_percent: Number.isInteger(values.child_ticket_discount_percent)
+      ? values.child_ticket_discount_percent : 50,
+    loyalty_ticket_discount_percent: Number.isInteger(values.loyalty_ticket_discount_percent)
+      ? values.loyalty_ticket_discount_percent : 50,
+  };
+}
+
 function normalizeSeats(seats, hall) {
   if (!Array.isArray(seats) || seats.length === 0) {
     throw new Error("At least one seat must be selected.");
@@ -248,6 +272,7 @@ async function getLoyaltyRewards(req, res) {
       return res.status(404).json({ message: "User account not found." });
     }
 
+    const discountSettings = await getTicketDiscountSettings();
     const earned = Number(row.earned_rewards);
     const redeemed = Number(row.redeemed_rewards);
     const reserved = Number(row.reserved_rewards);
@@ -258,6 +283,7 @@ async function getLoyaltyRewards(req, res) {
       redeemed_rewards: redeemed,
       reserved_rewards: reserved,
       available_rewards: Math.max(0, earned - redeemed - reserved),
+      loyalty_ticket_discount_percent: discountSettings.loyalty_ticket_discount_percent,
     });
   } catch (error) {
     console.error("Get loyalty rewards error:", error);
@@ -422,16 +448,22 @@ async function holdSeats(req, res) {
       }
     }
 
-    // Calculate the price of every selected seat.
-    const seatsWithPrices = normalizedSeats.map((seat) => {
-      let priceCents = basePriceCents;
+    // Read the latest percentages inside this booking transaction.
+    const discountSettings = await getTicketDiscountSettings(client);
 
-      if (
-        seat.ticket_type === "child_under_12" ||
-        seat.ticket_type === "loyalty_10th"
-      ) {
-        priceCents = Math.round(basePriceCents / 2);
+    // Calculate every seat price on the server. Frontend prices are never trusted.
+    const seatsWithPrices = normalizedSeats.map((seat) => {
+      let discountPercent = 0;
+
+      if (seat.ticket_type === "child_under_12") {
+        discountPercent = discountSettings.child_ticket_discount_percent;
+      } else if (seat.ticket_type === "loyalty_10th") {
+        discountPercent = discountSettings.loyalty_ticket_discount_percent;
       }
+
+      const priceCents = Math.round(
+        basePriceCents * (100 - discountPercent) / 100
+      );
 
       return {
         ...seat,

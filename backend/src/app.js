@@ -12,9 +12,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const hallRoutes = require("./routes/hallRoutes");
 const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const ticketDiscountRoutes = require("./routes/ticketDiscountRoutes");
 
-// Stripe Webhook
-const { handleStripeWebhook } = require("./controllers/paymentController");
 const app = express();
 
 // CORS
@@ -47,6 +46,7 @@ app.use("/api/admin/showtimes", adminShowtimeRoutes);
 app.use("/api/halls", hallRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/ticket-discounts", ticketDiscountRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

@@ -8,6 +8,7 @@ import {
   releaseBookingHold,
   reserveBooking,
 } from "../../api/bookingApi";
+import { getTicketDiscounts } from "../../api/ticketDiscountApi";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
@@ -70,12 +71,71 @@ export default function CheckoutPage() {
     }))
   );
 
-  const basePriceCents = Math.round(Number(screening?.base_price || 0) * 100);
+  const basePriceCents = Math.round(
+    Number(screening?.base_price || 0) * 100
+  );
+
+  const [ticketDiscounts, setTicketDiscounts] = useState(null);
+  const [discountsLoading, setDiscountsLoading] = useState(true);
+  const [discountsError, setDiscountsError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTicketDiscounts() {
+      setDiscountsLoading(true);
+      setDiscountsError("");
+
+      try {
+        const result = await getTicketDiscounts(controller.signal);
+
+        setTicketDiscounts({
+          child_ticket_discount_percent: Number(
+            result.child_ticket_discount_percent
+          ),
+          loyalty_ticket_discount_percent: Number(
+            result.loyalty_ticket_discount_percent
+          ),
+        });
+      } catch (requestError) {
+        if (requestError.name !== "AbortError") {
+          console.error("Unable to load ticket discounts:", requestError);
+          setDiscountsError(
+            requestError.message || "Unable to load ticket prices."
+          );
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setDiscountsLoading(false);
+        }
+      }
+    }
+
+    loadTicketDiscounts();
+
+    return () => controller.abort();
+  }, []);
+
+  function getSeatDiscountPercent(seat) {
+    if (!ticketDiscounts) return 0;
+
+    if (seat.ticket_type === "child_under_12") {
+      return ticketDiscounts.child_ticket_discount_percent;
+    }
+
+    if (seat.ticket_type === "loyalty_10th") {
+      return ticketDiscounts.loyalty_ticket_discount_percent;
+    }
+
+    return 0;
+  }
 
   function getSeatPriceCents(seat) {
-    return ["child_under_12", "loyalty_10th"].includes(seat.ticket_type)
-      ? Math.round(basePriceCents / 2)
-      : basePriceCents;
+    const discountPercent = getSeatDiscountPercent(seat);
+
+    return Math.round(
+      basePriceCents * (100 - discountPercent) / 100
+    );
   }
 
   const total = selectedSeats.reduce(
@@ -346,6 +406,11 @@ export default function CheckoutPage() {
 
   if (loading) return;
 
+  if (discountsLoading || !ticketDiscounts || discountsError) {
+    setError("Ticket prices are not available yet. Please try again.");
+    return;
+  }
+
   if (paymentMethod === "reserve") {
       if (!isLoggedIn) {
         continueToLogin();
@@ -402,6 +467,11 @@ export default function CheckoutPage() {
 
   async function createReservationDirectly() {
     if (loading || !isLoggedIn) return;
+
+    if (discountsLoading || !ticketDiscounts || discountsError) {
+      setError("Ticket prices are not available yet. Please try again.");
+      return;
+    }
 
     setError("");
     setLoading(true);
@@ -520,6 +590,10 @@ export default function CheckoutPage() {
             {error && (
               <p className="showtimes-feedback showtimes-error" role="alert">
                 {error}
+              </p>
+            )}{discountsError && (
+              <p className="showtimes-feedback showtimes-error" role="alert">
+                {discountsError}
               </p>
             )}
             {reservationMessage && (
@@ -654,7 +728,13 @@ export default function CheckoutPage() {
                       paymentMethod === "card" ? "is-payment-active" : ""
                     }`}
                     type={paymentMethod === "card" ? "submit" : "button"}
-                    disabled={loading || paymentSucceeded}
+                    disabled={
+                      loading ||
+                      paymentSucceeded ||
+                      discountsLoading ||
+                      !ticketDiscounts ||
+                      Boolean(discountsError)
+                    }
                     onClick={
                       paymentMethod === "reserve"
                         ? () => {
@@ -743,27 +823,28 @@ export default function CheckoutPage() {
                             Standard — full price
                           </option>
                           <option value="child_under_12">
-                            Child under 12 — 50% off
+                            Child under 12 — {" "}
+                            {ticketDiscounts?.child_ticket_discount_percent ?? 50}% off
                           </option>
                           <option value="wheelchair">
                             Wheelchair — full price
                           </option>
                           {isLoggedIn && (
-                            <option
-                              value="loyalty_10th"
-                              disabled={
-                                loadingRewards ||
-                                !loyaltyRewards ||
-                                Number(loyaltyRewards.available_rewards) <=
-                                  selectedSeats.filter(
-                                    (item) =>
-                                      item.ticket_type === "loyalty_10th"
-                                  ).length -
-                                    (ticketType === "loyalty_10th" ? 1 : 0)
-                              }
-                            >
-                              10th ticket reward — 50% off
-                            </option>
+                          <option
+                            value="loyalty_10th"
+                            disabled={
+                              loadingRewards ||
+                              !loyaltyRewards ||
+                              Number(loyaltyRewards.available_rewards) <=
+                                selectedSeats.filter(
+                                  (item) => item.ticket_type === "loyalty_10th"
+                                ).length -
+                                  (ticketType === "loyalty_10th" ? 1 : 0)
+                            }
+                          >
+                            10th ticket reward —{" "}
+                            {ticketDiscounts?.loyalty_ticket_discount_percent ?? 50}% off
+                          </option>
                           )}
                         </select>
                       </label>
@@ -775,7 +856,7 @@ export default function CheckoutPage() {
                     {loadingRewards
                       ? "Checking your loyalty rewards..."
                       : loyaltyRewards
-                        ? `Loyalty rewards available: ${loyaltyRewards.available_rewards}. Every 10 paid tickets earns one half-price reward.`
+                        ? `Loyalty rewards available: ${loyaltyRewards.available_rewards}. Every 10 paid tickets earns one reward with ${ticketDiscounts?.loyalty_ticket_discount_percent ?? loyaltyRewards.loyalty_ticket_discount_percent ?? 50}% off.`
                         : "Loyalty reward balance is currently unavailable."}
                   </p>
                 )}
