@@ -57,3 +57,42 @@ export async function joinShowtimeWaitlist(showtimeId, customerEmail) {
   }
   return data;
 }
+
+export async function fetchAdminWaitlist() {
+  const response = await fetch(`${API_BASE_URL}/api/bookings/admin/waitlist`, {
+    credentials: "include",
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error || "Failed to load waiting list.");
+  return data;
+}
+
+export async function notifyAdminWaitlistEntry(waitlistId) {
+  const response = await fetch(`${API_BASE_URL}/api/bookings/admin/waitlist/${waitlistId}/notify`, {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error || "Failed to notify recipient.");
+  return data;
+}
+
+export async function assignAdminWaitlistSeat(waitlistId) {
+  const response = await fetch(`${API_BASE_URL}/api/bookings/admin/waitlist/${waitlistId}/assign`, {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error || "Failed to assign seat.");
+  return data;
+}
+
+export async function removeAdminWaitlistEntry(waitlistId) {
+  const response = await fetch(`${API_BASE_URL}/api/bookings/admin/waitlist/${waitlistId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error || "Failed to remove waitlist entry.");
+  return data;
+}

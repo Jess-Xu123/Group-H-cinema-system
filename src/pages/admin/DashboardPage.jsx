@@ -5,6 +5,12 @@ import {
   getRoomOccupancy,
 } from "../../api/authApi";
 import "../../css/admin/AdminDashboard.css";
+import {
+  fetchAdminWaitlist,
+  notifyAdminWaitlistEntry,
+  assignAdminWaitlistSeat,
+  removeAdminWaitlistEntry,
+} from "../../api/cinemaApi";
 
 const overviewItems = (unpaidReservations, confirmedTickets, ticketSales, roomOccupancy) => [
   {
@@ -52,6 +58,11 @@ function DashboardPage() {
   const [rooms, setRooms] = useState([]);
   const [roomsError, setRoomsError] = useState("");
   const [roomsLoading, setRoomsLoading] = useState(true);
+
+  const [waitlist, setWaitlist] = useState([]);
+  const [waitlistLoading, setWaitlistLoading] = useState(true);
+  const [waitlistActionId, setWaitlistActionId] = useState(null);
+  const [waitlistMessage, setWaitlistMessage] = useState("");
 
     useEffect(() => {
       async function fetchAlerts() {
@@ -102,6 +113,70 @@ function DashboardPage() {
 
       fetchRooms();
     }, []);
+
+    useEffect(() => {
+      async function loadWaitlist() {
+        try {
+          const data = await fetchAdminWaitlist();
+          setWaitlist(Array.isArray(data) ? data : data?.waitlist || []);
+        } catch (error) {
+          setWaitlistMessage(error.message);
+        } finally {
+          setWaitlistLoading(false);
+        }
+      }
+
+      loadWaitlist();
+    }, []);
+
+
+    async function handleNotifyWaitlist(waitlistId) {
+      setWaitlistActionId(waitlistId);
+      setWaitlistMessage("");
+      try {
+        const result = await notifyAdminWaitlistEntry(waitlistId);
+        setWaitlist((prev) =>
+          prev.map((item) =>
+            item.id === waitlistId ? { ...item, is_notified: true } : item
+          )
+        );
+        setWaitlistMessage(result?.message || "Customer notified.");
+      } catch (error) {
+        setWaitlistMessage(error.message);
+      } finally {
+        setWaitlistActionId(null);
+      }
+    }
+
+    async function handleAssignWaitlistSeat(waitlistId) {
+      setWaitlistActionId(waitlistId);
+      setWaitlistMessage("");
+      try {
+        const result = await assignAdminWaitlistSeat(waitlistId);
+        setWaitlist((prev) => prev.filter((item) => item.id !== waitlistId));
+        setWaitlistMessage(
+          result?.message || "Seat assigned and customer notified."
+        );
+      } catch (error) {
+        setWaitlistMessage(error.message);
+      } finally {
+        setWaitlistActionId(null);
+      }
+    }
+
+    async function handleRemoveWaitlist(waitlistId) {
+      setWaitlistActionId(waitlistId);
+      setWaitlistMessage("");
+      try {
+        const result = await removeAdminWaitlistEntry(waitlistId);
+        setWaitlist((prev) => prev.filter((item) => item.id !== waitlistId));
+        setWaitlistMessage(result?.message || "Removed from waiting list.");
+      } catch (error) {
+        setWaitlistMessage(error.message);
+      } finally {
+        setWaitlistActionId(null);
+      }
+    }
 
   return (
     <div className="admin-dashboard">
@@ -323,6 +398,110 @@ function DashboardPage() {
               {alerts.upcomingScreenings}
             </span>
             </div>
+        </div>
+      </section>
+
+
+      <section className="dashboard-programme">
+        <div className="dashboard-section-header">
+          <div>
+            <h2>Waiting List Management</h2>
+            <p>Notify waitlisted customers, assign open seats, or remove entries</p>
+          </div>
+          <span className="dashboard-date-label">
+            {waitlist.length} waiting
+          </span>
+        </div>
+
+        {waitlistMessage && (
+          <p className="dashboard-error">{waitlistMessage}</p>
+        )}
+
+        <div className="dashboard-table-wrapper">
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Customer Email</th>
+                <th>Screening</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {waitlistLoading ? (
+                <tr>
+                  <td colSpan="5" className="dashboard-empty">
+                    Loading waiting list...
+                  </td>
+                </tr>
+              ) : waitlist.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="dashboard-empty">
+                    No customers currently on the waiting list.
+                  </td>
+                </tr>
+              ) : (
+                waitlist.map((entry) => {
+                  const isBusy = waitlistActionId === entry.id;
+                  return (
+                    <tr key={entry.id}>
+                      <td>{entry.customer_email}</td>
+                      <td>
+                        {entry.movie_title || `Showtime #${entry.showtime_id}`}
+                        {entry.start_time &&
+                          ` (${new Date(entry.start_time).toLocaleString([], {
+                            month: "short",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })})`}
+                      </td>
+                      <td>{entry.is_notified ? "Notified" : "Waiting"}</td>
+                      <td>
+                        {entry.created_at
+                          ? new Date(entry.created_at).toLocaleString([], {
+                              month: "short",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "—"}
+                      </td>
+                      <td>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                          <button
+                            type="button"
+                            className="dashboard-manage-button"
+                            disabled={isBusy || entry.is_notified}
+                            onClick={() => handleNotifyWaitlist(entry.id)}
+                          >
+                            {entry.is_notified ? "Notified" : "Notify"}
+                          </button>
+                          <button
+                            type="button"
+                            className="dashboard-manage-button"
+                            disabled={isBusy}
+                            onClick={() => handleAssignWaitlistSeat(entry.id)}
+                          >
+                            Assign Seat
+                          </button>
+                          <button
+                            type="button"
+                            className="dashboard-manage-button"
+                            disabled={isBusy}
+                            onClick={() => handleRemoveWaitlist(entry.id)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
 

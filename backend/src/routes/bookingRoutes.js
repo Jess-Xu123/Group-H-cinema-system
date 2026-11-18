@@ -8,6 +8,10 @@ const {
   releaseBookingHold,
   cancelReservation,
   confirmOfflinePayment,
+  getAdminWaitlist,
+  notifyWaitlistEntry,
+  assignWaitlistSeat,
+  removeWaitlistEntry,
   getLoyaltyRewards,
 } = require("../controllers/bookingController");
 
@@ -41,6 +45,11 @@ router.post(
   confirmOfflinePayment
 );
 
+router.get("/admin/waitlist", authMiddleware, requireStaffOrAdmin, getAdminWaitlist);
+router.post("/admin/waitlist/:id/notify", authMiddleware, requireStaffOrAdmin, notifyWaitlistEntry);
+router.post("/admin/waitlist/:id/assign", authMiddleware, requireStaffOrAdmin, assignWaitlistSeat);
+router.post("/admin/waitlist/:id/assign-seat", authMiddleware, requireStaffOrAdmin, assignWaitlistSeat);
+router.delete("/admin/waitlist/:id", authMiddleware, requireStaffOrAdmin, removeWaitlistEntry);
 // There is intentionally no public /:id/confirm route.
 // Stripe must call markBookingPaidFromVerifiedStripe only after webhook
 // signature verification in the Stripe integration.
