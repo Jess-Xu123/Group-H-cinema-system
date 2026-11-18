@@ -158,9 +158,9 @@ VALUES (
         'ACTION',
         'K-15',
         16.00,
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/The%20Odyssey.jpg',
+        '/Rio-media-backup/movie-poster/The_Odyssey.jpg',
         'https://www.youtube.com/watch?v=Mzw2ttJD2qQ',
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/The%20Odyssey.jpg',
+        '/Rio-media-backup/movie-poster/The_Odyssey.jpg',
         FALSE,
         TRUE
     ),
@@ -172,9 +172,9 @@ VALUES (
         'HORROR',
         'R',
         14.00,
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/obsession.jpg',
+        '/Rio-media-backup/movie-poster/obsession.jpg',
         'https://www.youtube.com/watch?v=gMC8kkwbIQQ',
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/obsession.jpg',
+        '/Rio-media-backup/movie-poster/obsession.jpg',
         FALSE,
         TRUE
     ),
@@ -186,9 +186,9 @@ VALUES (
         'CRIME',
         'R',
         16.00,
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/you_can_see_everything.jpeg',
+        '/Rio-media-backup/movie-poster/you_can_see_everything.jpeg',
         'https://www.youtube.com/watch?v=HvW_N5p1q44',
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/you_can_see_everything.jpeg',
+        '/Rio-media-backup/movie-poster/you_can_see_everything.jpeg',
         FALSE,
         TRUE
     ),
@@ -200,9 +200,9 @@ VALUES (
         'HORROR',
         'R',
         16.00,
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/residence_eveil.jpeg',
+        '/Rio-media-backup/movie-poster/residence_eveil.jpeg',
         'https://www.youtube.com/watch?v=mNd1gb19A-c',
-        'https://a3s.fi/swift/v1/Rio-media/movie%20poster/residence_eveil.jpeg',
+        '/Rio-media-backup/movie-poster/residence_eveil.jpeg',
         FALSE,
         TRUE
     );
@@ -436,7 +436,7 @@ SET
     title = 'Dune: Part Two',
     genre = 'SCI-FI / ADVENTURE',
     description = 'Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Faced with a choice between the love of his life and the fate of the universe, he endeavors to prevent a terrible future only he can foresee.',
-    poster_url = 'https://a3s.fi/swift/v1/Rio-media/movie%20poster/dune.jpg'
+    poster_url = '/Rio-media-backup/movie-poster/dune.jpg'
 WHERE
     external_api_id = 'api_1';
 
@@ -445,7 +445,7 @@ SET
     title = 'Oppenheimer',
     genre = 'DRAMA / HISTORY',
     description = 'The story of J. Robert Oppenheimer, the physics professor who led the Manhattan Project to develop the first nuclear weapons during World War II, exploring his triumph and the political fallout that followed.',
-    poster_url = 'https://a3s.fi/swift/v1/Rio-media/movie%20poster/oppenheimer.jpg'
+    poster_url = '/Rio-media-backup/movie-poster/oppenheimer.jpg'
 WHERE
     external_api_id = 'api_2';
 
@@ -454,7 +454,7 @@ SET
     title = 'Inside Out 2',
     genre = 'ANIMATION / FAMILY',
     description = 'Disney and Pixar''s Inside Out 2 returns to the mind of newly minted teenager Riley. Joy, Sadness, Anger, Fear and Disgust face sudden demolition as new Emotions like Anxiety arrive to shake up Headquarters.',
-    poster_url = 'https://a3s.fi/swift/v1/Rio-media/movie%20poster/insideout.png'
+    poster_url = '/Rio-media-backup/movie-poster/insideout.png'
 WHERE
     external_api_id = 'api_3';
 
@@ -463,7 +463,7 @@ SET
     title = 'Joker 2',
     genre = 'THRILLER / DRAMA',
     description = 'Arthur Fleck is institutionalized at Arkham awaiting trial for his crimes as Joker. While struggling with his dual identity, Arthur not only stumbles upon true love, but also finds the music that''s always been inside him.',
-    poster_url = 'https://a3s.fi/swift/v1/Rio-media/movie%20poster/Joker2.jpg',
+    poster_url = '/Rio-media-backup/movie-poster/Joker2.jpg',
     is_upcoming = FALSE
 WHERE
     external_api_id = 'api_4';
@@ -492,9 +492,9 @@ VALUES (
         'SCI-FI / ADVENTURE',
         'K-12',
         NULL,
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/dune3.jpg',
+        '/Rio-media-backup/movie-poster/dune3.jpg',
         'https://www.youtube.com/watch?v=uJqaGLmZpGo',
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/dune3.jpg',
+        '/Rio-media-backup/movie-poster/dune3.jpg',
         TRUE,
         FALSE
     ),
@@ -506,9 +506,9 @@ VALUES (
         'DRAMA / FICTION',
         'K-12',
         NULL,
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/The Lord of the Rings_ The Hunt for Gollum.jpg',
+        '/Rio-media-backup/movie-poster/The_Hunt_for_Gollum.jpg',
         'https://www.youtube.com/watch?v=WF2RtLKHU_U',
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/The Lord of the Rings_ The Hunt for Gollum.jpg',
+        '/Rio-media-backup/movie-poster/The_Hunt_for_Gollum.jpg',
         TRUE,
         FALSE
     ),
@@ -520,9 +520,9 @@ VALUES (
         'THRILLER / ACTION',
         'K-16',
         NULL,
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/The Thomas Crown Affair.jpg',
+        '/Rio-media-backup/movie-poster/The_Thomas_Crown_Affair.jpg',
         'https://www.youtube.com/watch?v=gnm4HgIAVmU',
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/The Thomas Crown Affair.jpg',
+        '/Rio-media-backup/movie-poster/The_Thomas_Crown_Affair.jpg',
         TRUE,
         FALSE
     ),
@@ -534,9 +534,9 @@ VALUES (
         'ANIMATION / ADVENTURE',
         'S',
         NULL,
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/Ice Age_ Boiling Point.jpg',
+        '/Rio-media-backup/movie-poster/ice_age.jpg',
         'https://www.youtube.com/watch?v=9Lh6uwe6WY0',
-        'https://a3s.fi/swift/v1/Rio-media/movie poster/Ice Age_ Boiling Point.jpg',
+        '/Rio-media-backup/movie-poster/ice_age.jpg',
         TRUE,
         FALSE
     ) ON CONFLICT (external_api_id) DO NOTHING;

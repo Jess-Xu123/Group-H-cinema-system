@@ -5,7 +5,7 @@ import PrivateScreeningForm from "../../components/PrivateScreenForm";
 import "../../css/PrivateScreening.css";
 
 const PRIVATE_SCREENING_IMAGE =
-  "https://a3s.fi/swift/v1/Rio-media/web-media/private screen.jpg";
+  "/Rio-media-backup/web-media/private-screen.jpg";
 
 const screeningSteps = [
   {
