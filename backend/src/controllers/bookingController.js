@@ -813,6 +813,153 @@ async function markBookingPaidFromVerifiedStripe(
   }
 }
 
+async function getAdminWaitlist(req, res) {
+  try {
+    const sql = `
+      SELECT
+        w.id,
+        w.showtime_id,
+        w.customer_email,
+        w.is_notified,
+        w.created_at,
+        m.title AS movie_title,
+        s.start_time
+      FROM premiere_waitlist w
+      LEFT JOIN showtimes s ON w.showtime_id = s.id
+      LEFT JOIN movies m ON s.movie_id = m.id
+      ORDER BY w.created_at ASC, w.id ASC;
+    `;
+    const { rows } = await pool.query(sql);
+    return res.json({ waitlist: rows });
+  } catch (err) {
+    console.error("Get admin waitlist error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+async function notifyWaitlistEntry(req, res) {
+  const waitlistId = Number(req.params.id);
+  if (!Number.isInteger(waitlistId) || waitlistId < 1) return res.status(400).json({ error: "Invalid waitlist ID." });
+  try {
+    const { rows } = await pool.query(`UPDATE premiere_waitlist SET is_notified = TRUE WHERE id = $1 RETURNING *;`, [waitlistId]);
+    if (rows.length === 0) return res.status(404).json({ error: "Waitlist entry not found." });
+    console.log(`[Waitlist Alert] Manual alert sent to ${rows[0].customer_email}`);
+    return res.json({ message: "Notification sent.", entry: rows[0] });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to notify recipient." });
+  }
+}
+
+async function removeWaitlistEntry(req, res) {
+  const waitlistId = Number(req.params.id);
+  if (!Number.isInteger(waitlistId) || waitlistId < 1) return res.status(400).json({ error: "Invalid waitlist ID." });
+  try {
+    const { rows } = await pool.query(`DELETE FROM premiere_waitlist WHERE id = $1 RETURNING id;`, [waitlistId]); // <-- Blank #2
+    if (rows.length === 0) return res.status(404).json({ error: "Waitlist entry not found." }); // <-- Blank #3
+    return res.json({ message: "Removed from waiting list.", id: waitlistId });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to remove waitlist entry." });
+  }
+}
+
+async function assignWaitlistSeat(req, res) {
+  const waitlistId = Number(req.params.id);
+  if (!Number.isInteger(waitlistId) || waitlistId < 1) {
+    return res.status(400).json({ error: "Invalid waitlist ID." });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const wlRes = await client.query(
+      `SELECT * FROM premiere_waitlist WHERE id = $1 FOR UPDATE;`,
+      [waitlistId]
+    );
+    if (wlRes.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Waitlist entry not found." });
+    }
+    const entry = wlRes.rows[0];
+
+    const infoRes = await client.query(
+      `SELECT s.start_time, s.is_premiere, m.base_price, h.total_rows, h.seats_per_row
+       FROM showtimes s
+       JOIN movies m ON s.movie_id = m.id
+       JOIN halls h ON s.hall_id = h.id
+       WHERE s.id = $1;`,
+      [entry.showtime_id]
+    );
+    if (infoRes.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Showtime not found." });
+    }
+    const info = infoRes.rows[0];
+
+    const takenRes = await client.query(
+      `SELECT row_number, seat_number
+       FROM booked_seats
+       WHERE showtime_id = $1;`,
+      [entry.showtime_id]
+    );
+    const taken = new Set(takenRes.rows.map((r) => `${r.row_number}-${r.seat_number}`));
+
+    let openSeat = null;
+    for (let r = 1; r <= Number(info.total_rows) && !openSeat; r++) {
+      if (r === 13) continue;
+      for (let s = 1; s <= Number(info.seats_per_row); s++) {
+        if ((r === 1 && s === 1) || taken.has(`${r}-${s}`)) continue;
+        openSeat = { row_number: r, seat_number: s };
+        break;
+      }
+    }
+
+    if (!openSeat) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "No open seats available." });
+    }
+
+    const price = Number((Number(info.base_price) * (info.is_premiere ? 1.15 : 1)).toFixed(2));
+    const userRes = await client.query(
+      `SELECT id FROM users WHERE LOWER(email) = LOWER($1);`,
+      [entry.customer_email]
+    );
+    const userId = userRes.rows[0]?.id || null;
+    const status = userId ? "reserved_unpaid" : "checkout_locked";
+    const expiresAt = userId
+      ? new Date(new Date(info.start_time).getTime() - 2 * 60 * 60 * 1000)
+      : new Date(Date.now() + 15 * 60 * 1000);
+
+    const bookRes = await client.query(
+      `INSERT INTO bookings (user_id, showtime_id, customer_email, total_amount, status, expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id;`,
+      [userId, entry.showtime_id, entry.customer_email, price, status, expiresAt]
+    );
+
+    await client.query(
+      `INSERT INTO booked_seats (booking_id, showtime_id, row_number, seat_number, ticket_type, seat_price)
+       VALUES ($1, $2, $3, $4, 'normal', $5);`,
+      [bookRes.rows[0].id, entry.showtime_id, openSeat.row_number, openSeat.seat_number, price]
+    );
+
+    await client.query(`DELETE FROM premiere_waitlist WHERE id = $1;`, [waitlistId]);
+    await client.query("COMMIT");
+
+    return res.status(201).json({
+      message: "Seat assigned.",
+      booking_id: bookRes.rows[0].id,
+      seat: openSeat,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Assign waitlist seat error:", err);
+    return res.status(500).json({ error: err.message || "Failed to assign seat." });
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = {
   getMyBookings,
   getAdminBookings,
@@ -822,4 +969,11 @@ module.exports = {
   cancelReservation,
   confirmOfflinePayment,
   markBookingPaidFromVerifiedStripe,
+  getAdminWaitlist,
+  notifyWaitlistEntry,
+  removeWaitlistEntry,
+  assignWaitlistSeat,
+  notifyAdminWaitlistEntry: notifyWaitlistEntry,
+  removeAdminWaitlistEntry: removeWaitlistEntry,
+  assignAdminWaitlistSeat: assignWaitlistSeat,
 };
