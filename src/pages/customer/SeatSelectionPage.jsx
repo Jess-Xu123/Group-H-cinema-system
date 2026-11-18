@@ -52,6 +52,7 @@ export default function SeatSelectionPage() {
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistLoading, setWaitlistLoading] = useState(false); 
   const [waitlistStatus, setWaitlistStatus] = useState(null); 
+  const [seatLimitNotice, setSeatLimitNotice] = useState("");
   const isLoading = loadedShowtimeId !== showtimeId;
   const currentError = error?.showtimeId === showtimeId ? error.message : "";
 
@@ -110,6 +111,13 @@ export default function SeatSelectionPage() {
     const key = seatKey(row, position);
     // Keep the reserved accessibility seat unavailable.
     if (occupiedKeys.has(key) || (row === 1 && position === 1)) return;
+
+    const alreadySelected = selectedKeys.has(key);
+    if (!alreadySelected && selectedSeats.length >= 6) {
+      setSeatLimitNotice("Maximum 6 tickets allowed per booking.");
+      return;
+    }
+    setSeatLimitNotice("");
 
     setSelectedSeats((current) =>
       current.some(
@@ -323,6 +331,11 @@ export default function SeatSelectionPage() {
                   </div>
                 </div>
                 <div className="seat-order-divider" />
+                {seatLimitNotice && (
+                <p className="showtimes-feedback showtimes-error" role="alert">
+                    {seatLimitNotice}
+                  </p>
+                )}
                 <p className="seat-order-count">
                   {selectedSeats.length}{" "}
                   {selectedSeats.length === 1 ? "ticket" : "tickets"}

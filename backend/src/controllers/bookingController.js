@@ -62,8 +62,10 @@ function normalizeSeats(seats, hall) {
   if (!Array.isArray(seats) || seats.length === 0) {
     throw new Error("At least one seat must be selected.");
   }
-
-  const seen = new Set();
+  if (seats.length > 6) {
+      throw new Error("Maximum 6 tickets allowed per booking.");
+    }
+    const seen = new Set();
 
   return seats.map((seat) => {
     const row = Number(seat.row_number ?? seat.row);
@@ -644,6 +646,19 @@ async function reserveBooking(req, res) {
       return res.status(410).json({
         message: "It is too late to create a reservation for this showtime.",
       });
+    }
+
+    const unpaidResult = await client.query(
+      `SELECT COUNT(bs.id)::int AS seat_count
+       FROM booked_seats bs
+       JOIN bookings b ON b.id = bs.booking_id
+       WHERE bs.released_at IS NULL
+         AND (b.id = $2 OR (b.user_id = $1 AND b.status = 'reserved_unpaid' AND b.expires_at > NOW()))`,
+      [userId, bookingId]
+    );
+    if (unpaidResult.rows[0].seat_count > 6) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({ message: "Maximum 6 unpaid reserved seats allowed." });
     }
 
     const updated = await client.query(
