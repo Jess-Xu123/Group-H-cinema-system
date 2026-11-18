@@ -7,7 +7,8 @@ function AdminSidebar({ userRole }) {
     { label: "Rooms & Halls", path: "/admin/halls", icon: "bi bi-building" },
     { label: "Bookings", path: "/admin/bookings", icon: "bi bi-ticket-perforated" },
     { label: "Showtimes", path: "/admin/showtimes", icon: "bi bi-tags" },
-    { label: "Settings", path: "/admin/settings", icon: "bi bi-gear" },
+    { label: "Private Screenings", path: "/admin/private-screenings", icon: "bi bi-tags" },
+    { label: "Settings", path: "/admin/settings", icon: "bi bi-building-lock" },
   ];
 
   // Only Owner (admin) can manage users

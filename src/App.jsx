@@ -29,6 +29,7 @@ import UsersPage from "./pages/admin/UsersPage";
 import SettingPage from "./pages/admin/SettingPage";
 import BookingsPage from "./pages/admin/BookingsPage";
 import AdminShowtimesPage from "./pages/admin/AdminShowtimesPage";
+import AdminPrivateScreeningsPage from "./pages/admin/AdminPrivateScreeningsPage";
 
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -73,6 +74,7 @@ function App() {
             <Route path="settings" element={<SettingPage />} />
             <Route path="bookings" element={<BookingsPage />} />
             <Route path="showtimes" element={<AdminShowtimesPage />} />
+            <Route path="private-screenings" element={<AdminPrivateScreeningsPage />} />
           </Route>
         </Routes>
       </div>
