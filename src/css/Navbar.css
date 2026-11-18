@@ -30,27 +30,12 @@
   object-fit: contain;
 }
 
-.rio-logo-main,
+.auth-brand-main,
 .logo-dot {
   font-family: "Oswald", sans-serif;
   font-size: 36px;
   font-weight: 600;
   line-height: 1.1;
-}
-
-.rio-logo-main {
-  letter-spacing: -1.5px;
-}
-
-.logo-dot {
-  color: var(--rio-gold);
-}
-
-.rio-logo-name {
-  font-family: "Inter", sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 2.5px;
 }
 
 .rio-nav-links {

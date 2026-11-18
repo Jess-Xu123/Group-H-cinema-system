@@ -56,7 +56,15 @@ export default function Navbar({ currentLocation, onLocationChange }) {
           >
             Showtimes
           </Link>
-          <a href="#private">Private Screenings</a>
+          <Link
+            to="/private-screenings"
+            className={pathname === "/private-screenings" ? "active" : ""}
+            aria-current={
+              pathname === "/private-screenings" ? "page" : undefined
+            }
+          >
+            Private Screenings
+          </Link>
         </div>
 
         <div className="rio-nav-actions">

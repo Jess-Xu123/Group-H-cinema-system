@@ -29,6 +29,12 @@
 }
 
 /* Brand Logo */
+.rio-logo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .auth-brand {
   display: inline-flex;
@@ -48,8 +54,6 @@
 }
 
 .auth-brand::after {
-  content: "CINEMA";
-
   margin-left: 3px;
 
   color: var(--rio-text-bright);

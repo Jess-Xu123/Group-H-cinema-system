@@ -1,0 +1,57 @@
+/* Ticket type selection in CheckoutPage */
+.checkout-ticket-item {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.checkout-ticket-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: #f4f0e8;
+  font-size: 0.92rem;
+}
+
+.checkout-ticket-heading span {
+  white-space: nowrap;
+  font-weight: 600;
+  color: #d5b36a;
+}
+
+.checkout-ticket-label {
+  display: grid;
+  gap: 7px;
+  color: rgba(244, 240, 232, 0.72);
+  font-size: 0.78rem;
+}
+
+.checkout-ticket-label select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid rgba(213, 179, 106, 0.35);
+  border-radius: 4px;
+  background: #171717;
+  color: #f4f0e8;
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.checkout-ticket-label select:focus {
+  outline: 2px solid rgba(213, 179, 106, 0.75);
+  outline-offset: 2px;
+}
+
+.checkout-ticket-label select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.checkout-loyalty-note {
+  margin: 14px 0;
+  color: rgba(244, 240, 232, 0.68);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}

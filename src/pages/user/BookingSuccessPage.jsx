@@ -68,17 +68,22 @@ function BookingSuccessPage() {
       headers["x-guest-checkout-token"] = guestToken;
     }
 
+    const requestSignal = AbortSignal.any([
+      controller.signal,
+      AbortSignal.timeout(10000),
+    ]);
+
     const response = await fetch(
-    `${API_BASE_URL}/api/payment/checkout-session/${encodeURIComponent(
+      `${API_BASE_URL}/api/payment/checkout-session/${encodeURIComponent(
         sessionId
-    )}`,
-    {
+      )}`,
+      {
         method: "GET",
         headers,
         credentials: "include",
         cache: "no-store",
-        signal: controller.signal,
-    }
+        signal: requestSignal,
+      }
     );
           
     const result = await response.json().catch(() => null);

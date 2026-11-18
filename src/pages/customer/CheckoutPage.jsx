@@ -3,16 +3,19 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createCheckoutSession } from "../../api/paymentApi";
 import {
+  getLoyaltyRewards,
   holdBookingSeats,
   releaseBookingHold,
   reserveBooking,
 } from "../../api/bookingApi";
+import { getTicketDiscounts } from "../../api/ticketDiscountApi";
 import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import "../../css/Showtimes.css";
 import "../../css/BookingPanels.css";
 import "../../css/BookingFlow.css";
+import "../../css/user/TicketTypeSelector.css";
 
 const CHECKOUT_DRAFT_KEY = "rio-checkout-draft";
 
@@ -61,8 +64,87 @@ export default function CheckoutPage() {
   const [reservationMessage, setReservationMessage] = useState("");
   const reservationAttemptRef = useRef(null);
   const checkoutFormRef = useRef(null);
-  const selectedSeats = checkout.selectedSeats || [];
-  const total = Number(checkout.total || 0);
+  const [selectedSeats, setSelectedSeats] = useState(() =>
+    (checkout.selectedSeats || []).map((seat) => ({
+      ...seat,
+      ticket_type: seat.ticket_type || "normal",
+    }))
+  );
+
+  const basePriceCents = Math.round(
+    Number(screening?.base_price || 0) * 100
+  );
+
+  const [ticketDiscounts, setTicketDiscounts] = useState(null);
+  const [discountsLoading, setDiscountsLoading] = useState(true);
+  const [discountsError, setDiscountsError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTicketDiscounts() {
+      setDiscountsLoading(true);
+      setDiscountsError("");
+
+      try {
+        const result = await getTicketDiscounts(controller.signal);
+
+        setTicketDiscounts({
+          child_ticket_discount_percent: Number(
+            result.child_ticket_discount_percent
+          ),
+          loyalty_ticket_discount_percent: Number(
+            result.loyalty_ticket_discount_percent
+          ),
+        });
+      } catch (requestError) {
+        if (requestError.name !== "AbortError") {
+          console.error("Unable to load ticket discounts:", requestError);
+          setDiscountsError(
+            requestError.message || "Unable to load ticket prices."
+          );
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setDiscountsLoading(false);
+        }
+      }
+    }
+
+    loadTicketDiscounts();
+
+    return () => controller.abort();
+  }, []);
+
+  function getSeatDiscountPercent(seat) {
+    if (!ticketDiscounts) return 0;
+
+    if (seat.ticket_type === "child_under_12") {
+      return ticketDiscounts.child_ticket_discount_percent;
+    }
+
+    if (seat.ticket_type === "loyalty_10th") {
+      return ticketDiscounts.loyalty_ticket_discount_percent;
+    }
+
+    return 0;
+  }
+
+  function getSeatPriceCents(seat) {
+    const discountPercent = getSeatDiscountPercent(seat);
+
+    return Math.round(
+      basePriceCents * (100 - discountPercent) / 100
+    );
+  }
+
+  const total = selectedSeats.reduce(
+    (sum, seat) => sum + getSeatPriceCents(seat),
+    0
+  ) / 100;
+
+  const [loyaltyRewards, setLoyaltyRewards] = useState(null);
+  const [loadingRewards, setLoadingRewards] = useState(false);
 
   const [secondsLeft, setSecondsLeft] = useState(15 * 60);
   useEffect(() => {
@@ -90,6 +172,30 @@ export default function CheckoutPage() {
     lastName: checkout.customerDetails?.lastName || "",
     email: checkout.customerDetails?.email || "",
   });
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setLoyaltyRewards(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setLoadingRewards(true);
+
+    getLoyaltyRewards(controller.signal)
+      .then(setLoyaltyRewards)
+      .catch((requestError) => {
+        if (requestError.name !== "AbortError") {
+          console.error("Unable to load loyalty rewards:", requestError);
+          setLoyaltyRewards(null);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadingRewards(false);
+      });
+
+    return () => controller.abort();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (!screening) return;
@@ -133,6 +239,7 @@ export default function CheckoutPage() {
           guestToken: null,
           expiresAt: booking.expires_at,
           totalAmount: booking.total_amount,
+          status: booking.status || "checkout_locked",
         };
 
         setHoldInfo(activeHold);
@@ -144,6 +251,7 @@ export default function CheckoutPage() {
           ...activeHold,
           expiresAt: result.booking.expires_at,
           totalAmount: result.booking.total_amount,
+          status: result.booking.status || "reserved_unpaid",
         };
 
         setHoldInfo(updatedHoldInfo);
@@ -186,6 +294,47 @@ export default function CheckoutPage() {
     completeReservation();
   }, [location.state, screening]);
 
+  async function handleTicketTypeChange(seat, ticketType) {
+    setError("");
+
+    // A hold stores immutable ticket types and prices. Release an active
+    // checkout hold before allowing the selection to change.
+    if (holdInfo?.bookingId) {
+      if (holdInfo.status !== "checkout_locked") {
+        setError(
+          "This reservation has already been created. Cancel it from your orders before changing ticket types."
+        );
+        return;
+      }
+
+      try {
+        await releaseBookingHold(holdInfo.bookingId, holdInfo.guestToken);
+        setHoldInfo(null);
+      } catch (requestError) {
+        setError(
+          requestError.message || "Unable to update your ticket selection."
+        );
+        return;
+      }
+    }
+
+    const seatRow = seat.row_number ?? seat.row;
+    const seatNumber =
+      seat.seat_number ?? seat.number ?? seat.position;
+
+    setSelectedSeats((currentSeats) =>
+      currentSeats.map((currentSeat) => {
+        const currentRow = currentSeat.row_number ?? currentSeat.row;
+        const currentNumber =
+          currentSeat.seat_number ?? currentSeat.number ?? currentSeat.position;
+
+        return currentRow === seatRow && currentNumber === seatNumber
+          ? { ...currentSeat, ticket_type: ticketType }
+          : currentSeat;
+      })
+    );
+  }
+
   function handleInputChange(e) {
     setCustomerDetails({
       ...customerDetails,
@@ -218,6 +367,7 @@ export default function CheckoutPage() {
         guestToken: holdResponse.guest_checkout_token,
         expiresAt: booking.expires_at,
         totalAmount: booking.total_amount,
+        status: booking.status || "checkout_locked",
       };
 
       setHoldInfo(activeHold);
@@ -255,6 +405,11 @@ export default function CheckoutPage() {
       event.preventDefault();
 
   if (loading) return;
+
+  if (discountsLoading || !ticketDiscounts || discountsError) {
+    setError("Ticket prices are not available yet. Please try again.");
+    return;
+  }
 
   if (paymentMethod === "reserve") {
       if (!isLoggedIn) {
@@ -313,6 +468,11 @@ export default function CheckoutPage() {
   async function createReservationDirectly() {
     if (loading || !isLoggedIn) return;
 
+    if (discountsLoading || !ticketDiscounts || discountsError) {
+      setError("Ticket prices are not available yet. Please try again.");
+      return;
+    }
+
     setError("");
     setLoading(true);
     setReservationMessage("");
@@ -336,6 +496,7 @@ export default function CheckoutPage() {
         guestToken: null,
         expiresAt: result.booking.expires_at,
         totalAmount: result.booking.total_amount,
+        status: result.booking.status || "reserved_unpaid",
       };
 
       setHoldInfo(updatedHoldInfo);
@@ -429,6 +590,10 @@ export default function CheckoutPage() {
             {error && (
               <p className="showtimes-feedback showtimes-error" role="alert">
                 {error}
+              </p>
+            )}{discountsError && (
+              <p className="showtimes-feedback showtimes-error" role="alert">
+                {discountsError}
               </p>
             )}
             {reservationMessage && (
@@ -563,7 +728,13 @@ export default function CheckoutPage() {
                       paymentMethod === "card" ? "is-payment-active" : ""
                     }`}
                     type={paymentMethod === "card" ? "submit" : "button"}
-                    disabled={loading || paymentSucceeded}
+                    disabled={
+                      loading ||
+                      paymentSucceeded ||
+                      discountsLoading ||
+                      !ticketDiscounts ||
+                      Boolean(discountsError)
+                    }
                     onClick={
                       paymentMethod === "reserve"
                         ? () => {
@@ -614,23 +785,88 @@ export default function CheckoutPage() {
                   {selectedSeats.length}{" "}
                   {selectedSeats.length === 1 ? "ticket" : "tickets"}
                 </p>
-                {selectedSeats.map((seat) => (
-                  <p
-                    className="seat-order-item"
-                    key={`${seat.row}-${seat.number}`}
-                  >
-                    Row {seat.row} · Seat {seat.number}
-                    <span>€{Number(screening.base_price).toFixed(2)}</span>
+                {selectedSeats.map((seat) => {
+                  const row = seat.row_number ?? seat.row;
+                  const number =
+                    seat.seat_number ?? seat.number ?? seat.position;
+                  const ticketType = seat.ticket_type || "normal";
+                  const seatPrice = getSeatPriceCents(seat) / 100;
+                  const canEditTicketType =
+                    !holdInfo?.bookingId ||
+                    holdInfo.status === "checkout_locked";
+
+                  return (
+                    <div
+                      className="checkout-ticket-item"
+                      key={`${row}-${number}`}
+                    >
+                      <div className="checkout-ticket-heading">
+                        <strong>Row {row} · Seat {number}</strong>
+                        <span>€{seatPrice.toFixed(2)}</span>
+                      </div>
+
+                      <label className="checkout-ticket-label">
+                        Ticket type
+                        <select
+                          value={ticketType}
+                          disabled={
+                            loading ||
+                            paymentSucceeded ||
+                            !canEditTicketType ||
+                            isExpired
+                          }
+                          onChange={(event) =>
+                            handleTicketTypeChange(seat, event.target.value)
+                          }
+                        >
+                          <option value="normal">
+                            Standard — full price
+                          </option>
+                          <option value="child_under_12">
+                            Child under 12 — {" "}
+                            {ticketDiscounts?.child_ticket_discount_percent ?? 50}% off
+                          </option>
+                          <option value="wheelchair">
+                            Wheelchair — full price
+                          </option>
+                          {isLoggedIn && (
+                          <option
+                            value="loyalty_10th"
+                            disabled={
+                              loadingRewards ||
+                              !loyaltyRewards ||
+                              Number(loyaltyRewards.available_rewards) <=
+                                selectedSeats.filter(
+                                  (item) => item.ticket_type === "loyalty_10th"
+                                ).length -
+                                  (ticketType === "loyalty_10th" ? 1 : 0)
+                            }
+                          >
+                            10th ticket reward —{" "}
+                            {ticketDiscounts?.loyalty_ticket_discount_percent ?? 50}% off
+                          </option>
+                          )}
+                        </select>
+                      </label>
+                    </div>
+                  );
+                })}
+                {isLoggedIn && (
+                  <p className="checkout-loyalty-note">
+                    {loadingRewards
+                      ? "Checking your loyalty rewards..."
+                      : loyaltyRewards
+                        ? `Loyalty rewards available: ${loyaltyRewards.available_rewards}. Every 10 paid tickets earns one reward with ${ticketDiscounts?.loyalty_ticket_discount_percent ?? loyaltyRewards.loyalty_ticket_discount_percent ?? 50}% off.`
+                        : "Loyalty reward balance is currently unavailable."}
                   </p>
-                ))}
+                )}
                 <div className="seat-order-total">
                   <span>Total</span>
                   <strong>€{total.toFixed(2)}</strong>
                 </div>
                 <p className="booking-order-guidance">
-                  {selectedSeats.length} * €
-                  {Number(screening.base_price).toFixed(2)} · No additional
-                  fees.
+                  Prices are calculated from the selected ticket types. No
+                  additional fees.
                 </p>
               </aside>
             </form>

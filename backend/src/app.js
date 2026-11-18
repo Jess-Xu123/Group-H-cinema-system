@@ -12,9 +12,9 @@ const adminRoutes = require("./routes/adminRoutes");
 const hallRoutes = require("./routes/hallRoutes");
 const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const ticketDiscountRoutes = require("./routes/ticketDiscountRoutes");
+const privateScreeningRoutes = require("./routes/privateScreeningRoutes");
 
-// Stripe Webhook
-const { handleStripeWebhook } = require("./controllers/paymentController");
 const app = express();
 
 // CORS
@@ -22,15 +22,12 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 // Stripe Webhook must receive the original raw body.
 // This MUST be registered before express.json().
-app.use(
-  "/api/payment/webhook",
-  express.raw({ type: "application/json" })
-);
+app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 
 // Normal JSON requests.
 app.use(express.json());
@@ -47,6 +44,8 @@ app.use("/api/admin/showtimes", adminShowtimeRoutes);
 app.use("/api/halls", hallRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/ticket-discounts", ticketDiscountRoutes);
+app.use("/api/private-screenings", privateScreeningRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

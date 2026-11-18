@@ -79,7 +79,11 @@ export default function Register() {
     <main className="auth-page">
       <section className="auth-card">
         <Link to="/" className="auth-brand">
-          RIO<span className="logo-dot">.</span>
+          <img
+            className="rio-logo-image"
+            src="/assets/rio-marquee-logo.png"
+            alt=""
+          />
         </Link>
 
         <p className="auth-eyebrow">JOIN THE EXPERIENCE</p>
