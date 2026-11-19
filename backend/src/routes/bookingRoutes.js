@@ -16,6 +16,14 @@ const {
 } = require("../controllers/bookingController");
 
 const {
+  createGroupBookingRequest,
+  getMyGroupBookingRequests,
+  getAdminGroupBookingRequests,
+  approveGroupBookingRequest,
+  rejectGroupBookingRequest,
+} = require("../controllers/groupBookingController");
+
+const {
   authMiddleware,
   requireStaffOrAdmin,
 } = require("../middleware/authMiddleware");
@@ -30,6 +38,41 @@ router.get(
   authMiddleware,
   requireStaffOrAdmin,
   getAdminBookings
+);
+
+// Customer Group Booking requests
+router.post(
+  "/group-requests",
+  authMiddleware,
+  createGroupBookingRequest
+);
+
+router.get(
+  "/group-requests/my",
+  authMiddleware,
+  getMyGroupBookingRequests
+);
+
+// Staff/Admin Group Booking management
+router.get(
+  "/group-requests/admin",
+  authMiddleware,
+  requireStaffOrAdmin,
+  getAdminGroupBookingRequests
+);
+
+router.post(
+  "/group-requests/:id/approve",
+  authMiddleware,
+  requireStaffOrAdmin,
+  approveGroupBookingRequest
+);
+
+router.post(
+  "/group-requests/:id/reject",
+  authMiddleware,
+  requireStaffOrAdmin,
+  rejectGroupBookingRequest
 );
 
 router.post("/hold", optionalAuthMiddleware, holdSeats);

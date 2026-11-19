@@ -5,6 +5,7 @@ import {
   getMyBookings,
   cancelReservation,
 } from "../../api/bookingApi";
+import GroupBookingRequestsPanel from "../../components/GroupBookingRequestsPanel";
 import "../../css/user/OrdersPage.css";
 
 const filters = [
@@ -187,6 +188,8 @@ export default function OrdersPage() {
           Browse showtimes ↗
         </Link>
       </div>
+
+      <GroupBookingRequestsPanel />
 
       <div className="orders-filter-bar">
         {filters.map((filter) => (
