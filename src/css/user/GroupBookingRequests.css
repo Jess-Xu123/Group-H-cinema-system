@@ -1,0 +1,64 @@
+.group-requests-panel {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e8e3da;
+  border-radius: 12px;
+}
+
+.group-requests-heading {
+  margin-bottom: 1.25rem;
+}
+
+.group-requests-heading h2 {
+  margin: 0.25rem 0;
+}
+
+.group-requests-heading p {
+  color: #777;
+}
+
+.group-request-card {
+  padding: 1rem 0;
+  border-top: 1px solid #e8e3da;
+}
+
+.group-request-card h3 {
+  margin: 0.75rem 0 0.4rem;
+}
+
+.group-request-card p {
+  margin: 0.4rem 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.group-request-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.group-request-status {
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #eee;
+}
+
+.group-request-status.status-pending {
+  background: #fff2d9;
+  color: #8a5b0a;
+}
+
+.group-request-status.status-approved {
+  background: #e4f4e9;
+  color: #28683b;
+}
+
+.group-request-status.status-rejected {
+  background: #f9e6e6;
+  color: #9b3030;
+}

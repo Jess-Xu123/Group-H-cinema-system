@@ -3,6 +3,7 @@ import {
   getAdminBookings,
   confirmOfflinePayment,
 } from "../../api/bookingApi";
+import AdminGroupBookingRequests from "../../components/admin/AdminGroupBookingRequests";
 import "../../css/admin/AdminBookings.css";
 
 const STATUS_OPTIONS = [
@@ -201,6 +202,8 @@ function BookingsPage() {
           {isLoading ? "Loading..." : "Refresh"}
         </button>
       </div>
+
+      <AdminGroupBookingRequests />
 
       {/* Booking summary */}
       <section className="booking-stats-grid">

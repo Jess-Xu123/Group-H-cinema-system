@@ -4,6 +4,8 @@ import BookingProgress from "../../components/BookingProgress";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import { getShowtimeSeats, joinShowtimeWaitlist } from "../../api/cinemaApi";
+import { useAuth } from "../../context/AuthContext";
+import { createGroupBookingRequest } from "../../api/groupBookingApi";
 import "../../css/Showtimes.css";
 import "../../css/BookingPanels.css";
 import "../../css/SeatSelection.css";
@@ -55,6 +57,12 @@ export default function SeatSelectionPage() {
   const [seatLimitNotice, setSeatLimitNotice] = useState("");
   const isLoading = loadedShowtimeId !== showtimeId;
   const currentError = error?.showtimeId === showtimeId ? error.message : "";
+
+  const { user } = useAuth();
+
+  const [groupRequestLoading, setGroupRequestLoading] = useState(false);
+  const [groupRequestMessage, setGroupRequestMessage] = useState("");
+  const [groupRequestError, setGroupRequestError] = useState("");
 
   //Call getShowtimeSeats to get screenings, booked seats, selected seats
   useEffect(() => {
@@ -113,8 +121,8 @@ export default function SeatSelectionPage() {
     if (occupiedKeys.has(key) || (row === 1 && position === 1)) return;
 
     const alreadySelected = selectedKeys.has(key);
-    if (!alreadySelected && selectedSeats.length >= 6) {
-      setSeatLimitNotice("Maximum 6 tickets allowed per booking.");
+    if (!alreadySelected && selectedSeats.length >= 50) {
+      setSeatLimitNotice("Maximum 50 tickets per group request.");
       return;
     }
     setSeatLimitNotice("");
@@ -138,6 +146,47 @@ export default function SeatSelectionPage() {
         total,
       },
     });
+  }
+
+  async function handleGroupBookingRequest() {
+    if (!user) {
+      setGroupRequestError(
+        "Please log in before submitting a Group Booking request."
+      );
+      return;
+    }
+
+    if (selectedSeats.length <= 6) {
+      setGroupRequestError(
+        "A Group Booking request requires more than 6 tickets."
+      );
+      return;
+    }
+
+    setGroupRequestLoading(true);
+    setGroupRequestError("");
+    setGroupRequestMessage("");
+
+    try {
+      const result = await createGroupBookingRequest({
+        showtime_id: screening.showtime_id,
+        seats: selectedSeats.map((seat) => ({
+          row_number: seat.row,
+          seat_number: seat.number,
+          ticket_type: seat.ticket_type || "normal",
+        })),
+      });
+
+      setGroupRequestMessage(
+        `${result.message} Your request reference is #${result.request.id}.`
+      );
+    } catch (requestError) {
+      setGroupRequestError(
+        requestError.message || "Unable to submit your request."
+      );
+    } finally {
+      setGroupRequestLoading(false);
+    }
   }
 
   const hasOpenSeat = screening
@@ -341,13 +390,52 @@ export default function SeatSelectionPage() {
                   {selectedSeats.length === 1 ? "ticket" : "tickets"}
                 </p>
                 {selectedSeats.map((seat) => (
-                  <p
-                    className="seat-order-item"
+                  <div
+                    className="checkout-ticket-item"
                     key={seatKey(seat.row, seat.number)}
                   >
-                    Row {seat.row} · Seat {seat.number}
-                    <span>€{Number(screening.base_price).toFixed(2)}</span>
-                  </p>
+                    <div className="checkout-ticket-heading">
+                      <strong>
+                        Row {seat.row} · Seat {seat.number}
+                      </strong>
+
+                      {selectedSeats.length <= 6 && (
+                        <span>€{Number(screening.base_price).toFixed(2)}</span>
+                      )}
+                    </div>
+
+                    {selectedSeats.length > 6 && (
+                      <label className="checkout-ticket-label">
+                        Ticket type
+
+                        <select
+                          value={seat.ticket_type || "normal"}
+                          onChange={(event) => {
+                            const ticketType = event.target.value;
+
+                            setSelectedSeats((current) =>
+                              current.map((item) =>
+                                seatKey(item.row, item.number) ===
+                                seatKey(seat.row, seat.number)
+                                  ? { ...item, ticket_type: ticketType }
+                                  : item
+                              )
+                            );
+                          }}
+                        >
+                          <option value="normal">Standard — full price</option>
+                          <option value="child_under_12">Child under 12 — discounted</option>
+                          <option value="wheelchair">Wheelchair — full price</option>
+
+                          {user && (
+                            <option value="loyalty_10th">
+                              10th ticket reward — subject to approval
+                            </option>
+                          )}
+                        </select>
+                      </label>
+                    )}
+                  </div>
                 ))}
                 {selectedSeats.length === 0 && (
                   <p className="booking-order-empty">
@@ -358,14 +446,53 @@ export default function SeatSelectionPage() {
                   <span>Total</span>
                   <strong>€ {total.toFixed(2)}</strong>
                 </div>
-                <button
-                  className="movie-select-seats"
-                  type="button"
-                  disabled={selectedSeats.length === 0}
-                  onClick={continueToCheckout}
-                >
-                  Continue to checkout <span aria-hidden="true">→</span>
-                </button>
+                {selectedSeats.length > 0 && selectedSeats.length <= 6 && (
+                  <button
+                    className="movie-select-seats"
+                    type="button"
+                    onClick={continueToCheckout}
+                  >
+                    Continue to checkout <span aria-hidden="true">→</span>
+                  </button>
+                )}
+
+                {selectedSeats.length > 6 && (
+                  <>
+                    <p className="booking-order-guidance">
+                      Group bookings require Staff/Admin approval. Your seats will not
+                      be held until your request is approved.
+                    </p>
+
+                    {!user && (
+                      <p className="showtimes-feedback">
+                        Please log in before submitting a Group Booking request.
+                      </p>
+                    )}
+
+                    <button
+                      className="movie-select-seats"
+                      type="button"
+                      disabled={!user || groupRequestLoading}
+                      onClick={handleGroupBookingRequest}
+                    >
+                      {groupRequestLoading
+                        ? "Submitting request..."
+                        : "Submit Group Booking Request"}
+                    </button>
+                  </>
+                )}
+
+                {groupRequestError && (
+                  <p className="showtimes-feedback showtimes-error" role="alert">
+                    {groupRequestError}
+                  </p>
+                )}
+
+                {groupRequestMessage && (
+                  <p className="booking-success-message" role="status">
+                    {groupRequestMessage}
+                  </p>
+                )}
 
                 {isSoldOut && (
                   <div className="waitlist-box" style={{ marginTop: "1rem" }}>
