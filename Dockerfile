@@ -1,7 +1,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 # Pass the production backend address for VITE build
 ARG VITE_API_URL=https://group-h-cinema-system-git-group-h-rio-cinme-app.2.rahtiapp.fi

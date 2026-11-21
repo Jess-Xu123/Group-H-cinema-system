@@ -41,7 +41,8 @@ jobs:
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./src
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
