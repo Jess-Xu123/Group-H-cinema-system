@@ -4,8 +4,8 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 # Pass the production backend address for VITE build
-ARG VITE_API_URL=https://group-h-cinema-system-git-group-h-rio-cinme-app.2.rahtiapp.fi
-ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_API_BASE_URL=https://group-h-cinema-system-git-group-h-rio-cinme-app.2.rahtiapp.fi
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 # Runtime phase: use the light weight `serve` to host the static files in `dist`
