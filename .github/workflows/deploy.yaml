@@ -48,3 +48,17 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.ref_name }}
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+
+      - name: Restart Rahti Deployments
+        run: |
+          curl -s -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.RAHTI_TOKEN }}" \
+            -H "Content-Type: application/strategic-merge-patch+json" \
+            -d "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}}}" \
+            "https://api.2.rahti.csc.fi:6443/apis/apps/v1/namespaces/group-h-rio-cinme-app/deployments/rio-cinema-frontend"
+
+          curl -s -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.RAHTI_TOKEN }}" \
+            -H "Content-Type: application/strategic-merge-patch+json" \
+            -d "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}}}" \
+            "https://api.2.rahti.csc.fi:6443/apis/apps/v1/namespaces/group-h-rio-cinme-app/deployments/group-h-cinema-system-git"
