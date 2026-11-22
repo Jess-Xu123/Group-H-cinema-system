@@ -1,5 +1,3 @@
-BEGIN;
-
 CREATE TABLE IF NOT EXISTS group_booking_requests (
     id SERIAL PRIMARY KEY,
     customer_id INT NOT NULL
@@ -54,5 +52,3 @@ ON group_booking_requests(status, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_group_request_seats_request
 ON group_booking_request_seats(request_id);
-
-COMMIT;

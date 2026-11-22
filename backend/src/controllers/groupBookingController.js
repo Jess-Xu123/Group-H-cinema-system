@@ -1,5 +1,7 @@
 const pool = require("../config/db");
-const { expireShowtimeBookings } = require("../services/bookingExpirationService");
+const {
+  expireShowtimeBookings,
+} = require("../services/bookingExpirationService");
 
 const ALLOWED_TICKET_TYPES = [
   "normal",
@@ -41,17 +43,17 @@ function normalizeGroupSeats(seats, hall) {
     const ticketType = seat.ticket_type || "normal";
 
     if (
-    !Number.isInteger(row) ||
-    !Number.isInteger(number) ||
-    row < 0 ||
-    row >= totalRows ||
-    number <= 0 ||
-    number > capacity
+      !Number.isInteger(row) ||
+      !Number.isInteger(number) ||
+      row < 0 ||
+      row >= totalRows ||
+      number <= 0 ||
+      number > capacity
     ) {
-    throw new Error(
+      throw new Error(
         `Invalid seat: row ${row}, seat ${number}. ` +
-        `This hall supports ${totalRows} rows and ${capacity} seats in total.`
-    );
+          `This hall supports ${totalRows} rows and ${capacity} seats in total.`,
+      );
     }
 
     if (!ALLOWED_TICKET_TYPES.includes(ticketType)) {
@@ -59,14 +61,8 @@ function normalizeGroupSeats(seats, hall) {
     }
 
     if (row === 0) {
-      if (
-        ticketType !== "wheelchair" ||
-        number < 1 ||
-        number > 10
-      ) {
-        throw new Error(
-          "Row 0 is reserved for wheelchair tickets."
-        );
+      if (ticketType !== "wheelchair" || number < 1 || number > 10) {
+        throw new Error("Row 0 is reserved for wheelchair tickets.");
       }
     } else {
       if (row === 1 && number === 1) {
@@ -74,9 +70,7 @@ function normalizeGroupSeats(seats, hall) {
       }
 
       if (ticketType === "wheelchair") {
-        throw new Error(
-          "Wheelchair tickets must use a wheelchair space."
-        );
+        throw new Error("Wheelchair tickets must use a wheelchair space.");
       }
     }
 
@@ -117,7 +111,7 @@ async function getShowtimeAndHall(client, showtimeId, lock = false) {
     WHERE s.id = $1
     ${lock ? "FOR UPDATE OF s" : ""}
     `,
-    [showtimeId]
+    [showtimeId],
   );
 
   return result.rows[0] || null;
@@ -131,32 +125,26 @@ async function checkSeatsAvailable(client, showtimeId, seats) {
     WHERE showtime_id = $1
       AND released_at IS NULL
       AND (
-        ${seats.map(
-          (_, index) =>
-            `(row_number = $${index * 2 + 2} AND seat_number = $${index * 2 + 3})`
-        ).join(" OR ")}
+        ${seats
+          .map(
+            (_, index) =>
+              `(row_number = $${index * 2 + 2} AND seat_number = $${index * 2 + 3})`,
+          )
+          .join(" OR ")}
       )
     `,
     [
       showtimeId,
-      ...seats.flatMap((seat) => [
-        seat.row_number,
-        seat.seat_number,
-      ]),
-    ]
+      ...seats.flatMap((seat) => [seat.row_number, seat.seat_number]),
+    ],
   );
 
   if (result.rows.length > 0) {
     const unavailable = result.rows
-      .map(
-        (seat) =>
-          `Row ${seat.row_number}, Seat ${seat.seat_number}`
-      )
+      .map((seat) => `Row ${seat.row_number}, Seat ${seat.seat_number}`)
       .join(", ");
 
-    throw new Error(
-      `These seats are no longer available: ${unavailable}.`
-    );
+    throw new Error(`These seats are no longer available: ${unavailable}.`);
   }
 }
 
@@ -169,14 +157,11 @@ async function getTicketDiscountSettings(client) {
       'child_ticket_discount_percent',
       'loyalty_ticket_discount_percent'
     )
-    `
+    `,
   );
 
   const settings = Object.fromEntries(
-    result.rows.map((row) => [
-      row.setting_key,
-      Number(row.setting_value),
-    ])
+    result.rows.map((row) => [row.setting_key, Number(row.setting_value)]),
   );
 
   return {
@@ -220,7 +205,7 @@ async function getAvailableLoyaltyRewards(client, userId) {
     FROM users u
     WHERE u.id = $1
     `,
-    [userId]
+    [userId],
   );
 
   const user = result.rows[0];
@@ -229,9 +214,7 @@ async function getAvailableLoyaltyRewards(client, userId) {
     throw new Error("Customer account not found.");
   }
 
-  const earned = Math.floor(
-    Number(user.paid_tickets_count || 0) / 10
-  );
+  const earned = Math.floor(Number(user.paid_tickets_count || 0) / 10);
 
   const redeemed = Number(user.redeemed || 0);
   const reserved = Number(user.reserved || 0);
@@ -248,7 +231,7 @@ function calculateSeatPrice(basePrice, ticketType, discounts) {
     discount = discounts.loyalty;
   }
 
-  const price = Number(basePrice) * (100 - discount) / 100;
+  const price = (Number(basePrice) * (100 - discount)) / 100;
 
   return Math.round(price * 100) / 100;
 }
@@ -276,10 +259,7 @@ async function createGroupBookingRequest(req, res) {
   try {
     await client.query("BEGIN");
 
-    const showtime = await getShowtimeAndHall(
-      client,
-      showtimeId
-    );
+    const showtime = await getShowtimeAndHall(client, showtimeId);
 
     if (!showtime) {
       await client.query("ROLLBACK");
@@ -295,10 +275,7 @@ async function createGroupBookingRequest(req, res) {
       });
     }
 
-    const seats = normalizeGroupSeats(
-      req.body?.seats,
-      showtime
-    );
+    const seats = normalizeGroupSeats(req.body?.seats, showtime);
 
     const userResult = await client.query(
       `
@@ -306,7 +283,7 @@ async function createGroupBookingRequest(req, res) {
       FROM users
       WHERE id = $1
       `,
-      [userId]
+      [userId],
     );
 
     if (userResult.rowCount === 0) {
@@ -329,7 +306,7 @@ async function createGroupBookingRequest(req, res) {
       VALUES ($1, $2, 'pending')
       RETURNING id, status, created_at
       `,
-      [userId, showtimeId]
+      [userId, showtimeId],
     );
 
     const request = requestResult.rows[0];
@@ -345,12 +322,7 @@ async function createGroupBookingRequest(req, res) {
         )
         VALUES ($1, $2, $3, $4)
         `,
-        [
-          request.id,
-          seat.row_number,
-          seat.seat_number,
-          seat.ticket_type,
-        ]
+        [request.id, seat.row_number, seat.seat_number, seat.ticket_type],
       );
     }
 
@@ -431,7 +403,7 @@ async function getMyGroupBookingRequests(req, res) {
       GROUP BY r.id, s.id, m.id, h.id
       ORDER BY r.created_at DESC
       `,
-      [userId]
+      [userId],
     );
 
     return res.json(result.rows);
@@ -493,7 +465,7 @@ async function getAdminGroupBookingRequests(req, res) {
       ORDER BY
         CASE WHEN r.status = 'pending' THEN 0 ELSE 1 END,
         r.created_at DESC
-      `
+      `,
     );
 
     return res.json(result.rows);
@@ -530,7 +502,7 @@ async function approveGroupBookingRequest(req, res) {
       WHERE id = $1
       FOR UPDATE
       `,
-      [requestId]
+      [requestId],
     );
 
     const request = requestResult.rows[0];
@@ -553,7 +525,7 @@ async function approveGroupBookingRequest(req, res) {
     const showtime = await getShowtimeAndHall(
       client,
       request.showtime_id,
-      true
+      true,
     );
 
     if (!showtime) {
@@ -570,7 +542,7 @@ async function approveGroupBookingRequest(req, res) {
       WHERE id = $1
       FOR UPDATE
       `,
-      [request.customer_id]
+      [request.customer_id],
     );
 
     const customer = userResult.rows[0];
@@ -586,43 +558,36 @@ async function approveGroupBookingRequest(req, res) {
       WHERE request_id = $1
       ORDER BY row_number, seat_number
       `,
-      [requestId]
+      [requestId],
     );
 
-    const seats = normalizeGroupSeats(
-      seatsResult.rows,
-      showtime
-    );
+    const seats = normalizeGroupSeats(seatsResult.rows, showtime);
 
     const startTime = new Date(showtime.start_time).getTime();
     const now = Date.now();
-    const showtimeCutoff = startTime - 15 * 60 * 1000;
+    const showtimeCutoff = startTime - 120 * 60 * 1000;
 
     if (showtimeCutoff <= now) {
       throw new Error(
-        "There is not enough time to approve this request before the screening."
+        "There is not enough time to approve this request before the screening.",
       );
     }
 
-    await checkSeatsAvailable(
-      client,
-      request.showtime_id,
-      seats
-    );
+    await checkSeatsAvailable(client, request.showtime_id, seats);
 
     const loyaltySeatCount = seats.filter(
-      (seat) => seat.ticket_type === "loyalty_10th"
+      (seat) => seat.ticket_type === "loyalty_10th",
     ).length;
 
     if (loyaltySeatCount > 0) {
       const availableRewards = await getAvailableLoyaltyRewards(
         client,
-        customer.id
+        customer.id,
       );
 
       if (loyaltySeatCount > availableRewards) {
         throw new Error(
-          `This customer has only ${availableRewards} available Loyalty reward(s), but the request contains ${loyaltySeatCount}.`
+          `This customer has only ${availableRewards} available Loyalty reward(s), but the request contains ${loyaltySeatCount}.`,
         );
       }
     }
@@ -635,7 +600,7 @@ async function approveGroupBookingRequest(req, res) {
       const price = calculateSeatPrice(
         showtime.base_price,
         seat.ticket_type,
-        discounts
+        discounts,
       );
 
       const cents = Math.round(price * 100);
@@ -647,12 +612,9 @@ async function approveGroupBookingRequest(req, res) {
       };
     });
 
-    // Deadline: 24 hours after approval, or 15 minutes before showtime.
+    // Deadline: 24 hours after approval, or 2 hours before showtime.
     const paymentDeadline = new Date(
-      Math.min(
-        now + 24 * 60 * 60 * 1000,
-        showtimeCutoff
-      )
+      Math.min(now + 24 * 60 * 60 * 1000, showtimeCutoff),
     );
 
     const bookingResult = await client.query(
@@ -674,7 +636,7 @@ async function approveGroupBookingRequest(req, res) {
         customer.email,
         (totalCents / 100).toFixed(2),
         paymentDeadline,
-      ]
+      ],
     );
 
     const booking = bookingResult.rows[0];
@@ -699,7 +661,7 @@ async function approveGroupBookingRequest(req, res) {
           seat.seat_number,
           seat.ticket_type,
           seat.seat_price,
-        ]
+        ],
       );
     }
 
@@ -713,12 +675,7 @@ async function approveGroupBookingRequest(req, res) {
           approval_note = $4
       WHERE id = $1
       `,
-      [
-        requestId,
-        booking.id,
-        staffId,
-        req.body?.note || null,
-      ]
+      [requestId, booking.id, staffId, req.body?.note || null],
     );
 
     await client.query("COMMIT");
@@ -768,11 +725,7 @@ async function rejectGroupBookingRequest(req, res) {
         AND status = 'pending'
       RETURNING id, status
       `,
-      [
-        requestId,
-        staffId,
-        req.body?.note || null,
-      ]
+      [requestId, staffId, req.body?.note || null],
     );
 
     if (result.rowCount === 0) {
