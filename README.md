@@ -27,7 +27,7 @@ Our development followed an incremental, agile workflow across four major iterat
 - Implemented customer waiting list registration and notifications, staff-assisted bookings, discount/booking limit rules, and initial database seed data.
 - Began parallel development of the **Admin & Staff Management System**.
 
-### **Iteration 3: Private Screenings, Group Bookings & Full Admin Operations** _(Issues #14, #24–#26; PRs #31, #32, #40)_
+### **Iteration 3: Private Screenings, Group Bookings & Full Admin Operations** _(Issues #14, #24–#26; #31, #32, #40)_
 
 - Built corporate/private screening enquiry submission and staff/admin review workflows with unique reference numbers (`PR #31`).
 - Expanded waiting list queue management and automated seat-release notifications (`PR #32`).
@@ -134,7 +134,7 @@ npm run dev            # Automatically runs pending SQL migrations and starts se
 
 ---
 
-## 🧪 Quality Assurance & Phase 5 E2E Testing
+## 🧪 Quality Assurance & E2E Testing
 
 - Production verification is tracked systematically across six functional end-to-end test tracks:
 
