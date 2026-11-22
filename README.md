@@ -1,10 +1,10 @@
-# 🎬 RIO Cinema System (Group H)
+# RIO Cinema System (Group H)
 
 A full-stack cinema ticketing, seat reservation, and management platform built with **React**, **Node.js (Express)**, and **PostgreSQL**, containerized with **Docker** and continuously deployed to **CSC Rahti** & **CSC Pukki** via **GitHub Actions**.
 
 ---
 
-## 🚀 Iterative Development Roadmap (Iteration 0 – 3)
+## Iterative Development Roadmap (Iteration 0 – 3)
 
 Our development followed an incremental, agile workflow across four major iterations:
 
@@ -54,7 +54,7 @@ Our development followed an incremental, agile workflow across four major iterat
 
 ---
 
-## 🏗️ System Architecture & Tech Stack
+## System Architecture & Tech Stack
 
 | Layer                | Technology                                             | Hosting / Infrastructure                                |
 | :------------------- | :----------------------------------------------------- | :------------------------------------------------------ |
@@ -65,7 +65,7 @@ Our development followed an incremental, agile workflow across four major iterat
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 Group-H-cinema-system/
@@ -95,7 +95,7 @@ Group-H-cinema-system/
 
 ---
 
-## 🔄 Cloud Infrastructure & CI/CD Deployment Workflow
+## Cloud Infrastructure & CI/CD Deployment Workflow
 
 Our deployment architecture separates **one-time cloud infrastructure provisioning** (CSC Pukki + CSC Rahti) from **continuous, automated delivery** (GitHub Actions + `ghcr.io` + startup SQL migrations).
 
@@ -135,7 +135,7 @@ Once the baseline infrastructure was live, we transitioned from manual S2I build
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 ### Prerequisites
 
@@ -162,7 +162,7 @@ npm run dev            # Automatically runs pending SQL migrations and starts se
 
 ---
 
-## 🧪 Quality Assurance & E2E Testing
+## Quality Assurance & E2E Testing
 
 - Production verification is tracked systematically across six functional end-to-end test tracks:
 
