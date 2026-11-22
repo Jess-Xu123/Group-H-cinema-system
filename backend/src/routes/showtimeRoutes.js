@@ -79,15 +79,6 @@ router.get("/:id/seats", async (req, res) => {
   }
 
   try {
-
-    await pool.query(
-      `DELETE FROM bookings
-       WHERE showtime_id = $1
-         AND status IN ('checkout_locked', 'reserved_unpaid')
-         AND expires_at <= NOW();`,
-      [showtimeId]
-    );
-
     const screeningQuery = `
       SELECT
         s.id AS showtime_id,
@@ -118,6 +109,7 @@ router.get("/:id/seats", async (req, res) => {
       return res.status(404).json({ error: "Showtime not found." });
     }
 
+    // Keep expired bookings for history; the seat query excludes past expiries.
     const bookedSeatsQuery = `
       SELECT bs.row_number, bs.seat_number
       FROM booked_seats bs

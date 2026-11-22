@@ -2,7 +2,10 @@ require("dotenv").config();
 
 const app = require("./app");
 const pool = require("./config/db");
-const { expireExpiredBookings } = require("./services/bookingExpirationService");
+const { runMigrations } = require("./config/migrate");
+const {
+  expireExpiredBookings,
+} = require("./services/bookingExpirationService");
 
 const PORT = process.env.PORT || 3000;
 let expirationJobRunning = false;
@@ -27,6 +30,8 @@ async function startServer() {
   try {
     await pool.query("SELECT NOW()");
     console.log("Database connection successful!");
+
+    await runMigrations(pool);
 
     // Run once on startup, then every minute.
     await runExpirationJob();

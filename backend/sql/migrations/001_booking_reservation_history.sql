@@ -26,7 +26,7 @@ SET expires_at = CASE
   WHEN b.status = 'checkout_locked'
     THEN b.created_at + INTERVAL '15 minutes'
   WHEN b.status = 'reserved_unpaid'
-    THEN s.start_time - INTERVAL '15 minutes'
+    THEN s.start_time - INTERVAL '120 minutes'
   ELSE b.expires_at
 END
 FROM showtimes s

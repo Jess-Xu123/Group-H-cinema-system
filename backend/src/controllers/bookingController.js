@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 const pool = require("../config/db");
-const { expireShowtimeBookings } = require("../services/bookingExpirationService");
+const {
+  expireShowtimeBookings,
+} = require("../services/bookingExpirationService");
 
 const ALLOWED_TICKET_TYPES = new Set([
   "normal",
@@ -19,14 +21,16 @@ function guestTokenMatches(token, storedHash) {
   const candidate = Buffer.from(hashGuestToken(String(token)), "hex");
   const stored = Buffer.from(storedHash, "hex");
 
-  return candidate.length === stored.length &&
-    crypto.timingSafeEqual(candidate, stored);
+  return (
+    candidate.length === stored.length &&
+    crypto.timingSafeEqual(candidate, stored)
+  );
 }
 
 function getGuestToken(req) {
-  return req.get("x-guest-checkout-token") ||
-    req.body?.guest_checkout_token ||
-    null;
+  return (
+    req.get("x-guest-checkout-token") || req.body?.guest_checkout_token || null
+  );
 }
 
 function validId(value) {
@@ -43,18 +47,24 @@ async function getTicketDiscountSettings(dbClient = pool) {
      WHERE setting_key IN (
        'child_ticket_discount_percent',
        'loyalty_ticket_discount_percent'
-     )`
+     )`,
   );
 
   const values = Object.fromEntries(
-    result.rows.map((row) => [row.setting_key, Number(row.setting_value)])
+    result.rows.map((row) => [row.setting_key, Number(row.setting_value)]),
   );
 
   return {
-    child_ticket_discount_percent: Number.isInteger(values.child_ticket_discount_percent)
-      ? values.child_ticket_discount_percent : 50,
-    loyalty_ticket_discount_percent: Number.isInteger(values.loyalty_ticket_discount_percent)
-      ? values.loyalty_ticket_discount_percent : 50,
+    child_ticket_discount_percent: Number.isInteger(
+      values.child_ticket_discount_percent,
+    )
+      ? values.child_ticket_discount_percent
+      : 50,
+    loyalty_ticket_discount_percent: Number.isInteger(
+      values.loyalty_ticket_discount_percent,
+    )
+      ? values.loyalty_ticket_discount_percent
+      : 50,
   };
 }
 
@@ -63,9 +73,9 @@ function normalizeSeats(seats, hall) {
     throw new Error("At least one seat must be selected.");
   }
   if (seats.length > 6) {
-      throw new Error("Maximum 6 tickets allowed per booking.");
-    }
-    const seen = new Set();
+    throw new Error("Maximum 6 tickets allowed per booking.");
+  }
+  const seen = new Set();
 
   return seats.map((seat) => {
     const row = Number(seat.row_number ?? seat.row);
@@ -98,10 +108,9 @@ function normalizeSeats(seats, hall) {
 }
 
 async function getUserEmail(client, userId) {
-  const result = await client.query(
-    "SELECT email FROM users WHERE id = $1",
-    [userId]
-  );
+  const result = await client.query("SELECT email FROM users WHERE id = $1", [
+    userId,
+  ]);
 
   return result.rows[0]?.email || null;
 }
@@ -113,12 +122,12 @@ async function notifyWaitlistForShowtime(dbClient, showtimeId) {
      WHERE showtime_id = $1
        AND is_notified = FALSE
      RETURNING id, customer_email;`,
-    [showtimeId]
+    [showtimeId],
   );
 
   if (rows.length > 0) {
     console.log(
-      `[Waitlist Alert] Showtime #${showtimeId}: Notified ${rows.map((r) => r.customer_email).join(", ")}`
+      `[Waitlist Alert] Showtime #${showtimeId}: Notified ${rows.map((r) => r.customer_email).join(", ")}`,
     );
   }
 
@@ -169,7 +178,7 @@ async function getMyBookings(req, res) {
       GROUP BY b.id, s.id, m.id, h.id
       ORDER BY b.created_at DESC
       `,
-      [req.user.userId]
+      [req.user.userId],
     );
 
     return res.status(200).json({ bookings: result.rows });
@@ -227,7 +236,7 @@ async function getAdminBookings(req, res) {
       LEFT JOIN booked_seats bs ON bs.booking_id = b.id
       GROUP BY b.id, s.id, m.id, h.id, u.id
       ORDER BY b.created_at DESC
-      `
+      `,
     );
 
     return res.status(200).json({ bookings: result.rows });
@@ -266,7 +275,7 @@ async function getLoyaltyRewards(req, res) {
         WHERE u.id = $1
         GROUP BY u.id
       `,
-      [userId]
+      [userId],
     );
 
     const row = result.rows[0];
@@ -285,7 +294,8 @@ async function getLoyaltyRewards(req, res) {
       redeemed_rewards: redeemed,
       reserved_rewards: reserved,
       available_rewards: Math.max(0, earned - redeemed - reserved),
-      loyalty_ticket_discount_percent: discountSettings.loyalty_ticket_discount_percent,
+      loyalty_ticket_discount_percent:
+        discountSettings.loyalty_ticket_discount_percent,
     });
   } catch (error) {
     console.error("Get loyalty rewards error:", error);
@@ -303,7 +313,9 @@ async function holdSeats(req, res) {
   const { seats } = req.body || {};
 
   if (!showtimeId) {
-    return res.status(400).json({ message: "A valid showtime_id is required." });
+    return res
+      .status(400)
+      .json({ message: "A valid showtime_id is required." });
   }
 
   const client = await pool.connect();
@@ -323,7 +335,7 @@ async function holdSeats(req, res) {
       WHERE s.id = $1
       FOR UPDATE OF s
       `,
-      [showtimeId]
+      [showtimeId],
     );
 
     const showtime = showtimeResult.rows[0];
@@ -334,7 +346,9 @@ async function holdSeats(req, res) {
 
     if (new Date(showtime.start_time) <= new Date()) {
       await client.query("ROLLBACK");
-      return res.status(400).json({ message: "This showtime has already started." });
+      return res
+        .status(400)
+        .json({ message: "This showtime has already started." });
     }
 
     if (showtime.base_price === null || showtime.base_price === undefined) {
@@ -361,7 +375,7 @@ async function holdSeats(req, res) {
         WHERE id = $1
         FOR UPDATE
         `,
-        [userId]
+        [userId],
       );
 
       const user = userResult.rows[0];
@@ -376,11 +390,15 @@ async function holdSeats(req, res) {
       customerEmail = user.email;
       paidTicketsCount = Number(user.paid_tickets_count);
     } else {
-      customerEmail = String(req.body?.customer_email || "").trim().toLowerCase();
+      customerEmail = String(req.body?.customer_email || "")
+        .trim()
+        .toLowerCase();
 
       if (!customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
         await client.query("ROLLBACK");
-        return res.status(400).json({ message: "A valid customer_email is required." });
+        return res
+          .status(400)
+          .json({ message: "A valid customer_email is required." });
       }
     }
 
@@ -399,7 +417,7 @@ async function holdSeats(req, res) {
     const basePriceCents = Math.round(Number(showtime.base_price) * 100);
 
     const loyaltySeatsCount = normalizedSeats.filter(
-      (seat) => seat.ticket_type === "loyalty_10th"
+      (seat) => seat.ticket_type === "loyalty_10th",
     ).length;
 
     // Loyalty rewards are only available to registered users.
@@ -431,7 +449,7 @@ async function holdSeats(req, res) {
           AND bs.ticket_type = 'loyalty_10th'
           AND bs.released_at IS NULL
         `,
-        [userId]
+        [userId],
       );
 
       const redeemedCount = rewardUsageResult.rows[0].redeemed_count;
@@ -439,8 +457,7 @@ async function holdSeats(req, res) {
 
       const earnedRewards = Math.floor(paidTicketsCount / 10);
 
-      const availableRewards =
-        earnedRewards - redeemedCount - reservedCount;
+      const availableRewards = earnedRewards - redeemedCount - reservedCount;
 
       if (loyaltySeatsCount > availableRewards) {
         await client.query("ROLLBACK");
@@ -464,7 +481,7 @@ async function holdSeats(req, res) {
       }
 
       const priceCents = Math.round(
-        basePriceCents * (100 - discountPercent) / 100
+        (basePriceCents * (100 - discountPercent)) / 100,
       );
 
       return {
@@ -477,7 +494,7 @@ async function holdSeats(req, res) {
     // Calculate the total booking amount.
     const totalAmountCents = seatsWithPrices.reduce(
       (total, seat) => total + seat.priceCents,
-      0
+      0,
     );
 
     const totalAmount = (totalAmountCents / 100).toFixed(2);
@@ -498,13 +515,7 @@ async function holdSeats(req, res) {
       RETURNING id, user_id, showtime_id, customer_email,
                 total_amount, status, expires_at, created_at
       `,
-      [
-        userId,
-        showtimeId,
-        customerEmail,
-        totalAmount,
-        guestTokenHash,
-      ]
+      [userId, showtimeId, customerEmail, totalAmount, guestTokenHash],
     );
 
     const booking = bookingResult.rows[0];
@@ -525,7 +536,7 @@ async function holdSeats(req, res) {
           seat.seat_number,
           seat.ticket_type,
           seat.seatPrice,
-        ]
+        ],
       );
     }
 
@@ -579,7 +590,7 @@ async function reserveBooking(req, res) {
       WHERE b.id = $1
       FOR UPDATE OF b
       `,
-      [bookingId]
+      [bookingId],
     );
 
     const booking = result.rows[0];
@@ -599,15 +610,17 @@ async function reserveBooking(req, res) {
       await client.query(
         `UPDATE bookings SET status = 'expired'
          WHERE id = $1 AND status = 'checkout_locked'`,
-        [bookingId]
+        [bookingId],
       );
       await client.query(
         `UPDATE booked_seats SET released_at = NOW()
          WHERE booking_id = $1 AND released_at IS NULL`,
-        [bookingId]
+        [bookingId],
       );
       await client.query("COMMIT");
-      return res.status(410).json({ message: "The 15-minute checkout hold has expired." });
+      return res
+        .status(410)
+        .json({ message: "The 15-minute checkout hold has expired." });
     }
 
     const userId = req.user.userId;
@@ -615,32 +628,41 @@ async function reserveBooking(req, res) {
 
     if (!userEmail) {
       await client.query("ROLLBACK");
-      return res.status(401).json({ message: "Your account could not be verified." });
+      return res
+        .status(401)
+        .json({ message: "Your account could not be verified." });
     }
 
     if (booking.user_id && Number(booking.user_id) !== Number(userId)) {
       await client.query("ROLLBACK");
-      return res.status(403).json({ message: "This booking belongs to another user." });
+      return res
+        .status(403)
+        .json({ message: "This booking belongs to another user." });
     }
 
-    if (!booking.user_id && !guestTokenMatches(getGuestToken(req), booking.guest_token_hash)) {
+    if (
+      !booking.user_id &&
+      !guestTokenMatches(getGuestToken(req), booking.guest_token_hash)
+    ) {
       await client.query("ROLLBACK");
       return res.status(403).json({
-        message: "A valid guest checkout token is required to claim this booking.",
+        message:
+          "A valid guest checkout token is required to claim this booking.",
       });
     }
 
-    const reservationExpiry = new Date(booking.start_time).getTime() - 15 * 60 * 1000;
+    const reservationExpiry =
+      new Date(booking.start_time).getTime() - 120 * 60 * 1000;
     if (reservationExpiry <= Date.now()) {
       await client.query(
         `UPDATE bookings SET status = 'expired'
          WHERE id = $1 AND status = 'checkout_locked'`,
-        [bookingId]
+        [bookingId],
       );
       await client.query(
         `UPDATE booked_seats SET released_at = NOW()
          WHERE booking_id = $1 AND released_at IS NULL`,
-        [bookingId]
+        [bookingId],
       );
       await client.query("COMMIT");
       return res.status(410).json({
@@ -654,11 +676,13 @@ async function reserveBooking(req, res) {
        JOIN bookings b ON b.id = bs.booking_id
        WHERE bs.released_at IS NULL
          AND (b.id = $2 OR (b.user_id = $1 AND b.status = 'reserved_unpaid' AND b.expires_at > NOW()))`,
-      [userId, bookingId]
+      [userId, bookingId],
     );
     if (unpaidResult.rows[0].seat_count > 6) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "Maximum 6 unpaid reserved seats allowed." });
+      return res
+        .status(409)
+        .json({ message: "Maximum 6 unpaid reserved seats allowed." });
     }
 
     const updated = await client.query(
@@ -673,13 +697,13 @@ async function reserveBooking(req, res) {
       RETURNING id, user_id, showtime_id, customer_email,
                 total_amount, status, expires_at, created_at
       `,
-      [bookingId, userId, userEmail, new Date(reservationExpiry)]
+      [bookingId, userId, userEmail, new Date(reservationExpiry)],
     );
 
     await client.query("COMMIT");
 
     return res.status(200).json({
-      message: "Your seats are reserved until 15 minutes before the movie starts.",
+      message: "Your seats are reserved until 2 hours before the movie starts.",
       booking: updated.rows[0],
     });
   } catch (error) {
@@ -705,7 +729,7 @@ async function releaseBookingHold(req, res) {
 
     const result = await client.query(
       "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
-      [bookingId]
+      [bookingId],
     );
     const booking = result.rows[0];
 
@@ -716,38 +740,48 @@ async function releaseBookingHold(req, res) {
 
     if (booking.status !== "checkout_locked") {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "This checkout hold cannot be released." });
+      return res
+        .status(409)
+        .json({ message: "This checkout hold cannot be released." });
     }
 
     if (booking.user_id) {
       if (!req.user || Number(req.user.userId) !== Number(booking.user_id)) {
         await client.query("ROLLBACK");
-        return res.status(403).json({ message: "You cannot release another user's hold." });
+        return res
+          .status(403)
+          .json({ message: "You cannot release another user's hold." });
       }
-    } else if (!guestTokenMatches(getGuestToken(req), booking.guest_token_hash)) {
+    } else if (
+      !guestTokenMatches(getGuestToken(req), booking.guest_token_hash)
+    ) {
       await client.query("ROLLBACK");
-      return res.status(403).json({ message: "A valid guest checkout token is required." });
+      return res
+        .status(403)
+        .json({ message: "A valid guest checkout token is required." });
     }
 
-    const newStatus = new Date(booking.expires_at) <= new Date()
-      ? "expired"
-      : "cancelled";
+    const newStatus =
+      new Date(booking.expires_at) <= new Date() ? "expired" : "cancelled";
 
-    await client.query(
-      "UPDATE bookings SET status = $2 WHERE id = $1",
-      [bookingId, newStatus]
-    );
+    await client.query("UPDATE bookings SET status = $2 WHERE id = $1", [
+      bookingId,
+      newStatus,
+    ]);
     await client.query(
       `UPDATE booked_seats SET released_at = NOW()
        WHERE booking_id = $1 AND released_at IS NULL`,
-      [bookingId]
+      [bookingId],
     );
 
-   await notifyWaitlistForShowtime(client, booking.showtime_id);
+    await notifyWaitlistForShowtime(client, booking.showtime_id);
 
     await client.query("COMMIT");
     return res.status(200).json({
-      message: newStatus === "expired" ? "The checkout hold had expired." : "Seat hold released.",
+      message:
+        newStatus === "expired"
+          ? "The checkout hold had expired."
+          : "Seat hold released.",
       status: newStatus,
     });
   } catch (error) {
@@ -773,7 +807,7 @@ async function cancelReservation(req, res) {
 
     const result = await client.query(
       "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
-      [bookingId]
+      [bookingId],
     );
     const booking = result.rows[0];
 
@@ -784,30 +818,35 @@ async function cancelReservation(req, res) {
 
     if (Number(booking.user_id) !== Number(req.user.userId)) {
       await client.query("ROLLBACK");
-      return res.status(403).json({ message: "You cannot cancel another user's reservation." });
+      return res
+        .status(403)
+        .json({ message: "You cannot cancel another user's reservation." });
     }
 
     if (booking.status !== "reserved_unpaid") {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "Only unpaid reservations can be cancelled." });
+      return res
+        .status(409)
+        .json({ message: "Only unpaid reservations can be cancelled." });
     }
 
-    const newStatus = new Date(booking.expires_at) <= new Date()
-      ? "expired"
-      : "cancelled";
+    const newStatus =
+      new Date(booking.expires_at) <= new Date() ? "expired" : "cancelled";
 
-    await client.query(
-      "UPDATE bookings SET status = $2 WHERE id = $1",
-      [bookingId, newStatus]
-    );
+    await client.query("UPDATE bookings SET status = $2 WHERE id = $1", [
+      bookingId,
+      newStatus,
+    ]);
     await client.query(
       `UPDATE booked_seats SET released_at = NOW()
        WHERE booking_id = $1 AND released_at IS NULL`,
-      [bookingId]
+      [bookingId],
     );
 
     await client.query("COMMIT");
-    return res.status(200).json({ message: "Reservation updated.", status: newStatus });
+    return res
+      .status(200)
+      .json({ message: "Reservation updated.", status: newStatus });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Cancel reservation error:", error);
@@ -817,11 +856,14 @@ async function cancelReservation(req, res) {
   }
 }
 
-async function markBookingPaidInTransaction(client, bookingId, stripePaymentId = null) {
-
+async function markBookingPaidInTransaction(
+  client,
+  bookingId,
+  stripePaymentId = null,
+) {
   const result = await client.query(
     "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
-    [bookingId]
+    [bookingId],
   );
 
   console.log("[PAYMENT] Booking row locked", {
@@ -831,21 +873,21 @@ async function markBookingPaidInTransaction(client, bookingId, stripePaymentId =
   const booking = result.rows[0];
 
   if (!booking) return { ok: false, reason: "not_found" };
-  if (booking.status === "paid") return { ok: true, alreadyPaid: true, booking };
+  if (booking.status === "paid")
+    return { ok: true, alreadyPaid: true, booking };
 
   if (!["checkout_locked", "reserved_unpaid"].includes(booking.status)) {
     return { ok: false, reason: "not_payable" };
   }
 
   if (new Date(booking.expires_at) <= new Date()) {
-    await client.query(
-      "UPDATE bookings SET status = 'expired' WHERE id = $1",
-      [bookingId]
-    );
+    await client.query("UPDATE bookings SET status = 'expired' WHERE id = $1", [
+      bookingId,
+    ]);
     await client.query(
       `UPDATE booked_seats SET released_at = NOW()
        WHERE booking_id = $1 AND released_at IS NULL`,
-      [bookingId]
+      [bookingId],
     );
     return { ok: false, reason: "expired" };
   }
@@ -858,7 +900,7 @@ async function markBookingPaidInTransaction(client, bookingId, stripePaymentId =
     WHERE id = $1
     RETURNING *
     `,
-    [bookingId, stripePaymentId]
+    [bookingId, stripePaymentId],
   );
 
   const paidBooking = updated.rows[0];
@@ -872,14 +914,14 @@ async function markBookingPaidInTransaction(client, bookingId, stripePaymentId =
         AND released_at IS NULL
         AND ticket_type != 'loyalty_10th'
       `,
-      [bookingId]
+      [bookingId],
     );
-    
+
     await client.query(
       `UPDATE users
        SET paid_tickets_count = paid_tickets_count + $1
        WHERE id = $2`,
-      [countResult.rows[0].count, paidBooking.user_id]
+      [countResult.rows[0].count, paidBooking.user_id],
     );
   }
 
@@ -901,7 +943,7 @@ async function confirmOfflinePayment(req, res) {
 
     const result = await client.query(
       "SELECT * FROM bookings WHERE id = $1 FOR UPDATE",
-      [bookingId]
+      [bookingId],
     );
     const booking = result.rows[0];
 
@@ -928,12 +970,12 @@ async function confirmOfflinePayment(req, res) {
     if (new Date(booking.expires_at) <= new Date()) {
       await client.query(
         "UPDATE bookings SET status = 'expired' WHERE id = $1",
-        [bookingId]
+        [bookingId],
       );
       await client.query(
         `UPDATE booked_seats SET released_at = NOW()
          WHERE booking_id = $1 AND released_at IS NULL`,
-        [bookingId]
+        [bookingId],
       );
       await client.query("COMMIT");
       return res.status(410).json({ message: "This reservation has expired." });
@@ -942,7 +984,9 @@ async function confirmOfflinePayment(req, res) {
     const paid = await markBookingPaidInTransaction(client, bookingId, null);
     if (!paid.ok) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "This reservation can no longer be paid." });
+      return res
+        .status(409)
+        .json({ message: "This reservation can no longer be paid." });
     }
 
     await client.query("COMMIT");
@@ -953,7 +997,9 @@ async function confirmOfflinePayment(req, res) {
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Offline payment confirmation error:", error);
-    return res.status(500).json({ message: "Failed to confirm offline payment." });
+    return res
+      .status(500)
+      .json({ message: "Failed to confirm offline payment." });
   } finally {
     client.release();
   }
@@ -965,14 +1011,14 @@ async function confirmOfflinePayment(req, res) {
 async function markBookingPaidFromVerifiedStripe(
   bookingId,
   paymentIntentId,
-  existingClient = null
+  existingClient = null,
 ) {
   // Reuse the Webhook's existing transaction.
   if (existingClient) {
     return markBookingPaidInTransaction(
       existingClient,
       bookingId,
-      paymentIntentId
+      paymentIntentId,
     );
   }
 
@@ -987,7 +1033,7 @@ async function markBookingPaidFromVerifiedStripe(
     const result = await markBookingPaidInTransaction(
       client,
       bookingId,
-      paymentIntentId
+      paymentIntentId,
     );
 
     await client.query("COMMIT");
@@ -1002,10 +1048,7 @@ async function markBookingPaidFromVerifiedStripe(
       }
     }
 
-    console.error(
-      "[PAYMENT] markBookingPaidFromVerifiedStripe error:",
-      error
-    );
+    console.error("[PAYMENT] markBookingPaidFromVerifiedStripe error:", error);
 
     throw error;
   } finally {
@@ -1041,11 +1084,18 @@ async function getAdminWaitlist(req, res) {
 
 async function notifyWaitlistEntry(req, res) {
   const waitlistId = Number(req.params.id);
-  if (!Number.isInteger(waitlistId) || waitlistId < 1) return res.status(400).json({ error: "Invalid waitlist ID." });
+  if (!Number.isInteger(waitlistId) || waitlistId < 1)
+    return res.status(400).json({ error: "Invalid waitlist ID." });
   try {
-    const { rows } = await pool.query(`UPDATE premiere_waitlist SET is_notified = TRUE WHERE id = $1 RETURNING *;`, [waitlistId]);
-    if (rows.length === 0) return res.status(404).json({ error: "Waitlist entry not found." });
-    console.log(`[Waitlist Alert] Manual alert sent to ${rows[0].customer_email}`);
+    const { rows } = await pool.query(
+      `UPDATE premiere_waitlist SET is_notified = TRUE WHERE id = $1 RETURNING *;`,
+      [waitlistId],
+    );
+    if (rows.length === 0)
+      return res.status(404).json({ error: "Waitlist entry not found." });
+    console.log(
+      `[Waitlist Alert] Manual alert sent to ${rows[0].customer_email}`,
+    );
     return res.json({ message: "Notification sent.", entry: rows[0] });
   } catch (err) {
     return res.status(500).json({ error: "Failed to notify recipient." });
@@ -1054,10 +1104,15 @@ async function notifyWaitlistEntry(req, res) {
 
 async function removeWaitlistEntry(req, res) {
   const waitlistId = Number(req.params.id);
-  if (!Number.isInteger(waitlistId) || waitlistId < 1) return res.status(400).json({ error: "Invalid waitlist ID." });
+  if (!Number.isInteger(waitlistId) || waitlistId < 1)
+    return res.status(400).json({ error: "Invalid waitlist ID." });
   try {
-    const { rows } = await pool.query(`DELETE FROM premiere_waitlist WHERE id = $1 RETURNING id;`, [waitlistId]); // <-- Blank #2
-    if (rows.length === 0) return res.status(404).json({ error: "Waitlist entry not found." }); // <-- Blank #3
+    const { rows } = await pool.query(
+      `DELETE FROM premiere_waitlist WHERE id = $1 RETURNING id;`,
+      [waitlistId],
+    ); // <-- Blank #2
+    if (rows.length === 0)
+      return res.status(404).json({ error: "Waitlist entry not found." }); // <-- Blank #3
     return res.json({ message: "Removed from waiting list.", id: waitlistId });
   } catch (err) {
     return res.status(500).json({ error: "Failed to remove waitlist entry." });
@@ -1076,7 +1131,7 @@ async function assignWaitlistSeat(req, res) {
 
     const wlRes = await client.query(
       `SELECT * FROM premiere_waitlist WHERE id = $1 FOR UPDATE;`,
-      [waitlistId]
+      [waitlistId],
     );
     if (wlRes.rows.length === 0) {
       await client.query("ROLLBACK");
@@ -1090,7 +1145,7 @@ async function assignWaitlistSeat(req, res) {
        JOIN movies m ON s.movie_id = m.id
        JOIN halls h ON s.hall_id = h.id
        WHERE s.id = $1;`,
-      [entry.showtime_id]
+      [entry.showtime_id],
     );
     if (infoRes.rows.length === 0) {
       await client.query("ROLLBACK");
@@ -1102,9 +1157,11 @@ async function assignWaitlistSeat(req, res) {
       `SELECT row_number, seat_number
        FROM booked_seats
        WHERE showtime_id = $1;`,
-      [entry.showtime_id]
+      [entry.showtime_id],
     );
-    const taken = new Set(takenRes.rows.map((r) => `${r.row_number}-${r.seat_number}`));
+    const taken = new Set(
+      takenRes.rows.map((r) => `${r.row_number}-${r.seat_number}`),
+    );
 
     let openSeat = null;
     for (let r = 1; r <= Number(info.total_rows) && !openSeat; r++) {
@@ -1121,10 +1178,12 @@ async function assignWaitlistSeat(req, res) {
       return res.status(400).json({ error: "No open seats available." });
     }
 
-    const price = Number((Number(info.base_price) * (info.is_premiere ? 1.15 : 1)).toFixed(2));
+    const price = Number(
+      (Number(info.base_price) * (info.is_premiere ? 1.15 : 1)).toFixed(2),
+    );
     const userRes = await client.query(
       `SELECT id FROM users WHERE LOWER(email) = LOWER($1);`,
-      [entry.customer_email]
+      [entry.customer_email],
     );
     const userId = userRes.rows[0]?.id || null;
     const status = userId ? "reserved_unpaid" : "checkout_locked";
@@ -1136,16 +1195,31 @@ async function assignWaitlistSeat(req, res) {
       `INSERT INTO bookings (user_id, showtime_id, customer_email, total_amount, status, expires_at)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id;`,
-      [userId, entry.showtime_id, entry.customer_email, price, status, expiresAt]
+      [
+        userId,
+        entry.showtime_id,
+        entry.customer_email,
+        price,
+        status,
+        expiresAt,
+      ],
     );
 
     await client.query(
       `INSERT INTO booked_seats (booking_id, showtime_id, row_number, seat_number, ticket_type, seat_price)
        VALUES ($1, $2, $3, $4, 'normal', $5);`,
-      [bookRes.rows[0].id, entry.showtime_id, openSeat.row_number, openSeat.seat_number, price]
+      [
+        bookRes.rows[0].id,
+        entry.showtime_id,
+        openSeat.row_number,
+        openSeat.seat_number,
+        price,
+      ],
     );
 
-    await client.query(`DELETE FROM premiere_waitlist WHERE id = $1;`, [waitlistId]);
+    await client.query(`DELETE FROM premiere_waitlist WHERE id = $1;`, [
+      waitlistId,
+    ]);
     await client.query("COMMIT");
 
     return res.status(201).json({
@@ -1156,7 +1230,9 @@ async function assignWaitlistSeat(req, res) {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Assign waitlist seat error:", err);
-    return res.status(500).json({ error: err.message || "Failed to assign seat." });
+    return res
+      .status(500)
+      .json({ error: err.message || "Failed to assign seat." });
   } finally {
     client.release();
   }
