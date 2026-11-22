@@ -457,3 +457,8 @@
   font-weight: 600;
   line-height: 1.6;
 }
+
+.seat.seat-gap-warning {
+  border: 2px dashed var(--rio-gold);
+  box-shadow: 0 0 8px rgba(227, 183, 87, 0.35);
+}

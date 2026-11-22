@@ -111,6 +111,40 @@ export default function SeatSelectionPage() {
       ),
     [selectedSeats],
   );
+
+  const strandedGapKeys = useMemo(() => {
+  const gaps = new Set();
+  if (!screening || selectedSeats.length === 0 ) return gaps;
+
+  const seatsPerRow = Number(screening.seats_per_row) || 10;
+  const isTaken = (row, pos) =>
+    pos < 1 ||
+    pos > seatsPerRow ||
+    occupiedKeys.has(seatKey(row, pos)) ||
+    selectedKeys.has(seatKey(row, pos)) ||
+    (row === 1 && pos === 1);
+
+    const activeRows = new Set(selectedSeats.map((seat) => seat.row));
+
+  activeRows.forEach((row) => {
+    for (let pos = 1; pos <= seatsPerRow; pos++) {
+      if (isTaken(row, pos)) continue;
+
+      const leftBlocked = isTaken(row, pos - 1)
+      const rightBlocked = isTaken(row, pos + 1)
+      const touchesSelection =
+        selectedKeys.has(seatKey(row, pos - 1)) ||
+        selectedKeys.has(seatKey(row, pos + 1))
+
+      if (leftBlocked && rightBlocked && touchesSelection) {
+        gaps.add(seatKey(row, pos));
+      }
+    }
+  });
+
+  return gaps;
+}, [screening, selectedSeats, occupiedKeys, selectedKeys]);
+
   const total = screening
     ? Number(screening.base_price) * selectedSeats.length
     : 0;
@@ -317,7 +351,7 @@ export default function SeatSelectionPage() {
                           const isReservedSeat = row === 1 && position === 1;
                           const isSelected = selectedKeys.has(key);
                           const unavailable = isBooked || isReservedSeat;
-
+                          const isStrandedGap = strandedGapKeys.has(key)
                           return (
                             <button
                               key={key}
@@ -327,7 +361,7 @@ export default function SeatSelectionPage() {
                                   ? "is-selected"
                                   : unavailable
                                     ? "is-unavailable"
-                                    : ""
+                                    : isStrandedGap ? "seat-gap-warning" : ""
                               }`}
                               disabled={unavailable}
                               aria-pressed={isSelected}
