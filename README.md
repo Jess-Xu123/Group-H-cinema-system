@@ -95,15 +95,43 @@ Group-H-cinema-system/
 
 ---
 
-## 🔄 CI/CD & Database Migration Workflow
+## 🔄 Cloud Infrastructure & CI/CD Deployment Workflow
 
-- Code & Schema Push: Developers commit application changes and any new numbered SQL scripts under backend/sql/migrations/ (e.g., 008_feature_update.sql) to main.
+Our deployment architecture separates **one-time cloud infrastructure provisioning** (CSC Pukki + CSC Rahti) from **continuous, automated delivery** (GitHub Actions + `ghcr.io` + startup SQL migrations).
 
-- Automated Build & Push: GitHub Actions builds both frontend (injecting VITE_API_BASE_URL) and backend Docker images and pushes them to ghcr.io.
+### Part 1: Initial Cloud Infrastructure Provisioning (One-Time Setup)
 
-- Rolling Deployment: GitHub Actions authenticates to CSC Rahti via RAHTI_TOKEN and triggers a rolling update of the frontend and backend pods.
+1. **Provisioning CSC Pukki PostgreSQL DBaaS:**
+   - Created a managed PostgreSQL instance on **CSC Pukki** (`pukki.dbaas.csc.fi`) and initialized the baseline database schema.
+   - Configured network firewall rules to restrict database access strictly to the **CSC Rahti** cluster egress subnet (`86.50.229.0/24`), blocking direct public internet connections.
+2. **Configuring CSC Rahti (OpenShift) Environment:**
+   - Created a project namespace in **CSC Rahti** and configured **Secrets** & **ConfigMaps** for backend runtime environment variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_SSL`, `JWT_SECRET`, `STRIPE_SECRET_KEY`, `CLIENT_URL`).
+   - Configured container image pull secrets so Rahti pods can pull private/public images from **GitHub Container Registry (`ghcr.io`)**.
+   - Exposed both frontend and backend services externally via Rahti **Routes / Ingress** (mapping external HTTPS traffic to container port `8080`).
+3. **Connecting GitHub Actions to Rahti:**
+   - Created a permanent `ServiceAccount` in Rahti with deployment rollout permissions and stored its access token as `RAHTI_TOKEN` in **GitHub Repository Secrets**.
 
-- Zero-Touch DB Migration: On startup (server.js), the backend connects to CSC Pukki inside the trusted Rahti network, executes any unapplied .sql files inside a transaction (BEGIN/COMMIT), and records them in schema_migrations before accepting traffic.
+---
+
+### Part 2: Automated CI/CD & Database Migration Pipeline (On Every Push to `main`)
+
+Once the baseline infrastructure was live, we transitioned from manual S2I builds to a fully automated containerized pipeline (`.github/workflows/deploy.yaml`):
+
+1. **Code & Versioned Schema Push:**
+   - Developers commit frontend/backend code changes alongside any new sequential SQL migration scripts under `backend/sql/migrations/` (e.g., `007_update_unpaid_booking_expiry.sql`, `008_feature_update.sql`) and push to the `main` branch.
+2. **Multi-Stage Docker Build & Registry Push (`ghcr.io`):**
+   - **Frontend Image:** Built using a multi-stage `Dockerfile` (Stage 1 compiles the Vite/React bundle with `VITE_API_BASE_URL` baked in at build time; Stage 2 serves static assets via `serve` on port `8080`).
+   - **Backend Image:** Built on lightweight `node:alpine` exposing port `8080`.
+   - Both images are tagged and pushed automatically to `ghcr.io/jess-xu123/...`.
+3. **Zero-Downtime Rolling Update on CSC Rahti:**
+   - GitHub Actions authenticates to the CSC Rahti API using `RAHTI_TOKEN` and triggers a rolling update (`oc rollout restart`) for both frontend and backend deployments.
+   - Rahti spins up new pods with the latest images and gracefully terminates old pods only after health checks pass.
+4. **Zero-Touch Automated Database Migration (`migrate.js`):**
+   - Because GitHub Actions runners use dynamic public IPs blocked by Pukki's firewall, database migrations execute **inside the backend pod at startup** (`backend/src/server.js`), which already resides within Rahti's trusted network.
+   - Before accepting HTTP traffic or starting the background expiration cron job, `runMigrations(pool)` (`backend/src/config/migrate.js`):
+     1. Ensures the `schema_migrations` tracking table exists.
+     2. Reads all `.sql` files in `backend/sql/migrations/` in alphanumeric order.
+     3. Executes any unapplied script inside an atomic PostgreSQL transaction (`BEGIN` / `COMMIT` with automatic `ROLLBACK` on error) and logs the filename into `schema_migrations`.
 
 ---
 
