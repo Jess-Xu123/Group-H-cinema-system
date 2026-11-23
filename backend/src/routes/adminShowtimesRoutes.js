@@ -219,6 +219,12 @@ router.post("/", async (req, res) => {
     });
   }
 
+  if (new Date(startTime).getTime() <= Date.now()) {
+    return res.status(400).json({
+      error: "Start time must be in the future.",
+    });
+  }
+
   if (isPrivateCompany && !companyName) {
     return res.status(400).json({
       error: "Company name is required for private-company showtimes.",
@@ -344,6 +350,12 @@ router.put("/:id", async (req, res) => {
   if (!showtimeId || !movieId || !hallId || !startTime) {
     return res.status(400).json({
       error: "Invalid showtime, movie, hall or start time.",
+    });
+  }
+
+  if (new Date(startTime).getTime() <= Date.now()) {
+    return res.status(400).json({
+      error: "Start time must be in the future.",
     });
   }
 
