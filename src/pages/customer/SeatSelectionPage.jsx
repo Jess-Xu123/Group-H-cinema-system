@@ -117,13 +117,17 @@ export default function SeatSelectionPage() {
   if (!screening || selectedSeats.length === 0 ) return gaps;
 
   const seatsPerRow = Number(screening.seats_per_row) || 10;
-  const isTaken = (row, pos) =>
-    pos < 1 ||
-    pos > seatsPerRow ||
-    occupiedKeys.has(seatKey(row, pos)) ||
-    selectedKeys.has(seatKey(row, pos)) ||
-    (row === 1 && pos === 1);
-
+  
+  const isTaken = (row, pos) => {
+    const rowNumbers = getSeatNumbers(row, seatsPerRow);
+    if (pos < 1 || pos > rowNumbers.length) return true;
+    const num = rowNumbers[pos - 1];
+    return (
+      occupiedKeys.has(seatKey(row, num)) ||
+      selectedKeys.has(seatKey(row, pos)) ||
+      (row === 1 && num === 1)
+    );
+  };
     const activeRows = new Set(selectedSeats.map((seat) => seat.row));
 
   activeRows.forEach((row) => {
@@ -151,8 +155,10 @@ export default function SeatSelectionPage() {
 
   function toggleSeat(row, position, number) {
     const key = seatKey(row, position);
+    const posKey = seatKey(row, position);
+    const dbSeatKey = seatKey(row, number);
     // Keep the reserved accessibility seat unavailable.
-    if (occupiedKeys.has(key) || (row === 1 && position === 1)) return;
+    if (occupiedKeys.has(dbSeatKey) || (row === 1 && position === 1)) return;
 
     const alreadySelected = selectedKeys.has(key);
     if (!alreadySelected && selectedSeats.length >= 50) {
@@ -227,9 +233,9 @@ export default function SeatSelectionPage() {
     ? Array.from({ length: Number(screening.total_rows) }, (_, i) => i + 1)
         .filter((row) => row !== 13)
         .some((row) =>
-          getSeatNumbers(row, Number(screening.seats_per_row)).some((_, idx) => {
+          getSeatNumbers(row, Number(screening.seats_per_row)).some((num, idx) => {
             const pos = idx + 1;
-            return !occupiedKeys.has(seatKey(row, pos)) && !(row === 1 && pos === 1);
+            return !occupiedKeys.has(seatKey(row, num)) && !(row === 1 && num === 1);
           }),
         )
     : true;
@@ -346,8 +352,11 @@ export default function SeatSelectionPage() {
                           Number(screening.seats_per_row),
                         ).map((number, index) => {
                           const position = index + 1;
+                          const posKey = seatKey(row, position);
+                          const dbSeatKey = seatKey(row, number);
+
                           const key = seatKey(row, position);
-                          const isBooked = occupiedKeys.has(key);
+                          const isBooked = occupiedKeys.has(dbSeatKey);
                           const isReservedSeat = row === 1 && position === 1;
                           const isSelected = selectedKeys.has(key);
                           const unavailable = isBooked || isReservedSeat;

@@ -32,6 +32,7 @@ function normalizeGroupSeats(seats, hall) {
 
   const totalRows = Number(hall.total_rows);
   const capacity = Number(hall.capacity);
+  const maxSeatNumber = capacity + 1;
 
   const seen = new Set();
 
@@ -46,9 +47,11 @@ function normalizeGroupSeats(seats, hall) {
       !Number.isInteger(row) ||
       !Number.isInteger(number) ||
       row < 0 ||
-      row >= totalRows ||
+      row > totalRows ||
       number <= 0 ||
-      number > capacity
+      number > maxSeatNumber ||
+      row === 13 ||
+      number === 13
     ) {
       throw new Error(
         `Invalid seat: row ${row}, seat ${number}. ` +
