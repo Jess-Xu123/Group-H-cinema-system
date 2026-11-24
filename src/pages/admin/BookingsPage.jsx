@@ -67,6 +67,9 @@ function BookingsPage() {
   const [actionError, setActionError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [activeSection, setActiveSection] = useState("bookings");
+  const [pendingGroupCount, setPendingGroupCount] = useState(0);
+
   const loadBookings = useCallback(async (signal) => {
     setIsLoading(true);
     setError("");
@@ -203,8 +206,31 @@ function BookingsPage() {
         </button>
       </div>
 
-      <AdminGroupBookingRequests />
+      <div className="admin-section-tabs">
+        <button
+          type="button"
+          className={`admin-section-tab ${activeSection === "bookings" ? "active" : ""}`}
+          onClick={() => setActiveSection("bookings")}
+        >
+          All Bookings ({bookings.length})
+        </button>
 
+        <button
+          type="button"
+          className={`admin-section-tab ${activeSection === "group" ? "active" : ""}`}
+          onClick={() => setActiveSection("group")}
+        >
+          Group Booking Requests
+          {pendingGroupCount > 0 && (
+            <span className="admin-tab-badge">{pendingGroupCount} pending</span>
+          )}
+        </button>
+      </div>
+
+      {activeSection === "group" ? (
+        <AdminGroupBookingRequests onPendingCountChange={setPendingGroupCount} />
+      ) : (
+        <>
       {/* Booking summary */}
       <section className="booking-stats-grid">
         <div className="booking-stat-card">
@@ -556,6 +582,8 @@ function BookingsPage() {
           </div>
         )}
       </section>
+      </>
+      )}
     </div>
   );
 }

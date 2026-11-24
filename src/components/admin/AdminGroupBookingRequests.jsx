@@ -14,12 +14,52 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+const TICKET_TYPE_LABELS = {
+  normal: "Normal",
+  child_under_12: "Child",
+  wheelchair: "Wheelchair",
+  loyalty_10th: "Loyalty 10th",
+};
+
+function summarizeTickets(seats) {
+  const counts = seats.reduce((acc, seat) => {
+    const label = TICKET_TYPE_LABELS[seat.ticket_type] || seat.ticket_type;
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+
+  const breakdown = Object.entries(counts)
+    .map(([label, count]) => `${count} ${label}`)
+    .join(", ");
+
+  return `${seats.length} tickets (${breakdown})`;
+}
+
+function groupSeatsByRow(seats) {
+  const map = new Map();
+  seats.forEach((seat) => {
+    if (!map.has(seat.row_number)) {
+      map.set(seat.row_number, []);
+    }
+    map.get(seat.row_number).push({
+      number: seat.seat_number,
+      type: seat.ticket_type,
+    });
+  });
+
+  return Array.from(map.entries()).map(([row, rowSeats]) => ({
+    row,
+    seats: rowSeats,
+  }));
+}
+
 export default function AdminGroupBookingRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [expandedIds, setExpandedIds] = useState(new Set());
 
   const loadRequests = useCallback(async (signal) => {
     setLoading(true);
@@ -108,6 +148,14 @@ export default function AdminGroupBookingRequests() {
     (request) => request.status === "pending"
   ).length;
 
+  function toggleExpand(id) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
   return (
     <section className="booking-list-section">
       <div className="booking-list-header">
@@ -195,18 +243,51 @@ export default function AdminGroupBookingRequests() {
                     </td>
 
                     <td>
-                      <strong>{request.seats.length} tickets</strong>
+                      <strong>{summarizeTickets(request.seats)}</strong>
 
-                      {request.seats.map((seat) => (
-                        <span
-                          className="booking-secondary-text"
-                          key={`${request.id}-${seat.row_number}-${seat.seat_number}`}
-                        >
-                          Row {seat.row_number}, Seat {seat.seat_number}
-                          {" · "}
-                          {seat.ticket_type}
-                        </span>
-                      ))}
+                      <div className="seat-row-groups">
+                        {(() => {
+                          const grouped = groupSeatsByRow(request.seats);
+                          const isExpanded = expandedIds.has(request.id);
+                          const visibleGroups = isExpanded ? grouped : grouped.slice(0, 2);
+
+                          return (
+                            <>
+                              {visibleGroups.map((group) => (
+                                <div className="seat-group-line" key={`${request.id}-row-${group.row}`}>
+                                  <span className="seat-group-row-label">Row {group.row}:</span>
+                                  <div className="seat-pill-list">
+                                    {group.seats.map((s) => (
+                                      <span
+                                        key={s.number}
+                                        className={`seat-pill ${s.type !== "normal" ? "seat-pill-special" : ""}`}
+                                        title={TICKET_TYPE_LABELS[s.type] || s.type}
+                                      >
+                                        #{s.number}
+                                        {s.type !== "normal" && (
+                                          <small> · {TICKET_TYPE_LABELS[s.type]}</small>
+                                        )}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+
+                              {grouped.length > 2 && (
+                                <button
+                                  type="button"
+                                  className="seat-expand-btn"
+                                  onClick={() => toggleExpand(request.id)}
+                                >
+                                  {isExpanded
+                                    ? "Show less"
+                                    : `+${grouped.length - 2} more rows (${request.seats.length} total)`}
+                                </button>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
                     </td>
 
                     <td>

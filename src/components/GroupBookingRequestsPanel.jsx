@@ -11,6 +11,45 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+const TICKET_TYPE_LABELS = {
+  normal: "Normal",
+  child_under_12: "Child",
+  wheelchair: "Wheelchair",
+  loyalty_10th: "Loyalty 10th",
+};
+
+function summarizeTickets(seats) {
+  const counts = seats.reduce((acc, seat) => {
+    const label = TICKET_TYPE_LABELS[seat.ticket_type] || seat.ticket_type;
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+
+  const breakdown = Object.entries(counts)
+    .map(([label, count]) => `${count} ${label}`)
+    .join(", ");
+
+  return `${seats.length} tickets (${breakdown})`;
+}
+
+function groupSeatsByRow(seats) {
+  const map = new Map();
+  seats.forEach((seat) => {
+    if (!map.has(seat.row_number)) {
+      map.set(seat.row_number, []);
+    }
+    map.get(seat.row_number).push({
+      number: seat.seat_number,
+      type: seat.ticket_type,
+    });
+  });
+
+  return Array.from(map.entries()).map(([row, rowSeats]) => ({
+    row,
+    seats: rowSeats,
+  }));
+}
+
 export default function GroupBookingRequestsPanel() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,15 +116,32 @@ export default function GroupBookingRequestsPanel() {
 
           <p>{formatDate(request.start_time)}</p>
 
-          <p>
-            {request.seats.length} tickets ·{" "}
-            {request.seats
-              .map(
-                (seat) =>
-                  `Row ${seat.row_number}, Seat ${seat.seat_number} (${seat.ticket_type})`
-              )
-              .join("; ")}
-          </p>
+          <div className="group-request-seats-box">
+            <p className="group-request-seats-summary">
+              <strong>{summarizeTickets(request.seats)}</strong>
+            </p>
+
+            <div className="seat-row-groups">
+              {groupSeatsByRow(request.seats).map((group) => (
+                <div className="seat-group-line" key={group.row}>
+                  <span className="seat-group-row-label">Row {group.row}</span>
+                  <div className="seat-pill-list">
+                    {group.seats.map((s) => (
+                      <span
+                        key={s.number}
+                        className={`seat-pill ${s.type !== "normal" ? "seat-pill-special" : ""}`}
+                      >
+                        Seat {s.number}
+                        {s.type !== "normal" && (
+                          <small> ({TICKET_TYPE_LABELS[s.type]})</small>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <p>
             Submitted: {formatDate(request.created_at)}

@@ -466,9 +466,7 @@
   font-weight: 600;
 }
 
-/* ========================================
-   Loading and Empty States
-======================================== */
+/*  Loading and Empty States */
 
 .booking-state-message {
   display: flex;
@@ -490,9 +488,51 @@
   font-size: 13px;
 }
 
-/* ========================================
-   Responsive
-======================================== */
+/* Tab */
+.admin-section-tabs {
+  display: flex;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  margin: 1.25rem 0 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.admin-section-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 0.15s ease;
+}
+
+.admin-section-tab:hover{
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-section-tab.active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.admin-tab-badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #eab308;
+  color: #111827;
+  font-weight: 700;
+}
+
+/*  Responsive */
 
 @media (max-width: 1100px) {
   .booking-stats-grid {

@@ -46,6 +46,8 @@ export default function OrdersPage() {
   const [cancellationError, setCancellationError] = useState("");
   const [cancellationSuccess, setCancellationSuccess] = useState("");
 
+  const [activeTab, setActiveTab] = useState("orders");
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -189,8 +191,28 @@ export default function OrdersPage() {
         </Link>
       </div>
 
-      <GroupBookingRequestsPanel />
+      <div className="orders-main-tabs">
+        <button
+          type="button"
+          className={`orders-main-tab ${activeTab === "orders" ? "active" : ""}`}
+          onClick={() => setActiveTab("orders")}
+        >
+          My Tickets &amp; Orders ({bookings.length})
+        </button>
 
+        <button
+          type="button"
+          className={`orders-main-tab ${activeTab === "group" ? "active" : ""}`}
+          onClick={() => setActiveTab("group")}
+        >
+          Group Booking Requests
+        </button>
+      </div>
+
+      {activeTab === "group" ? (
+        <GroupBookingRequestsPanel />
+      ) : (
+        <>
       <div className="orders-filter-bar">
         {filters.map((filter) => (
           <button
@@ -469,6 +491,8 @@ export default function OrdersPage() {
         </aside>
 
         </div>
+      )}
+      </>
       )}
     </div>
   );

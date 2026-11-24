@@ -62,3 +62,64 @@
   background: #f9e6e6;
   color: #9b3030;
 }
+
+.seat-row-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.seat-group-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.seat-group-row-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.8;
+  min-width: 3.4rem;
+  padding-top: 0.15rem;
+}
+
+.seat-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.seat-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.seat-pill-special {
+  background: rgba(234, 179, 8, 0.16);
+  border-color: rgba(234, 179, 8, 0.45);
+  color: #47b1fdeb;
+}
+
+.seat-expand-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0.2rem 0;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.seat-expand-btn:hover {
+  opacity: 1;
+}
