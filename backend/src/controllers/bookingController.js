@@ -1153,18 +1153,25 @@ async function assignWaitlistSeat(req, res) {
     }
     const info = infoRes.rows[0];
 
+    await expireShowtimeBookings(client, entry.showtime_id);
+
     const takenRes = await client.query(
       `SELECT row_number, seat_number
        FROM booked_seats
-       WHERE showtime_id = $1;`,
+       WHERE showtime_id = $1 AND released_at IS NULL;`,
       [entry.showtime_id],
     );
     const taken = new Set(
       takenRes.rows.map((r) => `${r.row_number}-${r.seat_number}`),
     );
 
+    const maxRow =
+      Number(info.total_rows) >= 13
+        ? Number(info.total_rows) + 1
+        : Number(info.total_rows);
+
     let openSeat = null;
-    for (let r = 1; r <= Number(info.total_rows) && !openSeat; r++) {
+    for (let r = 1; r <= maxRow && !openSeat; r++) {
       if (r === 13) continue;
       for (let s = 1; s <= Number(info.seats_per_row); s++) {
         if ((r === 1 && s === 1) || taken.has(`${r}-${s}`)) continue;
