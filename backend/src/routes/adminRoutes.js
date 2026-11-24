@@ -1,9 +1,13 @@
 const express = require("express");
 const pool = require("../config/db");
+const {
+  authMiddleware,
+  requireStaffOrAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/movies/search", async (req, res) => {
+router.get("/movies/search", authMiddleware, requireStaffOrAdmin, async (req, res) => {
   const { q } = req.query;
   if (!q || !q.trim()) {
     return res.status(400).json({ error: "Search query 'q' is required." });
@@ -30,7 +34,7 @@ router.get("/movies/search", async (req, res) => {
   }
 });
 
-router.post("/movies/import", async (req, res) => {
+router.post("/movies/import", authMiddleware, requireStaffOrAdmin, async (req, res) => {
   const { external_api_id, manual_data } = req.body;
 
   if (!external_api_id && !manual_data) {
@@ -40,9 +44,16 @@ router.post("/movies/import", async (req, res) => {
   let moviePayload = null;
   let isFallback = !external_api_id;
 
-  if (external_api_id) {
+if (external_api_id) {
+    const cleanExternalId = String(external_api_id).trim();
+    if (!/^\d+$/.test(cleanExternalId)) {
+      return res.status(400).json({
+        error: "external_api_id must be a numeric TMDB ID.",
+      });
+    }
+
     try {
-      const url = `https://api.themoviedb.org/3/movie/${external_api_id}?api_key=${process.env.TMDB_KEY}&append_to_response=videos,release_dates`;
+      const url = `https://api.themoviedb.org/3/movie/${cleanExternalId}?api_key=${process.env.TMDB_KEY}&append_to_response=videos,release_dates`;
       const apiRes = await fetch(url, { signal: AbortSignal.timeout(4000) });
       if (!apiRes.ok) throw new Error("External API error");
       const data = await apiRes.json();
@@ -97,6 +108,7 @@ router.post("/movies/import", async (req, res) => {
       description: manual_data.description || "No description provided.",
       duration_min: Number(manual_data.duration_min) || 120,
       genre: manual_data.genre || "General",
+      age_rating: manual_data.age_rating || "S",
       poster_url: manual_data.poster_url || "https://placehold.co/300x450?text=Poster",
       trailer_url: manual_data.trailer_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       banner_ad_url: manual_data.banner_ad_url || "",
