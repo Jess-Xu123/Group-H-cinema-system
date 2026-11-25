@@ -59,14 +59,7 @@ export default function MoviesPage() {
         ),
     );
 
-    const comingSoon = movies.filter(
-      (movie) =>
-        movie.is_upcoming &&
-        currentCityShowtimes.some(
-          (showtime) =>
-            Number(showtime.movie_id) === Number(movie.id),
-        ),
-    );
+    const comingSoon = movies.filter((movie) => Boolean(movie.is_upcoming))
 
     const displayedMovies =
       activeTab === "now_showing" ? nowShowing : comingSoon;
