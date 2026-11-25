@@ -39,6 +39,41 @@ const overviewItems = (unpaidReservations, confirmedTickets, ticketSales, roomOc
   },
 ];
 
+function formatScreeningStart(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  const now = new Date();
+
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
+  const timeStr = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  if (isSameDay(date, now)) {
+    return `Today · ${timeStr}`;
+  }
+  if (isSameDay(date, tomorrow)) {
+    return `Tomorrow · ${timeStr}`;
+  }
+
+  const dateStr = date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+  return `${dateStr} · ${timeStr}`;
+}
+
 
 function DashboardPage() {
   const [alerts, setAlerts] = useState({
@@ -216,7 +251,7 @@ function DashboardPage() {
             </div>
 
             <span className="dashboard-date-label">
-              Today's overview
+              Next 7 days
             </span>
         </div>
 
@@ -252,13 +287,10 @@ function DashboardPage() {
                   </td>
                 </tr>
               ) : (
-                programme.map((screening) => (
+                  programme.map((screening) => (
                   <tr key={screening.showtime_id}>
                     <td>
-                      {new Date(screening.start_time).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      <strong>{formatScreeningStart(screening.start_time)}</strong>
                     </td>
                     <td>{screening.movie_title}</td>
                     <td>
