@@ -188,9 +188,7 @@ export default function PrivateScreeningForm() {
         <label className="private-screening-field">
           <span>Room capacity preference *</span>
           <select name="roomCapacity" defaultValue="" required>
-            <option value="" disabled>
-              100 / 200 total places
-            </option>
+            <option value="unsure">Not sure</option>
             <option value="100">100 places</option>
             <option value="200">200 places</option>
           </select>

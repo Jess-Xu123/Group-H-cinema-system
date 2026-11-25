@@ -52,6 +52,16 @@ async function createPrivateScreeningEnquiry(req, res) {
     });
   }
 
+  const maxCapacity = roomCapacity === "unsure" ? 200 : Number(roomCapacity);
+  if (guestCount > maxCapacity) {
+    return res.status(400).json({
+      message:
+        roomCapacity === "unsure"
+          ? "Maximum capacity for private screenings is 200 attendees."
+          : `Attendees cannot exceed the selected room capacity (${roomCapacity}). Please choose a larger room or "Not sure".`,
+    });
+  }
+
   try {
     // Insert into Database
     const insertQuery = `
