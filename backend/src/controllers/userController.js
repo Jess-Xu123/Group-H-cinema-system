@@ -48,16 +48,32 @@ async function getUsers(req, res) {
     const values = [];
 
     if (search.trim()) {
-      values.push(`%${search.trim()}%`);
-      const searchIndex = values.length;
+      const rawSearch = search.trim();
+      values.push(`%${rawSearch}%`);
+      const textSearchIndex = values.length;
 
-      conditions.push(`
-        (
-          full_name ILIKE $${searchIndex}
-          OR email ILIKE $${searchIndex}
-          OR id::TEXT = $${searchIndex}
-        )
-      `);
+      const strippedId = rawSearch.replace(/^#/, "");
+      const parsedId = Number(strippedId);
+
+      if (Number.isInteger(parsedId) && parsedId > 0) {
+        values.push(parsedId);
+        const idSearchIndex = values.length;
+
+        conditions.push(`
+          (
+            full_name ILIKE $${textSearchIndex}
+            OR email ILIKE $${textSearchIndex}
+            OR id = $${idSearchIndex}
+          )
+        `);
+      } else {
+        conditions.push(`
+          (
+            full_name ILIKE $${textSearchIndex}
+            OR email ILIKE $${textSearchIndex}
+          )
+        `);
+      }
     }
 
     if (role) {
