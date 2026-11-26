@@ -61,7 +61,7 @@ export async function getLoyaltyRewards(signal) {
 export async function holdBookingSeats({ showtime_id, seats, customer_email }) {
   const formattedSeats = seats.map((s) => ({
     row_number: Number(s.row_number ?? s.row),
-    seat_number: Number(s.position ?? s.seat_number ?? s.number),
+    seat_number: Number(s.seat_number ?? s.number),
     ticket_type: s.ticket_type || "normal",
   }));
 

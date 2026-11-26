@@ -6,7 +6,6 @@
   color: #28252b;
 }
 
-
 .orders-page-header {
   display: flex;
   justify-content: space-between;
@@ -76,7 +75,9 @@
   font-size: 12px;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .orders-filter-bar button:hover {
@@ -125,13 +126,14 @@
   min-width: 0;
 }
 
-
 .order-card {
   padding: 20px;
   background: #fffefa;
   border: 1px solid #e8e2d7;
   border-radius: 6px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   cursor: pointer;
 }
 
@@ -170,6 +172,11 @@
 .status-reserved_unpaid {
   background: #fbf0d8;
   color: #a47b30;
+}
+
+.status-expired {
+  background: #ebedef;
+  color: #a65d55;
 }
 
 .status-cancelled {
@@ -257,8 +264,6 @@
   color: #6f5428;
 }
 
-
-
 .booking-state,
 .booking-empty {
   padding: 28px 24px;
@@ -292,7 +297,6 @@
   color: #a65d55;
   font-size: 13px;
 }
-
 
 .orders-summary-panel {
   position: sticky;
@@ -405,7 +409,6 @@
   cursor: not-allowed;
 }
 
-
 .summary-empty {
   padding: 28px 4px;
   text-align: center;
@@ -469,7 +472,6 @@
   font-size: 13px;
   margin: 12px 0;
 }
-
 
 .orders-main-tabs {
   display: flex;

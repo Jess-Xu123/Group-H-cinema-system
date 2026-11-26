@@ -2,6 +2,7 @@ const pool = require("../config/db");
 const {
   expireShowtimeBookings,
 } = require("../services/bookingExpirationService");
+const { isActualSeatNumber } = require("../services/seatLayout");
 
 const ALLOWED_TICKET_TYPES = [
   "normal",
@@ -32,7 +33,7 @@ function normalizeGroupSeats(seats, hall) {
 
   const totalRows = Number(hall.total_rows);
   const capacity = Number(hall.capacity);
-  const maxSeatNumber = capacity + 1;
+  const seatsPerRow = Number(hall.seats_per_row);
 
   const seen = new Set();
 
@@ -48,10 +49,8 @@ function normalizeGroupSeats(seats, hall) {
       !Number.isInteger(number) ||
       row < 0 ||
       row > totalRows ||
-      number <= 0 ||
-      number > maxSeatNumber ||
       row === 13 ||
-      number === 13
+      !isActualSeatNumber(row, number, seatsPerRow)
     ) {
       throw new Error(
         `Invalid seat: row ${row}, seat ${number}. ` +

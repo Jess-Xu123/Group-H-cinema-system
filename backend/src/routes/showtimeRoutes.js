@@ -1,5 +1,6 @@
 const express = require("express");
 const pool = require("../config/db");
+const { getBookableSeatCount } = require("../services/seatLayout");
 
 const router = express.Router();
 
@@ -109,22 +110,36 @@ router.get("/:id/seats", async (req, res) => {
       return res.status(404).json({ error: "Showtime not found." });
     }
 
-    // Keep expired bookings for history; the seat query excludes past expiries.
+    // Paid seats remain occupied until explicitly released; expiry only applies
+    // to unpaid checkout holds and reservations.
     const bookedSeatsQuery = `
       SELECT bs.row_number, bs.seat_number
       FROM booked_seats bs
       JOIN bookings b ON b.id = bs.booking_id
       WHERE bs.showtime_id = $1
         AND b.status IN ('paid', 'reserved_unpaid', 'checkout_locked')
-        AND (b.expires_at IS NULL OR b.expires_at > NOW())
+        AND bs.released_at IS NULL
+        AND (
+          b.status = 'paid'
+          OR (
+            b.status IN ('reserved_unpaid', 'checkout_locked')
+            AND (b.expires_at IS NULL OR b.expires_at > NOW())
+          )
+        )
       ORDER BY bs.row_number, bs.seat_number;
     `;
     const bookedSeatsResult = await pool.query(bookedSeatsQuery, [showtimeId]);
     
-    const takenRegularSeats = bookedSeatsResult.rows.filter(
-          (seat) => seat.row_number > 0
-        ).length;
-    const isSoldOut = takenRegularSeats >= rows[0].capacity - 1;
+    const takenBookableSeats = bookedSeatsResult.rows.filter(
+      (seat) =>
+        seat.row_number > 0 &&
+        !(seat.row_number === 1 && seat.seat_number === 1),
+    ).length;
+    const bookableSeatCount = getBookableSeatCount(
+      rows[0].total_rows,
+      rows[0].seats_per_row,
+    );
+    const isSoldOut = takenBookableSeats >= bookableSeatCount;
 
         return res.json({
           screening: rows[0],
@@ -150,15 +165,38 @@ router.post("/:id/waitlist", async (req, res) => {
 
 try {
     const checkQuery = `
-      SELECT h.capacity, COUNT(bs.id) FILTER (WHERE bs.row_number > 0)::int AS taken_seats
+      SELECT
+        h.total_rows,
+        h.seats_per_row,
+        COUNT(bs.id) FILTER (
+          WHERE bs.row_number > 0
+            AND NOT (bs.row_number = 1 AND bs.seat_number = 1)
+        )::int AS taken_seats
       FROM showtimes s JOIN halls h ON s.hall_id = h.id
-      LEFT JOIN bookings b ON b.showtime_id = s.id AND b.status IN ('paid', 'reserved_unpaid', 'checkout_locked') AND (b.expires_at IS NULL OR b.expires_at > NOW())
-      LEFT JOIN booked_seats bs ON bs.booking_id = b.id
-      WHERE s.id = $1 AND s.is_private_company = FALSE GROUP BY h.capacity;
+      LEFT JOIN bookings b
+        ON b.showtime_id = s.id
+        AND b.status IN ('paid', 'reserved_unpaid', 'checkout_locked')
+        AND (
+          b.status = 'paid'
+          OR (
+            b.status IN ('reserved_unpaid', 'checkout_locked')
+            AND (b.expires_at IS NULL OR b.expires_at > NOW())
+          )
+        )
+      LEFT JOIN booked_seats bs
+        ON bs.booking_id = b.id
+        AND bs.showtime_id = s.id
+        AND bs.released_at IS NULL
+      WHERE s.id = $1 AND s.is_private_company = FALSE
+      GROUP BY h.total_rows, h.seats_per_row;
     `;
     const { rows } = await pool.query(checkQuery, [showtimeId]);
     if (rows.length === 0) return res.status(404).json({ error: "Showtime not found." });
-    if (rows[0].taken_seats < rows[0].capacity - 1) return res.status(400).json({ error: "Seats are still available." });
+    const bookableSeatCount = getBookableSeatCount(
+      rows[0].total_rows,
+      rows[0].seats_per_row,
+    );
+    if (rows[0].taken_seats < bookableSeatCount) return res.status(400).json({ error: "Seats are still available." });
 
     const insertResult = await pool.query(
       `INSERT INTO premiere_waitlist (showtime_id, customer_email)

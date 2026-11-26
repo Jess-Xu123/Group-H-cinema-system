@@ -3,6 +3,10 @@ const pool = require("../config/db");
 const {
   expireShowtimeBookings,
 } = require("../services/bookingExpirationService");
+const {
+  getSeatNumbers,
+  isActualSeatNumber,
+} = require("../services/seatLayout");
 
 const ALLOWED_TICKET_TYPES = new Set([
   "normal",
@@ -87,11 +91,9 @@ function normalizeSeats(seats, hall) {
       !Number.isInteger(number) ||
       row < 0 ||
       row > Number(hall.total_rows) ||
-      number < 1 ||
-      number > Number(hall.seats_per_row) ||
       row === 13 ||
+      !isActualSeatNumber(row, number, hall.seats_per_row) ||
       (row === 1 && number === 1) ||
-      (row === 0 && number > 10) ||
       !ALLOWED_TICKET_TYPES.has(ticketType)
     ) {
       throw new Error("Invalid seat selection.");
@@ -1165,15 +1167,10 @@ async function assignWaitlistSeat(req, res) {
       takenRes.rows.map((r) => `${r.row_number}-${r.seat_number}`),
     );
 
-    const maxRow =
-      Number(info.total_rows) >= 13
-        ? Number(info.total_rows) + 1
-        : Number(info.total_rows);
-
     let openSeat = null;
-    for (let r = 1; r <= maxRow && !openSeat; r++) {
+    for (let r = 1; r <= Number(info.total_rows) && !openSeat; r++) {
       if (r === 13) continue;
-      for (let s = 1; s <= Number(info.seats_per_row); s++) {
+      for (const s of getSeatNumbers(r, info.seats_per_row)) {
         if ((r === 1 && s === 1) || taken.has(`${r}-${s}`)) continue;
         openSeat = { row_number: r, seat_number: s };
         break;
