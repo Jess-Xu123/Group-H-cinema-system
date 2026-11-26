@@ -49,13 +49,11 @@ function CouponsPage() {
   const ticketsRemaining = 10 - ticketsProgress;
   const progressPercentage = (ticketsProgress / 10) * 100;
 
-  const earnedRewards = Number(rewards?.earned_rewards ?? 0);
-  const availableRewards = Number(rewards?.available_rewards ?? 0);
-  const redeemedRewards = Number(rewards?.redeemed_rewards ?? 0);
-  const reservedRewards = Number(rewards?.reserved_rewards ?? 0);
-  const loyaltyDiscountPercent = Number(
-    rewards?.loyalty_ticket_discount_percent ?? 50
-  );
+  const earnedRewards = Number(rewards?.earned_rewards) || 0;
+  const availableRewards = Number(rewards?.available_rewards) || 0;
+  const redeemedRewards = Number(rewards?.redeemed_rewards) || 0;
+  const reservedRewards = Number(rewards?.reserved_rewards) || 0;
+  const loyaltyDiscountPercent = Number(rewards?.loyalty_ticket_discount_percent) || 50;
 
   return (
     <main className="coupons-page">
@@ -192,7 +190,7 @@ function CouponsPage() {
                     ? `${reservedRewards} reward${
                         reservedRewards === 1 ? " is" : "s are"
                       } currently being used in an unfinished booking.`
-                    : "Keep collecting paid movie tickets to earn your next ${loyaltyDiscountPercent}%-off reward."}
+                    : `Keep collecting paid movie tickets to earn your next ${loyaltyDiscountPercent}%-off reward.`}
                 </p>
               </div>
             )
