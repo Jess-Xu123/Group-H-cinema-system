@@ -144,6 +144,71 @@
   top: 24px;
 }
 
+/*waiting list css*/
+.booking-order-panel .waitlist-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--rio-border-subtle);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.booking-order-panel .waitlist-box h3 {
+  margin: 0;
+  color: #f3ede1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.booking-order-panel .waitlist-box > p {
+  margin: 0;
+  color: var(--rio-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.booking-order-panel .waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.booking-order-panel .waitlist-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--rio-border-subtle);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--rio-text-bright, #f3ede1);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.booking-order-panel .waitlist-form input::placeholder {
+  color: var(--rio-text-muted);
+}
+
+.booking-order-panel .waitlist-form input:focus {
+  border-color: var(--rio-gold);
+}
+
+.booking-order-panel .waitlist-form .movie-select-seats {
+  width: 100%;
+  margin-top: 0;
+}
+
+.booking-order-panel .waitlist-status {
+  margin: 2px 0 0;
+  color: var(--rio-gold);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 @media (max-width: 640px) {
   .seat-order-panel,
   .checkout-order-panel {

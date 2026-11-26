@@ -30,6 +30,10 @@ function seatKey(row, seat) {
   return `${row}-${seat}`;
 }
 
+function selectedSeatNumber(seat) {
+  return seat.seat_number ?? seat.number;
+}
+
 function getSeatNumbers(row, seatsPerRow) {
   const firstSeat = row === 1 ? 1 : row === 2 ? 11 : (row - 1) * 10 + 2;
   const lastSeat = row === 1 ? seatsPerRow : row * 10 + 1;
@@ -52,8 +56,8 @@ export default function SeatSelectionPage() {
   const [loadedShowtimeId, setLoadedShowtimeId] = useState(null);
   const [error, setError] = useState(null);
   const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistLoading, setWaitlistLoading] = useState(false); 
-  const [waitlistStatus, setWaitlistStatus] = useState(null); 
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistStatus, setWaitlistStatus] = useState(null);
   const [seatLimitNotice, setSeatLimitNotice] = useState("");
   const isLoading = loadedShowtimeId !== showtimeId;
   const currentError = error?.showtimeId === showtimeId ? error.message : "";
@@ -106,48 +110,48 @@ export default function SeatSelectionPage() {
     () =>
       new Set(
         selectedSeats.map((seat) =>
-          seatKey(seat.row, seat.position ?? seat.number),
+          seatKey(seat.row, seat.position ?? selectedSeatNumber(seat)),
         ),
       ),
     [selectedSeats],
   );
 
   const strandedGapKeys = useMemo(() => {
-  const gaps = new Set();
-  if (!screening || selectedSeats.length === 0 ) return gaps;
+    const gaps = new Set();
+    if (!screening || selectedSeats.length === 0) return gaps;
 
-  const seatsPerRow = Number(screening.seats_per_row) || 10;
-  
-  const isTaken = (row, pos) => {
-    const rowNumbers = getSeatNumbers(row, seatsPerRow);
-    if (pos < 1 || pos > rowNumbers.length) return true;
-    const num = rowNumbers[pos - 1];
-    return (
-      occupiedKeys.has(seatKey(row, num)) ||
-      selectedKeys.has(seatKey(row, pos)) ||
-      (row === 1 && num === 1)
-    );
-  };
+    const seatsPerRow = Number(screening.seats_per_row) || 10;
+
+    const isTaken = (row, pos) => {
+      const rowNumbers = getSeatNumbers(row, seatsPerRow);
+      if (pos < 1 || pos > rowNumbers.length) return true;
+      const num = rowNumbers[pos - 1];
+      return (
+        occupiedKeys.has(seatKey(row, num)) ||
+        selectedKeys.has(seatKey(row, pos)) ||
+        (row === 1 && num === 1)
+      );
+    };
     const activeRows = new Set(selectedSeats.map((seat) => seat.row));
 
-  activeRows.forEach((row) => {
-    for (let pos = 1; pos <= seatsPerRow; pos++) {
-      if (isTaken(row, pos)) continue;
+    activeRows.forEach((row) => {
+      for (let pos = 1; pos <= seatsPerRow; pos++) {
+        if (isTaken(row, pos)) continue;
 
-      const leftBlocked = isTaken(row, pos - 1)
-      const rightBlocked = isTaken(row, pos + 1)
-      const touchesSelection =
-        selectedKeys.has(seatKey(row, pos - 1)) ||
-        selectedKeys.has(seatKey(row, pos + 1))
+        const leftBlocked = isTaken(row, pos - 1);
+        const rightBlocked = isTaken(row, pos + 1);
+        const touchesSelection =
+          selectedKeys.has(seatKey(row, pos - 1)) ||
+          selectedKeys.has(seatKey(row, pos + 1));
 
-      if (leftBlocked && rightBlocked && touchesSelection) {
-        gaps.add(seatKey(row, pos));
+        if (leftBlocked && rightBlocked && touchesSelection) {
+          gaps.add(seatKey(row, pos));
+        }
       }
-    }
-  });
+    });
 
-  return gaps;
-}, [screening, selectedSeats, occupiedKeys, selectedKeys]);
+    return gaps;
+  }, [screening, selectedSeats, occupiedKeys, selectedKeys]);
 
   const total = screening
     ? Number(screening.base_price) * selectedSeats.length
@@ -155,7 +159,6 @@ export default function SeatSelectionPage() {
 
   function toggleSeat(row, position, number) {
     const key = seatKey(row, position);
-    const posKey = seatKey(row, position);
     const dbSeatKey = seatKey(row, number);
     // Keep the reserved accessibility seat unavailable.
     if (occupiedKeys.has(dbSeatKey) || (row === 1 && position === 1)) return;
@@ -169,12 +172,15 @@ export default function SeatSelectionPage() {
 
     setSelectedSeats((current) =>
       current.some(
-        (seat) => seatKey(seat.row, seat.position ?? seat.number) === key,
+        (seat) =>
+          seatKey(seat.row, seat.position ?? selectedSeatNumber(seat)) === key,
       )
         ? current.filter(
-            (seat) => seatKey(seat.row, seat.position ?? seat.number) !== key,
+            (seat) =>
+              seatKey(seat.row, seat.position ?? selectedSeatNumber(seat)) !==
+              key,
           )
-        : [...current, { row, number, position }],
+        : [...current, { row, seat_number: number, position }],
     );
   }
 
@@ -191,14 +197,14 @@ export default function SeatSelectionPage() {
   async function handleGroupBookingRequest() {
     if (!user) {
       setGroupRequestError(
-        "Please log in before submitting a Group Booking request."
+        "Please log in before submitting a Group Booking request.",
       );
       return;
     }
 
     if (selectedSeats.length <= 6) {
       setGroupRequestError(
-        "A Group Booking request requires more than 6 tickets."
+        "A Group Booking request requires more than 6 tickets.",
       );
       return;
     }
@@ -212,17 +218,17 @@ export default function SeatSelectionPage() {
         showtime_id: screening.showtime_id,
         seats: selectedSeats.map((seat) => ({
           row_number: seat.row,
-          seat_number: seat.number,
+          seat_number: selectedSeatNumber(seat),
           ticket_type: seat.ticket_type || "normal",
         })),
       });
 
       setGroupRequestMessage(
-        `${result.message} Your request reference is #${result.request.id}.`
+        `${result.message} Your request reference is #${result.request.id}.`,
       );
     } catch (requestError) {
       setGroupRequestError(
-        requestError.message || "Unable to submit your request."
+        requestError.message || "Unable to submit your request.",
       );
     } finally {
       setGroupRequestLoading(false);
@@ -233,10 +239,15 @@ export default function SeatSelectionPage() {
     ? Array.from({ length: Number(screening.total_rows) }, (_, i) => i + 1)
         .filter((row) => row !== 13)
         .some((row) =>
-          getSeatNumbers(row, Number(screening.seats_per_row)).some((num, idx) => {
-            const pos = idx + 1;
-            return !occupiedKeys.has(seatKey(row, num)) && !(row === 1 && num === 1);
-          }),
+          getSeatNumbers(row, Number(screening.seats_per_row)).some(
+            (num, idx) => {
+              const pos = idx + 1;
+              return (
+                !occupiedKeys.has(seatKey(row, num)) &&
+                !(row === 1 && num === 1)
+              );
+            },
+          ),
         )
     : true;
   const isSoldOut = Boolean(screening && !hasOpenSeat);
@@ -246,13 +257,13 @@ export default function SeatSelectionPage() {
     setWaitlistLoading(true);
     setWaitlistStatus(null);
     try {
-      const result = await joinShowtimeWaitlist(showtimeId, waitlistEmail); 
+      const result = await joinShowtimeWaitlist(showtimeId, waitlistEmail);
       setWaitlistStatus({ type: "success", text: result.message });
       setWaitlistEmail("");
     } catch (err) {
       setWaitlistStatus({ type: "error", text: err.message });
     } finally {
-      setWaitlistLoading(false); 
+      setWaitlistLoading(false);
     }
   }
 
@@ -352,7 +363,6 @@ export default function SeatSelectionPage() {
                           Number(screening.seats_per_row),
                         ).map((number, index) => {
                           const position = index + 1;
-                          const posKey = seatKey(row, position);
                           const dbSeatKey = seatKey(row, number);
 
                           const key = seatKey(row, position);
@@ -360,7 +370,7 @@ export default function SeatSelectionPage() {
                           const isReservedSeat = row === 1 && position === 1;
                           const isSelected = selectedKeys.has(key);
                           const unavailable = isBooked || isReservedSeat;
-                          const isStrandedGap = strandedGapKeys.has(key)
+                          const isStrandedGap = strandedGapKeys.has(key);
                           return (
                             <button
                               key={key}
@@ -370,7 +380,9 @@ export default function SeatSelectionPage() {
                                   ? "is-selected"
                                   : unavailable
                                     ? "is-unavailable"
-                                    : isStrandedGap ? "seat-gap-warning" : ""
+                                    : isStrandedGap
+                                      ? "seat-gap-warning"
+                                      : ""
                               }`}
                               disabled={unavailable}
                               aria-pressed={isSelected}
@@ -424,7 +436,10 @@ export default function SeatSelectionPage() {
                 </div>
                 <div className="seat-order-divider" />
                 {seatLimitNotice && (
-                <p className="showtimes-feedback showtimes-error" role="alert">
+                  <p
+                    className="showtimes-feedback showtimes-error"
+                    role="alert"
+                  >
                     {seatLimitNotice}
                   </p>
                 )}
@@ -435,11 +450,11 @@ export default function SeatSelectionPage() {
                 {selectedSeats.map((seat) => (
                   <div
                     className="checkout-ticket-item"
-                    key={seatKey(seat.row, seat.number)}
+                    key={seatKey(seat.row, selectedSeatNumber(seat))}
                   >
                     <div className="checkout-ticket-heading">
                       <strong>
-                        Row {seat.row} · Seat {seat.number}
+                        Row {seat.row} · Seat {selectedSeatNumber(seat)}
                       </strong>
 
                       {selectedSeats.length <= 6 && (
@@ -450,7 +465,6 @@ export default function SeatSelectionPage() {
                     {selectedSeats.length > 6 && (
                       <label className="checkout-ticket-label">
                         Ticket type
-
                         <select
                           value={seat.ticket_type || "normal"}
                           onChange={(event) => {
@@ -458,17 +472,21 @@ export default function SeatSelectionPage() {
 
                             setSelectedSeats((current) =>
                               current.map((item) =>
-                                seatKey(item.row, item.number) ===
-                                seatKey(seat.row, seat.number)
+                                seatKey(item.row, selectedSeatNumber(item)) ===
+                                seatKey(seat.row, selectedSeatNumber(seat))
                                   ? { ...item, ticket_type: ticketType }
-                                  : item
-                              )
+                                  : item,
+                              ),
                             );
                           }}
                         >
                           <option value="normal">Standard — full price</option>
-                          <option value="child_under_12">Child under 12 — discounted</option>
-                          <option value="wheelchair">Wheelchair — full price</option>
+                          <option value="child_under_12">
+                            Child under 12 — discounted
+                          </option>
+                          <option value="wheelchair">
+                            Wheelchair — full price
+                          </option>
 
                           {user && (
                             <option value="loyalty_10th">
@@ -502,8 +520,8 @@ export default function SeatSelectionPage() {
                 {selectedSeats.length > 6 && (
                   <>
                     <p className="booking-order-guidance">
-                      Group bookings require Staff/Admin approval. Your seats will not
-                      be held until your request is approved.
+                      Group bookings require Staff/Admin approval. Your seats
+                      will not be held until your request is approved.
                     </p>
 
                     {!user && (
@@ -526,7 +544,10 @@ export default function SeatSelectionPage() {
                 )}
 
                 {groupRequestError && (
-                  <p className="showtimes-feedback showtimes-error" role="alert">
+                  <p
+                    className="showtimes-feedback showtimes-error"
+                    role="alert"
+                  >
                     {groupRequestError}
                   </p>
                 )}
@@ -538,10 +559,13 @@ export default function SeatSelectionPage() {
                 )}
 
                 {isSoldOut && (
-                  <div className="waitlist-box" style={{ marginTop: "1rem" }}>
+                  <div className="waitlist-box">
                     <h3>Screening Full — Join Waitlist</h3>
                     <p>Enter your email to get an alert if a seat opens up.</p>
-                    <form onSubmit={handleJoinWaitlist}>
+                    <form
+                      className="waitlist-form"
+                      onSubmit={handleJoinWaitlist}
+                    >
                       <input
                         type="email"
                         required
@@ -558,19 +582,23 @@ export default function SeatSelectionPage() {
                       </button>
                     </form>
                     {waitlistStatus && (
-                      <p role="status">{waitlistStatus.text}</p>
+                      <p className="waitlist-status" role="status">
+                        {waitlistStatus.text}
+                      </p>
                     )}
                   </div>
                 )}
-                
 
                 {/* Reminder in the summary section */}
                 <div className="booking-order-guidance">
                   {selectedSeats.length > 0 ? (
                     <p>
                       Two seats together: Row {selectedSeats[0]?.row} seats{" "}
-                      {selectedSeats.map((s) => s.number).join(" & ")}. You can
-                      review your tickets before payment. {selectedSeats.length}
+                      {selectedSeats
+                        .map((seat) => selectedSeatNumber(seat))
+                        .join(" & ")}
+                      . You can review your tickets before payment.{" "}
+                      {selectedSeats.length}
                       /6 tickets selected for this booking.
                     </p>
                   ) : (
